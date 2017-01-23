@@ -1,0 +1,102 @@
+Template:
+As a [role]
+I want [feature]
+So that [reason]
+
+----------------------------------------------------------------------------
+
+As a player
+I want there to be two sides: a king with his defends and attackers
+So that I can play Hnefatafl against someone
+
+As a player
+I want there to be 12 defenders and 24 attacks
+So that the Copenhagen rules are obeyed
+
+As a player
+I want there board to be an grid with 11 rows and 11 columns of squares
+So that the Copenhagen rules are obeyed
+
+As a player
+I want the initial board setup to be as follows [TODO: Diagram]
+So that the Copenhagen rules are obeyed
+
+As a player
+I want the central square to be the throne and can only be occupied by the king
+So that the Copenhagen rules are obeyed
+
+As a player
+I want the king to be the only piece that can occupy any of the four corners
+So that the Copenhagen rules are obeyed
+
+As a player
+I want any piece to be able to pass through the throne when it is empty
+So that the Copenhagen rules are obeyed
+
+As a player
+I want the four corners to be hostile to any piece
+So that the Copenhagen rules are obeyed
+
+As a player
+I want the throne to always be hostile to attackers
+So that the Copenhagen rules are obeyed
+
+As a player
+I want the throne to be hostile to defenders if and only if it is empty
+So that the Copenhagen rules are obeyed
+
+As a player
+I want the attacker's side to move first
+So that the Copenhagen rules are obeyed
+
+As a player
+I want the game to progress with alternating moves between the two sides
+So that the Copenhagen rules are obeyed
+
+As a player
+I want a piece to be able to move a piece on my side any number of vacant squares along a row or column
+So that the Copenhagen rules are obeyed
+
+As a player
+I want any piece other than the king to be captured if there is a opposing piece and/or hostile square above and below or left and right of the piece if the piece was there (ie a piece should be able to move between two enemy pieces) (TODO: Phrasing?)
+So that the Copenhagen rules are obeyed
+
+As a player
+I want a row of pieces along any edge to be captured, excluding the king, if there is an enemy piece on both ends and an enemy piece adjacent to each piece parallel to the edge (TODO: Phrasing?)
+So that the Copenhagen rules are obeyed
+
+As a player
+I want the king and his defender's side to win if the king occupies any of the four corners
+So that the Copenhagen rules are obeyed
+
+As a player
+I want the king and his defender's side to win if the king is adjacent to a edge, can move, and it is impossible for the attacks to capture him after any number of moves
+So that the Copenhagen rules are obeyed
+
+As a player
+I want the attackers to win if there is an attacker's piece on all four adjacent sides of the king
+So that the Copenhagen rules are obeyed
+
+As a player
+I want the attackers to win if there is an attacker's piece on three of the adjacent sides of the king and the throne is on the fourth adjacent side of the king
+So that the Copenhagen rules are obeyed
+
+As a player
+I want the attackers to win if there is a barrier of attacker's pieces surrounding the king and all remaining defenders preventing the king from escaping
+So that the Copenhagen rules are obeyed
+
+As a player
+I want a side to win if the opposing side moves a piece back and forth three times
+So that the Copenhagen rules are obeyed
+
+As a player
+I want the attackers to win if the defenders repeat the same defending board position three times without capturing a piece if and only if the king and at least four other defending pieces are remaining
+So that the Copenhagen rules are obeyed
+
+As a player
+I want a side to win if the opposing side cannot move
+So that the Copenhagen rules are obeyed
+
+As a player
+I want the game to end in a draw if there is 50 consectutive moves without a capture
+So that the Copenhagen rules are obeyed

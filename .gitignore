@@ -1,4 +1,18 @@
 /bin/
+/build/
+.gradle
+
+# Ignore GUI config.
+gradle-app.setting
+
+# Ignore Java jars, except important ones.
+*.jar
+!gradle-wrapper.jar
+
+# Project cache.
+.gradletasknamecache
+
+# More Java ignores.
 *.class
 .project
 .classpath

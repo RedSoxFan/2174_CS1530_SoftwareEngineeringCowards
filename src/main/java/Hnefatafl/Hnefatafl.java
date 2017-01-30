@@ -1,4 +1,4 @@
-package hnefatafl;
+package cowards;
 
 import java.awt.*;
 import java.awt.event.*;

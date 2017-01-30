@@ -9,7 +9,8 @@
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
 apply plugin: 'application'
-mainClassName = "Hnefatafl.Hnefatafl"
+apply plugin: 'checkstyle'
+mainClassName = "hnefatafl.Hnefatafl"
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -17,6 +18,11 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
     //jcenter()
     mavenCentral()
+}
+
+checkstyle {
+  configFile = file("${project.rootDir}/config/checkstyle.xml")
+  toolVersion = '7.5'
 }
 
 // In this section you declare the dependencies for your production and test code

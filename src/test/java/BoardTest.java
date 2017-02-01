@@ -130,15 +130,11 @@ public class BoardTest {
     Board board = new Board();
 
     // Check for appropriate start state.
-    if (board.isGameOver()) {
-      fail();
-    }
+    assertFalse(board.isGameOver());
 
     // Try setting the state.
     board.setGameOver(true);
-    if (!board.isGameOver()) {
-      fail();
-    }
+    assertTrue(board.isGameOver());
   }
 
   /**
@@ -149,14 +145,10 @@ public class BoardTest {
     Board board = new Board();
 
     // Check for appropriate start state.
-    if (!board.isAttackerTurn()) {
-      fail();
-    }
+    assertTrue(board.isAttackerTurn());
 
     // Try setting the state.
     board.setAttackerTurn(false);
-    if (board.isAttackerTurn()) {
-      fail();
-    }
+    assertFalse(board.isAttackerTurn());
   }
 }

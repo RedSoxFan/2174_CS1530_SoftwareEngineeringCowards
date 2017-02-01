@@ -6,27 +6,7 @@ import javax.swing.*;
 
 public class HnefataflPanel extends JPanel {
 
-  public static enum GridSquareState {
-    EMPTY, KING, DEFENDER, ATTACKER
-  }
-
-  public static final char[][] INITIAL_BOARD = new char[][]{
-    {' ', ' ', ' ', 'A', 'A', 'A', 'A', 'A', ' ', ' ', ' '},
-      {' ', ' ', ' ', ' ', ' ', 'A', ' ', ' ', ' ', ' ', ' '},
-      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-      {'A', ' ', ' ', ' ', ' ', 'D', ' ', ' ', ' ', ' ', 'A'},
-      {'A', ' ', ' ', ' ', 'D', 'D', 'D', ' ', ' ', ' ', 'A'},
-      {'A', 'A', ' ', 'D', 'D', 'K', 'D', 'D', ' ', 'A', 'A'},
-      {'A', ' ', ' ', ' ', 'D', 'D', 'D', ' ', ' ', ' ', 'A'},
-      {'A', ' ', ' ', ' ', ' ', 'D', ' ', ' ', ' ', ' ', 'A'},
-      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-      {' ', ' ', ' ', ' ', ' ', 'A', ' ', ' ', ' ', ' ', ' '},
-      {' ', ' ', ' ', 'A', 'A', 'A', 'A', 'A', ' ', ' ', ' '}
-  };
-
-  private GridSquareState[][] board = new GridSquareState[11][11];
-  private boolean attacking = true;
-  private boolean gameOver = false;
+  private Board board;
   private Rectangle grid;
   private Rectangle newGame;
   private Rectangle saveGame;
@@ -38,13 +18,14 @@ public class HnefataflPanel extends JPanel {
   */
   public HnefataflPanel() {
     super();
+
+    // Create initial game board.
+    board = new Board();
     addMouseListener(new MouseAdapter() {
         public void mouseReleased(MouseEvent event) {
         mouseReleaseEvent(event);
         }
     });
-
-    reset();
 
     // Initialize timer to repaint
     new java.util.Timer().scheduleAtFixedRate(new java.util.TimerTask() {
@@ -52,29 +33,6 @@ public class HnefataflPanel extends JPanel {
         repaint();
         }
         }, 50, 1000 / 30);
-  }
-
-  /**
-    Reinitialize the board.
-   */
-  public void reset() {
-    // Initialize the board
-    for (int r = 0; r < 11; r++) {
-      for (int c = 0; c < 11; c++) {
-        char square = INITIAL_BOARD[r][c];
-        if (square == 'A') {
-          board[r][c] = GridSquareState.ATTACKER;
-        } else if (square == 'D') {
-          board[r][c] = GridSquareState.DEFENDER;
-        } else if (square == 'K') {
-          board[r][c] = GridSquareState.KING;
-        } else {
-          board[r][c] = GridSquareState.EMPTY;
-        }
-      }
-    }
-    attacking = true;
-    gameOver = false;
   }
 
   /**
@@ -90,7 +48,7 @@ public class HnefataflPanel extends JPanel {
         // TODO: Process event
       } else if (newGame != null && newGame.contains(event.getPoint())) {
         // TODO: Confirm and reset
-        reset();
+        board.reset();
       } else if (saveGame != null && saveGame.contains(event.getPoint())) {
         // TODO: Show save dialog and save
       } else if (loadGame != null && loadGame.contains(event.getPoint())) {
@@ -140,15 +98,23 @@ public class HnefataflPanel extends JPanel {
       int tempX = gridX;
       for (int c = 0; c < 11; c++) {
         // Draw Piece
-        if (board[r][c].equals(GridSquareState.ATTACKER)) {
-          graph.setColor(Color.BLACK);
-          graph.fillRect(tempX + 5, tempY + 5, gridS - 10, gridS - 10);
-        } else if (board[r][c].equals(GridSquareState.DEFENDER)) {
-          graph.setColor(Color.GRAY);
-          graph.fillRect(tempX + 5, tempY + 5, gridS - 10, gridS - 10);
-        } else if (board[r][c].equals(GridSquareState.KING)) {
-          graph.setColor(Color.WHITE);
-          graph.fillRect(tempX + 5, tempY + 5, gridS - 10, gridS - 10);
+        try {
+          if (board.square(r, c).equals(Board.GridSquareState.ATTACKER)) {
+            graph.setColor(Color.BLACK);
+            graph.fillRect(tempX + 5, tempY + 5, gridS - 10, gridS - 10);
+          } else if (board.square(r, c).equals(Board.GridSquareState.DEFENDER)) {
+            graph.setColor(Color.GRAY);
+            graph.fillRect(tempX + 5, tempY + 5, gridS - 10, gridS - 10);
+          } else if (board.square(r, c).equals(Board.GridSquareState.KING)) {
+            graph.setColor(Color.WHITE);
+            graph.fillRect(tempX + 5, tempY + 5, gridS - 10, gridS - 10);
+          }
+        } catch (GridOutOfBoundsException exception) {
+          // TODO: Better error message.
+          System.out.println(
+              "Attempted to go outside of the grid. Please contact developers."
+          );
+          System.exit(1);
         }
 
         // Draw Border
@@ -163,8 +129,8 @@ public class HnefataflPanel extends JPanel {
 
     // Paint whose turn it is (or who won)
     graph.setColor(Color.WHITE);
-    String turn = attacking ? "Attacker's " : "Defender's ";
-    turn += gameOver ? "Won" : "Turn";
+    String turn = board.isAttackerTurn() ? "Attacker's " : "Defender's ";
+    turn += board.isGameOver() ? "Won" : "Turn";
     setMaxFontSize(graph, turn, (gridS * 11) - 10, 25);
     width = graph.getFontMetrics().stringWidth(turn);
     int height = graph.getFontMetrics().getHeight();

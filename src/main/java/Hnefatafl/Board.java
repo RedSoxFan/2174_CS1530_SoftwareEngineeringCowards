@@ -101,7 +101,8 @@ public class Board {
   public void loadBoardFromChar(char[][] charBoard)
       throws BadAsciiBoardFormatException {
 
-    if (charBoard.length < GRID_ROW_MAX + 1
+    if (charBoard == null
+        || charBoard.length < GRID_ROW_MAX + 1
         || charBoard[0].length < GRID_COL_MAX + 1) {
       throw new BadAsciiBoardFormatException();
     }
@@ -128,7 +129,8 @@ public class Board {
     @param column Column of desired square.
    */
   public GridSquareState square(int row, int column) throws GridOutOfBoundsException {
-    if (row > GRID_ROW_MAX || column > GRID_COL_MAX) {
+    if (row > GRID_ROW_MAX || column > GRID_COL_MAX
+        || row < 0 || column < 0) {
       throw new GridOutOfBoundsException();
     }
 

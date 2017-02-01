@@ -24,6 +24,25 @@ public class BoardTest {
   }
 
   /**
+    Test that BadAsciiBoardFormatExceptions are thrown on null inputs.
+   */
+  @Test
+  public void boardFromCharLoadNullTest() {
+    Board board = new Board();
+
+    // Null.
+    char[][] badBoard = null;
+
+    try {
+      board.loadBoardFromChar(badBoard);
+    } catch (BadAsciiBoardFormatException exception) {
+      return;
+    }
+
+    fail();
+  }
+
+  /**
     Test that BadAsciiBoardFormatExceptions are thrown appropriately.
    */
   @Test
@@ -95,10 +114,45 @@ public class BoardTest {
   }
 
   /**
-    Test that GridOutOfBoundsExceptions are thrown appropriately.
+    Test that GridOutOfBoundsExceptions isn't thrown within normal parameters.
    */
   @Test
-  public void boardGridOutOfBoundsTest() {
+  public void boardGridNotOutOfBoundsTest() {
+    Board board = new Board();
+    // Make sure the good edge case passes.
+    try {
+      board.square(Board.GRID_ROW_MAX, Board.GRID_COL_MAX);
+    } catch (GridOutOfBoundsException exception) {
+      fail();
+    }
+  }
+
+  /**
+    Test that GridOutOfBoundsExceptions is thrown for the lower bound.
+   */
+  @Test
+  public void boardGridOutOfBoundsLowerTest() {
+    Board board = new Board();
+    // Any call under 0 is bad.
+    try {
+      board.square(-1, 0);
+    } catch (GridOutOfBoundsException exception) {
+      try {
+        board.square(0, -1);
+      } catch (GridOutOfBoundsException nestedException) {
+        // pass
+        return;
+      }
+    }
+
+    fail();
+  }
+
+  /**
+    Test that GridOutOfBoundsExceptions is thrown for the upper bound.
+   */
+  @Test
+  public void boardGridOutOfBoundsUpperTest() {
     Board board = new Board();
     // Make sure the good edge case passes.
     try {

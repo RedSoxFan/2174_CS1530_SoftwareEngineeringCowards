@@ -10,6 +10,7 @@
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'checkstyle'
+apply plugin: 'jacoco'
 mainClassName = "cowards.Hnefatafl"
 
 // In this section you declare where to find the dependencies of your project

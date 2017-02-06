@@ -1,0 +1,4 @@
+#!/bin/sh
+# Copy this to <repo-base>/.git/hooks/pre-commit
+# On Mac/Linux, make sure it is executable
+exec gradle -q check --rerun-tasks

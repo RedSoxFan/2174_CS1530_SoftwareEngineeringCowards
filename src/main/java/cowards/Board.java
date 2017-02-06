@@ -74,74 +74,77 @@ public class Board {
   }
 
   /**
-   * Whether or not a square is selected
+   * Whether or not a square is selected.
    */
   public boolean hasSelection() {
     return selRow != -1 && selCol != -1;
   }
 
   /**
-   * Getter for selRow
+   * Getter for selRow.
    */
   public int getSelectedRow() {
     return selRow;
   }
 
   /**
-   * Getter for selCol
+   * Getter for selCol.
    */
   public int getSelectedColumn() {
-      return selCol;
+    return selCol;
   }
 
   /**
-   * Attempt to select a piece
+   * Attempt to select a piece.
    *
-   * @param row: The row of the piece to select
-   * @param col: The column of the piece to select
+   * @param row The row of the piece to select.
+   * @param col The column of the piece to select.
    */
   public void select(int row, int col) throws GridOutOfBoundsException {
-     switch (square(row, col)) {
-       // The attacking side can only select attacker pieces
-       case ATTACKER:
-         if (isAttackerTurn()) {
-           selRow = row;
-           selCol = col;
-         }
-         break;
+    switch (square(row, col)) {
+      // The attacking side can only select attacker pieces.
+      case ATTACKER:
+        if (isAttackerTurn()) {
+          selRow = row;
+          selCol = col;
+        }
+        break;
 
-       // The defending side can only select defender pieces and the king
-       case DEFENDER:
-       case KING:
-         if (!isAttackerTurn()) {
-           selRow = row;
-           selCol = col;
-         }
-         break;
+        // The defending side can only select defender pieces and the king.
+      case DEFENDER:
+      case KING:
+        if (!isAttackerTurn()) {
+          selRow = row;
+          selCol = col;
+        }
+        break;
 
-       // For clarity sake, include the default no-op case
-       default:
-         break;
-     }
+        // For clarity sake, include the default no-op case.
+      default:
+        break;
+    }
   }
 
   /**
-   * Attempt to move a piece
+   * Attempt to move a piece.
    *
-   * @param row: The row of the square to move to
-   * @param col: The column of the square to move to
+   * @param row The row of the square to move to.
+   * @param col The column of the square to move to.
    *
-   * @return Whether or not the selected piece was moved
+   * @return Whether or not the selected piece was moved.
    */
   public boolean move(int row, int col) throws GridOutOfBoundsException {
     boolean moved = false;
-    // Verify there is a selection and only one axis differs
+    // Verify there is a selection and only one axis differs.
     if (hasSelection() && ((row != selRow) ^ (col != selCol))) {
-      // TODO: Check the reserved squares that only the king can move to
+      // TODO: Check the reserved squares that only the king can move to.
       moved = true;
-      // Determine the top, bottom, left, and right
-      // Either top and bottom or left and right will be the same
-      int top, bottom, left, right;
+      // Determine the top, bottom, left, and right.
+      // Either top and bottom or left and right will be the same.
+      int top;
+      int bottom;
+      int left;
+      int right;
       if (row < selRow) {
         top = row;
         bottom = selRow;
@@ -156,34 +159,34 @@ public class Board {
         left = selCol;
         right = col;
       }
-      // Walk the path to make sure it is clear
+      // Walk the path to make sure it is clear.
       for (int r = top; r <= bottom; r++) {
         for (int c = left; c <= right; c++) {
-          // Ignore the selected square
+          // Ignore the selected square.
           if (r != selRow || c != selCol) {
-            // If the square is not empty, stop walking
+            // If the square is not empty, stop walking.
             if (!square(r, c).equals(GridSquareState.EMPTY)) {
               moved = false;
               break;
             }
           }
         }
-        // If a barricade was found, stop walking
+        // If a barricade was found, stop walking.
         if (!moved) {
           break;
         }
       }
-      // If there is no conflict, move the piece, deselect, and end turn
+      // If there is no conflict, move the piece, deselect, and end turn.
       if (moved) {
         board[row][col] = square(selRow, selCol);
         board[selRow][selCol] = GridSquareState.EMPTY;
         selRow = -1;
         selCol = -1;
-        // TODO: Check for captures
+        // TODO: Check for captures.
         setAttackerTurn(!isAttackerTurn());
       }
     }
-    // Return whether the selected piece was moved
+    // Return whether the selected piece was moved.
     return moved;
   }
 
@@ -191,7 +194,7 @@ public class Board {
     Reset the board to starting conditions.
    */
   public void reset() {
-    // Initialize the board
+    // Initialize the board.
     try {
       loadBoardFromChar(INITIAL_BOARD);
     } catch (BadAsciiBoardFormatException exception) {

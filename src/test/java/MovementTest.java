@@ -5,12 +5,12 @@ import cowards.GridOutOfBoundsException;
 import org.junit.Test;
 
 /**
- * Test methods associated with selection and movement
+ * Test methods associated with selection and movement.
  */
 public class MovementTest {
 
   /**
-   * Verify that there is no selection when the game starts
+   * Verify that there is no selection when the game starts.
    */
   @Test
   public void noStartingSelectionTest() {
@@ -19,7 +19,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify that the attacking side can select an attacker
+   * Verify that the attacking side can select an attacker.
    */
   @Test
   public void selectAttackerAsAttackerTest() {
@@ -37,7 +37,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify that the attacking side cannot select an attacker
+   * Verify that the attacking side cannot select an attacker.
    */
   @Test
   public void selectDefenderAsAttackerTest() {
@@ -55,7 +55,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify that the attacking side cannot select the king
+   * Verify that the attacking side cannot select the king.
    */
   @Test
   public void selectKingAsAttackerTest() {
@@ -73,7 +73,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify that the attacking side cannot select an empty square
+   * Verify that the attacking side cannot select an empty square.
    */
   @Test
   public void selectEmptyAsAttackerTest() {
@@ -92,7 +92,7 @@ public class MovementTest {
 
   /**
    * Verify that the attacking side cannot select a piece above or to the left
-   * of the board
+   * of the board.
    */
   @Test
   public void selectLowerBoundAsAttackerTest() {
@@ -115,7 +115,7 @@ public class MovementTest {
 
   /**
    * Verify that the attacking side cannot select a piece below or to the
-   * right of the board
+   * right of the board.
    */
   @Test
   public void selectUpperBoundAsAttackerTest() {
@@ -137,7 +137,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify the defending side cannot select an attacker
+   * Verify the defending side cannot select an attacker.
    */
   @Test
   public void selectAttackerAsDefenderTest() {
@@ -155,7 +155,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify the defending side can select a defender
+   * Verify the defending side can select a defender.
    */
   @Test
   public void selectDefenderAsDefenderTest() {
@@ -173,7 +173,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify the defending side can select the king
+   * Verify the defending side can select the king.
    */
   @Test
   public void selectKingAsDefenderTest() {
@@ -191,7 +191,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify the defending side cannot select an empty square
+   * Verify the defending side cannot select an empty square.
    */
   @Test
   public void selectEmptyAsDefenderTest() {
@@ -210,7 +210,7 @@ public class MovementTest {
 
   /**
    * Verify the defending side cannot select a square above or to the left
-   * of the board
+   * of the board.
    */
   @Test
   public void selectLowerBoundAsDefenderTest() {
@@ -233,7 +233,7 @@ public class MovementTest {
 
   /**
    * Verify the defending side cannot select a square below or to the right
-   * of the board
+   * of the board.
    */
   @Test
   public void selectUpperBoundAsDefenderTest() {
@@ -255,7 +255,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify movement fails for the attacking side when there is no selection
+   * Verify movement fails for the attacking side when there is no selection.
    */
   @Test
   public void moveNoSelectionAsAttackerTest() {
@@ -275,7 +275,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving left one square works for the attacking side
+   * Verify moving left one square works for the attacking side.
    */
   @Test
   public void moveLeftAsAttackerTest() {
@@ -296,7 +296,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving right one square works for the attacking side
+   * Verify moving right one square works for the attacking side.
    */
   @Test
   public void moveRightAsAttackerTest() {
@@ -317,7 +317,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving up one square works for the attacking side
+   * Verify moving up one square works for the attacking side.
    */
   @Test
   public void moveUpAsAttackerTest() {
@@ -338,7 +338,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving down one square works for the attacking side
+   * Verify moving down one square works for the attacking side.
    */
   @Test
   public void moveDownAsAttackerTest() {
@@ -359,7 +359,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving left multiple squares works for the attacking side
+   * Verify moving left multiple squares works for the attacking side.
    */
   @Test
   public void moveLeftMultipleAsAttackerTest() {
@@ -380,7 +380,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving right multiple squares works for the attacking side
+   * Verify moving right multiple squares works for the attacking side.
    */
   @Test
   public void moveRightMutipleAsAttackerTest() {
@@ -401,7 +401,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving up multiple squares works for the attacking side
+   * Verify moving up multiple squares works for the attacking side.
    */
   @Test
   public void moveUpMulitpleAsAttackerTest() {
@@ -422,7 +422,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving down multiple squares works for the attacking side
+   * Verify moving down multiple squares works for the attacking side.
    */
   @Test
   public void moveDownMultipleAsAttackerTest() {
@@ -443,7 +443,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving left fails when there is a barricade for the attacking side
+   * Verify moving left fails when there is a barricade for the attacking side.
    */
   @Test
   public void moveLeftBarricadeAsAttackerTest() {
@@ -464,7 +464,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving right fails when there is a barricade for the attacking side
+   * Verify moving right fails when there is a barricade for the attacking side.
    */
   @Test
   public void moveRightBarricadeAsAttackerTest() {
@@ -485,7 +485,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving up fails when there is a barricade for the attacking side
+   * Verify moving up fails when there is a barricade for the attacking side.
    */
   @Test
   public void moveUpBarricadeAsAttackerTest() {
@@ -506,7 +506,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving down fails when there is a barricade for the attacking side
+   * Verify moving down fails when there is a barricade for the attacking side.
    */
   @Test
   public void moveDownBarricadeAsAttackerTest() {
@@ -527,7 +527,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify movement fails for the defending side when there is no selection
+   * Verify movement fails for the defending side when there is no selection.
    */
   @Test
   public void moveNoSelectionAsDefenderTest() {
@@ -547,7 +547,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving left one square works for the defending side
+   * Verify moving left one square works for the defending side.
    */
   @Test
   public void moveLeftAsDefenderTest() {
@@ -568,7 +568,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving right one square works for the defending side
+   * Verify moving right one square works for the defending side.
    */
   @Test
   public void moveRightAsDefenderTest() {
@@ -589,7 +589,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving up one square works for the defending side
+   * Verify moving up one square works for the defending side.
    */
   @Test
   public void moveUpAsDefenderTest() {
@@ -610,7 +610,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving down one square works for the defending side
+   * Verify moving down one square works for the defending side.
    */
   @Test
   public void moveDownAsDefenderTest() {
@@ -631,7 +631,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving left multiple squares works for the defending side
+   * Verify moving left multiple squares works for the defending side.
    */
   @Test
   public void moveLeftMultipleAsDefenderTest() {
@@ -652,7 +652,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving right multiple squares works for the defending side
+   * Verify moving right multiple squares works for the defending side.
    */
   @Test
   public void moveRightMutipleAsDefenderTest() {
@@ -673,7 +673,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving up multiple squares works for the defending side
+   * Verify moving up multiple squares works for the defending side.
    */
   @Test
   public void moveUpMulitpleAsDefenderTest() {
@@ -694,7 +694,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving down multiple squares works for the defending side
+   * Verify moving down multiple squares works for the defending side.
    */
   @Test
   public void moveDownMultipleAsDefenderTest() {
@@ -715,7 +715,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving left fails when there is a barricade for the defending side
+   * Verify moving left fails when there is a barricade for the defending side.
    */
   @Test
   public void moveLeftBarricadeAsDefenderTest() {
@@ -736,7 +736,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving right fails when there is a barricade for the defending side
+   * Verify moving right fails when there is a barricade for the defending side.
    */
   @Test
   public void moveRightBarricadeAsDefenderTest() {
@@ -757,7 +757,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving up fails when there is a barricade for the defending side
+   * Verify moving up fails when there is a barricade for the defending side.
    */
   @Test
   public void moveUpBarricadeAsDefenderTest() {
@@ -778,7 +778,7 @@ public class MovementTest {
   }
 
   /**
-   * Verify moving down fails when there is a barricade for the defending side
+   * Verify moving down fails when there is a barricade for the defending side.
    */
   @Test
   public void moveDownBarricadeAsDefenderTest() {

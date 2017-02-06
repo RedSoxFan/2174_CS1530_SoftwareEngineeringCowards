@@ -22,17 +22,17 @@ public class HnefataflPanel extends JPanel {
     // Create initial game board.
     board = new Board();
     addMouseListener(new MouseAdapter() {
-        public void mouseReleased(MouseEvent event) {
+      public void mouseReleased(MouseEvent event) {
         mouseReleaseEvent(event);
-        }
+      }
     });
 
     // Initialize timer to repaint
     new java.util.Timer().scheduleAtFixedRate(new java.util.TimerTask() {
-        public void run() {
+      public void run() {
         repaint();
-        }
-        }, 50, 1000 / 30);
+      }
+    }, 50, 1000 / 30);
   }
 
   /**
@@ -43,9 +43,22 @@ public class HnefataflPanel extends JPanel {
   public void mouseReleaseEvent(MouseEvent event) {
     if (event.getButton() == 1) {
       if (grid != null && grid.contains(event.getPoint())) {
-        int xpos = (event.getX() - grid.x) / (grid.width / 11);
-        int ypos = (event.getY() - grid.y) / (grid.height / 11);
-        // TODO: Process event
+        int col = (event.getX() - grid.x) / (grid.width / 11);
+        int row = (event.getY() - grid.y) / (grid.height / 11);
+        try {
+          if (board.hasSelection()) {
+            // Attempt to move. If it fails, try changing the selection
+            if (!board.move(row, col)) {
+              board.select(row, col);
+            }
+          } else {
+            board.select(row, col);
+          }
+        } catch (GridOutOfBoundsException ex) {
+          // Something went wrong with the geometry of the board painted.
+          // Since this should not happen, just log a warning
+          System.out.println("WARNING: The board geometry is not synced");
+        }
       } else if (newGame != null && newGame.contains(event.getPoint())) {
         // TODO: Confirm and reset
         board.reset();
@@ -92,6 +105,16 @@ public class HnefataflPanel extends JPanel {
     graph.fillRect(gridX + gridS * 5, gridY + gridS * 5, gridS, gridS);
     graph.fillRect(gridX + gridS * 10, gridY, gridS, gridS);
     graph.fillRect(gridX + gridS * 10, gridY + gridS * 10, gridS, gridS);
+
+    // If a piece is selected, highlight it
+    if (board.hasSelection()) {
+      graph.setColor(Color.YELLOW);
+      graph.fillRect(gridX + gridS * board.getSelectedColumn(),
+              gridY + gridS * board.getSelectedRow(),
+              gridS,
+              gridS
+      );
+    }
 
     int tempY = gridY;
     for (int r = 0; r < 11; r++) {

@@ -31,6 +31,9 @@ public class Board {
   private boolean attackerTurn = true;
   private boolean gameOver = false;
 
+  private int selRow = -1;
+  private int selCol = -1;
+
   /**
     Constructor.
   */
@@ -68,6 +71,120 @@ public class Board {
    */
   public void setGameOver(boolean turn) {
     gameOver = turn;
+  }
+
+  /**
+   * Whether or not a square is selected
+   */
+  public boolean hasSelection() {
+    return selRow != -1 && selCol != -1;
+  }
+
+  /**
+   * Getter for selRow
+   */
+  public int getSelectedRow() {
+    return selRow;
+  }
+
+  /**
+   * Getter for selCol
+   */
+  public int getSelectedColumn() {
+      return selCol;
+  }
+
+  /**
+   * Attempt to select a piece
+   *
+   * @param row: The row of the piece to select
+   * @param col: The column of the piece to select
+   */
+  public void select(int row, int col) throws GridOutOfBoundsException {
+     switch (square(row, col)) {
+       // The attacking side can only select attacker pieces
+       case ATTACKER:
+         if (isAttackerTurn()) {
+           selRow = row;
+           selCol = col;
+         }
+         break;
+
+       // The defending side can only select defender pieces and the king
+       case DEFENDER:
+       case KING:
+         if (!isAttackerTurn()) {
+           selRow = row;
+           selCol = col;
+         }
+         break;
+
+       // For clarity sake, include the default no-op case
+       default:
+         break;
+     }
+  }
+
+  /**
+   * Attempt to move a piece
+   *
+   * @param row: The row of the square to move to
+   * @param col: The column of the square to move to
+   *
+   * @return Whether or not the selected piece was moved
+   */
+  public boolean move(int row, int col) throws GridOutOfBoundsException {
+    boolean moved = false;
+    // Verify there is a selection and only one axis differs
+    if (hasSelection() && ((row != selRow) ^ (col != selCol))) {
+      // TODO: Check the reserved squares that only the king can move to
+      moved = true;
+      // Determine the top, bottom, left, and right
+      // Either top and bottom or left and right will be the same
+      int top, bottom, left, right;
+      if (row < selRow) {
+        top = row;
+        bottom = selRow;
+      } else {
+        top = selRow;
+        bottom = row;
+      }
+      if (col < selCol) {
+        left = col;
+        right = selCol;
+      } else {
+        left = selCol;
+        right = col;
+      }
+      // Walk the path to make sure it is clear
+      for (int r = top; r <= bottom; r++) {
+        for (int c = left; c <= right; c++) {
+          // Ignore the selected square
+          if (r != selRow || c != selCol) {
+            // If the square is not empty, stop walking
+            if (!square(r, c).equals(GridSquareState.EMPTY)) {
+              moved = false;
+              break;
+            }
+          }
+        }
+        // If a barricade was found, stop walking
+        if (!moved) {
+          break;
+        }
+      }
+      // If there is no conflict, move the piece, deselect, and end turn
+      if (moved) {
+        board[row][col] = square(selRow, selCol);
+        board[selRow][selCol] = GridSquareState.EMPTY;
+        selRow = -1;
+        selCol = -1;
+        // TODO: Check for captures
+        setAttackerTurn(!isAttackerTurn());
+      }
+    }
+    // Return whether the selected piece was moved
+    return moved;
   }
 
   /**

@@ -2,14 +2,16 @@ package cowards;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.Serializable;
 import javax.swing.*;
 
-public class Board {
+public class Board implements Serializable {
 
   public static enum GridSquareState {
     EMPTY, KING, DEFENDER, ATTACKER
   }
-
+  
+  private static final long serialVersionUID = 7526472295622776147L;
   public static int GRID_ROW_MAX = 10;
   public static int GRID_COL_MAX = 10;
 
@@ -241,7 +243,16 @@ public class Board {
       }
     }
   }
-
+  
+  /**
+    Takes an instance of a board from a saved game.
+    
+    @param loadedBoard Board from saved file
+  */
+  public void loadBoardFromSave(Board loadedBoard) {
+    //TODO this method
+  }
+  
   /**
     Returns the state of the square at the row and column provided.
 

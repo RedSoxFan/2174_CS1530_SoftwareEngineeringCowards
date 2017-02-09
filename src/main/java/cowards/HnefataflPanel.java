@@ -2,6 +2,7 @@ package cowards;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 import javax.swing.*;
 
 public class HnefataflPanel extends JPanel {
@@ -60,15 +61,44 @@ public class HnefataflPanel extends JPanel {
           System.out.println("WARNING: The board geometry is not synced");
         }
       } else if (newGame != null && newGame.contains(event.getPoint())) {
-        // TODO: Confirm and reset
-        board.reset();
+        int selected = JOptionPane.showConfirmDialog(null, "Do you really want to start new game?", 
+            "New Game", JOptionPane.YES_NO_OPTION);
+        if (selected == JOptionPane.YES_OPTION) {
+          board.reset();
+        }
       } else if (saveGame != null && saveGame.contains(event.getPoint())) {
-        // TODO: Show save dialog and save
+        String fileName = JOptionPane.showInputDialog(null, 
+            "Enter the name of your save game file");
+        if (fileName != null) {
+          String pathName = "saved_games/" + fileName + ".dat";
+          try {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathName));
+            oos.writeObject(board);
+            oos.close();
+          } catch (Exception ex) {
+            ex.printStackTrace();
+          }
+        }
       } else if (loadGame != null && loadGame.contains(event.getPoint())) {
-        // TODO: Show load dialog and load
+        String fileName = JOptionPane.showInputDialog(null, 
+            "Enter the name of the game you want to load");
+        if (fileName != null) {
+          String pathName = "saved_games/" + fileName + ".dat";
+          try {
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(pathName));
+            Board loadedBoard = (Board) ois.readObject();
+            ois.close();
+            //TODO actually load the board and reset it appropriately
+          } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(null, "That is not a valid file name.");
+          }
+        }
       } else if (exitGame != null && exitGame.contains(event.getPoint())) {
-        // TODO: Confirm
-        System.exit(0);
+        int selected = JOptionPane.showConfirmDialog(null, "Do you really want to exit the game?", 
+            "Exit Game", JOptionPane.YES_NO_OPTION);
+        if (selected == JOptionPane.YES_OPTION) {
+          System.exit(0);
+        }
       }
     }
   }

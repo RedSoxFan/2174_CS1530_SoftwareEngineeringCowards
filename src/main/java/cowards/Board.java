@@ -27,6 +27,14 @@ public class Board {
       {' ', ' ', ' ', 'A', 'A', 'A', 'A', 'A', ' ', ' ', ' '}
   };
 
+  public static final int[][] SPECIAL_SQUARE_POSITIONS = new int[][]{
+    {0, 0},
+    {0, 10},
+    {10, 0},
+    {10, 10},
+    {5, 5}
+  };
+
   private GridSquareState[][] board = new GridSquareState[11][11];
   private boolean attackerTurn = true;
   private boolean gameOver = false;
@@ -74,31 +82,31 @@ public class Board {
   }
 
   /**
-   * Whether or not a square is selected.
+    Whether or not a square is selected.
    */
   public boolean hasSelection() {
     return selRow != -1 && selCol != -1;
   }
 
   /**
-   * Getter for selRow.
+    Getter for selRow.
    */
   public int getSelectedRow() {
     return selRow;
   }
 
   /**
-   * Getter for selCol.
+    Getter for selCol.
    */
   public int getSelectedColumn() {
     return selCol;
   }
 
   /**
-   * Attempt to select a piece.
-   *
-   * @param row The row of the piece to select.
-   * @param col The column of the piece to select.
+    Attempt to select a piece.
+   
+    @param row The row of the piece to select.
+    @param col The column of the piece to select.
    */
   public void select(int row, int col) throws GridOutOfBoundsException {
     switch (square(row, col)) {
@@ -126,18 +134,17 @@ public class Board {
   }
 
   /**
-   * Attempt to move a piece.
-   *
-   * @param row The row of the square to move to.
-   * @param col The column of the square to move to.
-   *
-   * @return Whether or not the selected piece was moved.
+    Attempt to move a piece.
+   
+    @param row The row of the square to move to.
+    @param col The column of the square to move to.
+   
+    @return Whether or not the selected piece was moved.
    */
   public boolean move(int row, int col) throws GridOutOfBoundsException {
     boolean moved = false;
     // Verify there is a selection and only one axis differs.
     if (hasSelection() && ((row != selRow) ^ (col != selCol))) {
-      // TODO: Check the reserved squares that only the king can move to.
       moved = true;
       // Determine the top, bottom, left, and right.
       // Either top and bottom or left and right will be the same.
@@ -158,6 +165,17 @@ public class Board {
       } else {
         left = selCol;
         right = col;
+      }
+      // Make sure piece other than king isn't moving to throne or four corners.
+      if (!square(selRow, selCol).equals(GridSquareState.KING)) {
+        for (int i = 0; i < SPECIAL_SQUARE_POSITIONS.length; i++) {
+          int specialRow = SPECIAL_SQUARE_POSITIONS[i][0];
+          int specialCol = SPECIAL_SQUARE_POSITIONS[i][1];
+          if (row == specialRow && col == specialCol) {
+            moved = false;
+            break;
+          }
+        }
       }
       // Walk the path to make sure it is clear.
       for (int r = top; r <= bottom; r++) {
@@ -183,7 +201,8 @@ public class Board {
         selRow = -1;
         selCol = -1;
         // TODO: Check for captures.
-        setAttackerTurn(!isAttackerTurn());
+        // TODO: Check to see if move was winning move.
+        isGameOver();
       }
     }
     // Return whether the selected piece was moved.

@@ -91,6 +91,13 @@ public class HnefataflPanel extends JPanel {
             //TODO actually load the board and reset it appropriately
           } catch (FileNotFoundException ex) {
             JOptionPane.showMessageDialog(null, "That is not a valid file name.");
+          } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Failed to open file.");
+          } catch (ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(
+                null, "Failed to load file. Critical error. Contact developers."
+            );
+            System.exit(1);
           }
         }
       } else if (exitGame != null && exitGame.contains(event.getPoint())) {

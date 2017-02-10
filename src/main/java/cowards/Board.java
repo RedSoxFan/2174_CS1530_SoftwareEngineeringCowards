@@ -202,7 +202,7 @@ public class Board {
         selCol = -1;
         // TODO: Check for captures.
         // TODO: Check to see if move was winning move.
-        isGameOver();
+        setAttackerTurn(!isAttackerTurn());
       }
     }
     // Return whether the selected piece was moved.

@@ -70,13 +70,25 @@ public class HnefataflPanel extends JPanel {
         String fileName = JOptionPane.showInputDialog(null, 
             "Enter the name of your save game file");
         if (fileName != null) {
+          File dir = new File("saved_games");
           String pathName = "saved_games/" + fileName + ".dat";
+          
+          //create the saved_games directory if it doesn't exists
+          if (!dir.exists()) {
+            boolean success = dir.mkdir();
+            if (success) {
+              JOptionPane.showMessageDialog(null, "Created a saved_games directory for save files");
+            } else {
+              JOptionPane.showMessageDialog(null, "Error creating saved_games directory");
+            }
+          }
+          
           try {
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathName));
             oos.writeObject(board);
             oos.close();
           } catch (Exception ex) {
-            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "An error occurred");
           }
         }
       } else if (loadGame != null && loadGame.contains(event.getPoint())) {

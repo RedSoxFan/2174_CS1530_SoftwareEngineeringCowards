@@ -203,12 +203,40 @@ public class Board implements Serializable {
         selRow = -1;
         selCol = -1;
         // TODO: Check for captures.
-        // TODO: Check to see if move was winning move.
-        setAttackerTurn(!isAttackerTurn());
+        //TODO: Should this function check if attacker won too or do we want that to be separate?
+        //TODO: This updates and says defender won, but the game doesn't end. 
+        boolean win = false;
+        win = checkForDefenderWin(row, col);
+        if (!win) {
+          setAttackerTurn(!isAttackerTurn());  
+        }
       }
     }
     // Return whether the selected piece was moved.
     return moved;
+  }
+
+  /**
+    Check if move was winning move for defender.
+   
+    @param row The row of the square the piece was moved to.
+    @param col The column of the square the piece was moved to.
+  */
+  public boolean checkForDefenderWin(int row, int col) throws GridOutOfBoundsException {
+    //Check if defending side won
+    if (square(row, col).equals(GridSquareState.KING)) {
+      for (int i = 0; i < SPECIAL_SQUARE_POSITIONS.length - 1; i++) {
+        int specialRow = SPECIAL_SQUARE_POSITIONS[i][0];
+        int specialCol = SPECIAL_SQUARE_POSITIONS[i][1];
+        if (row == specialRow && col == specialCol) {
+          setGameOver(true);
+          JOptionPane.showMessageDialog(null, 
+              "                  Game Over!\nPlease select one of the options below");
+          return true;
+        }
+      }
+    } 
+    return false; 
   }
 
   /**

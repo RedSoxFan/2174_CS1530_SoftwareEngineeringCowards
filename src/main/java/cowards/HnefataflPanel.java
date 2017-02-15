@@ -43,7 +43,7 @@ public class HnefataflPanel extends JPanel {
    */
   public void mouseReleaseEvent(MouseEvent event) {
     if (event.getButton() == 1) {
-      if (grid != null && grid.contains(event.getPoint())) {
+      if (grid != null && grid.contains(event.getPoint()) && !board.isGameOver()) {
         int col = (event.getX() - grid.x) / (grid.width / 11);
         int row = (event.getY() - grid.y) / (grid.height / 11);
         try {

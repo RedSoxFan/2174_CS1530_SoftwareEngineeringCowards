@@ -1062,4 +1062,23 @@ public class MovementTest {
     return;
   }  
 
+  /**
+    Verify winning move
+  */
+  /*@Test
+  public void checkWinningMoveTopLeft() {
+    Board board = new Board();
+    board.setAttackerTurn(false);
+
+    try {
+      board[0][1] = GridSquareState.KING;
+      board.move(0, 0);
+      assertTrue(board.isGameOver());
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+  }*/
+
 }

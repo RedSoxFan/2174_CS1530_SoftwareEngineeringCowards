@@ -46,6 +46,12 @@ public class HnefataflPanel extends JPanel {
       if (grid != null && grid.contains(event.getPoint())) {
         int col = (event.getX() - grid.x) / (grid.width / 11);
         int row = (event.getY() - grid.y) / (grid.height / 11);
+
+        // Freeze the board if the game is over.
+        if (board.isGameOver()) {
+          return;
+        }
+
         try {
           if (board.hasSelection()) {
             // Attempt to move. If it fails, try changing the selection

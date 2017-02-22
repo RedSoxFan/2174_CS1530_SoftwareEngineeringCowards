@@ -54,6 +54,9 @@ public class Board implements Serializable {
   private LinkedList<int []> attackerMoves;
   private LinkedList<int []> defenderMoves;
 
+  private final int maxMovesWoCapture = 50;
+  private int movesWoCapture = 0;
+
   private int selRow = -1;
   private int selCol = -1;
 
@@ -264,6 +267,15 @@ public class Board implements Serializable {
   }
 
   /**
+    Return if too many moves have been made without capture.
+
+    @return Whether the game is a draw.
+    */
+  public boolean isDraw() {
+    return movesWoCapture >= maxMovesWoCapture;
+  }
+
+  /**
     Attempt to move a piece.
    
     @param row The row of the square to move to.
@@ -303,6 +315,7 @@ public class Board implements Serializable {
     }
 
     // TODO: Check for captures.
+    ++movesWoCapture;
 
     // TODO: Check to see if move was winning move.
     if (isKing && inCornerLocation(row, col)) {
@@ -313,6 +326,11 @@ public class Board implements Serializable {
 
       // If we made too many repeat moves the enemy wins.
       if (tooManyRepeats()) {
+        setGameOver(true);
+      }
+
+      // If we made too many repeat moves the enemy wins.
+      if (isDraw()) {
         setGameOver(true);
       }
     }

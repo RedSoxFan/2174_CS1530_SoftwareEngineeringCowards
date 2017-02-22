@@ -207,8 +207,13 @@ public class HnefataflPanel extends JPanel {
 
     // Paint whose turn it is (or who won)
     graph.setColor(Color.WHITE);
-    String turn = board.isAttackerTurn() ? "Attacker's " : "Defender's ";
-    turn += board.isGameOver() ? "Won" : "Turn";
+    String turn;
+    if (board.isDraw()) {
+      turn = "Draw";
+    } else {
+      turn = board.isAttackerTurn() ? "Attacker's " : "Defender's ";
+      turn += board.isGameOver() ? "Won" : "Turn";
+    }
     setMaxFontSize(graph, turn, (gridS * 11) - 10, 25);
     width = graph.getFontMetrics().stringWidth(turn);
     int height = graph.getFontMetrics().getHeight();

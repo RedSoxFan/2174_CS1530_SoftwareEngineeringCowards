@@ -3,6 +3,7 @@ package cowards;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.Serializable;
+import java.util.*;
 import javax.swing.*;
 
 public class Board implements Serializable {
@@ -37,9 +38,24 @@ public class Board implements Serializable {
     {5, 5}
   };
 
+  public static final int[][] CORNER_SQUARE_POSITIONS = new int[][]{
+    {0, 0},
+    {0, 10},
+    {10, 0},
+    {10, 10},
+  };
+
   private GridSquareState[][] board = new GridSquareState[11][11];
   private boolean attackerTurn = true;
   private boolean gameOver = false;
+
+  // No more than 3 back-and-forth motions (6 moves total).
+  private final int maxRepeatMoves = 6;
+  private LinkedList<int []> attackerMoves;
+  private LinkedList<int []> defenderMoves;
+
+  private final int maxMovesWoCapture = 50;
+  private int movesWoCapture = 0;
 
   private int selRow = -1;
   private int selCol = -1;
@@ -48,6 +64,8 @@ public class Board implements Serializable {
     Constructor.
   */
   public Board() {
+    attackerMoves = new LinkedList<int []>();
+    defenderMoves = new LinkedList<int []>();
     reset();
   }
 
@@ -136,6 +154,128 @@ public class Board implements Serializable {
   }
 
   /**
+    Check if the specified square is a corner.
+
+    @param row The row of the square.
+    @param col The column of the square.
+
+    @return Whether or not the square is a corner.
+    */
+  private boolean inCornerLocation(int row, int col) {
+    for (int i = 0; i < CORNER_SQUARE_POSITIONS.length; i++) {
+      int cornerRow = CORNER_SQUARE_POSITIONS[i][0];
+      int cornerCol = CORNER_SQUARE_POSITIONS[i][1];
+      if (row == cornerRow && col == cornerCol) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+    Check if the specified square is a king only position.
+
+    @param row The row of the square.
+    @param col The column of the square.
+
+    @return Whether or not the square is special.
+    */
+  private boolean inSpecialLocation(int row, int col) {
+    for (int i = 0; i < SPECIAL_SQUARE_POSITIONS.length; i++) {
+      int specialRow = SPECIAL_SQUARE_POSITIONS[i][0];
+      int specialCol = SPECIAL_SQUARE_POSITIONS[i][1];
+      if (row == specialRow && col == specialCol) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+    Check if the path is clear to the specified square.
+
+    @param row The row of the square.
+    @param col The column of the square.
+
+    @return Whether or not the path is clear.
+    */
+  private boolean isPathClear(int row, int col) throws GridOutOfBoundsException {
+    // Determine the top, bottom, left, and right.
+    // Either top and bottom or left and right will be the same.
+    int top    = (row < selRow) ? row    : selRow;
+    int bottom = (row < selRow) ? selRow : row;
+    int left   = (col < selCol) ? col    : selCol;
+    int right  = (col < selCol) ? selCol : col;
+
+    // Walk the path to make sure it is clear.
+    for (int r = top; r <= bottom; r++) {
+      for (int c = left; c <= right; c++) {
+        // Ignore the selected square.
+        if (r != selRow || c != selCol) {
+          // If the square is not empty, stop walking.
+          if (!square(r, c).equals(GridSquareState.EMPTY)) {
+            return false;
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /**
+    Check if the current opposing player loses on account of repeat moves.
+
+    @return Whether or not the opponant loses on repeat moves.
+    */
+  private boolean tooManyRepeats() {
+    // Check if the last six moves are back and fourth.
+    ListIterator<int []> moves = !isAttackerTurn()
+        ? attackerMoves.listIterator(0) : defenderMoves.listIterator(0);
+    int [] first = new int [2];
+    int [] second = new int [2];
+
+    // Look through the list of previous moves and see if there were more than
+    // the max allowable back-and-forth motions.
+    // Note: max motions = maxRepeatedMoves / 2
+    //
+    // To avoid losing the player must avoid cycling between two squares over
+    // the course of maxRepeatedMoves moves.
+    for (int i = 0; i < maxRepeatMoves && moves.hasNext(); ++i) {
+      int [] nxt = moves.next();
+      if (i == 0) {
+        // First move in sequence.
+        first[0] = nxt[0];
+        first[1] = nxt[1];
+      } else if (i == 1) {
+        // Second move in sequence.
+        second[0] = nxt[0];
+        second[1] = nxt[1];
+      } else if (i % 2 == 0 && (first[0] != nxt[0] || first[1] != nxt[1])) {
+        // Deviation from the first move in the sequence.
+        return false;
+      } else if (i % 2 == 1 && (second[0] != nxt[0] || second[1] != nxt[1])) {
+        // Deviation from the second move in the sequence.
+        return false;
+      } else if (i == maxRepeatMoves - 1) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+    Return if too many moves have been made without capture.
+
+    @return Whether the game is a draw.
+    */
+  public boolean isDraw() {
+    return movesWoCapture >= maxMovesWoCapture;
+  }
+
+  /**
     Attempt to move a piece.
    
     @param row The row of the square to move to.
@@ -144,71 +284,62 @@ public class Board implements Serializable {
     @return Whether or not the selected piece was moved.
    */
   public boolean move(int row, int col) throws GridOutOfBoundsException {
-    boolean moved = false;
     // Verify there is a selection and only one axis differs.
-    if (hasSelection() && ((row != selRow) ^ (col != selCol))) {
-      moved = true;
-      // Determine the top, bottom, left, and right.
-      // Either top and bottom or left and right will be the same.
-      int top;
-      int bottom;
-      int left;
-      int right;
-      if (row < selRow) {
-        top = row;
-        bottom = selRow;
-      } else {
-        top = selRow;
-        bottom = row;
+    if (!hasSelection() || ((row != selRow) == (col != selCol))) {
+      return false;
+    }
+
+    boolean isKing = square(selRow, selCol).equals(GridSquareState.KING);
+
+    // Make sure piece other than king isn't moving to throne or four corners.
+    if (!isKing && inSpecialLocation(row, col)) {
+      return false;
+    }
+
+    // Check for a clear path.
+    if (!isPathClear(row, col)) {
+      return false;
+    }
+
+    // If there is no conflict, move the piece, deselect, and end turn.
+    board[row][col] = square(selRow, selCol);
+    board[selRow][selCol] = GridSquareState.EMPTY;
+
+    // Track the move.
+    LinkedList<int []> moves = isAttackerTurn() ? attackerMoves : defenderMoves;
+    if (moves.size() > 5) {
+      moves.removeFirst();
+      moves.add(new int [] {row, col});
+    } else {
+      moves.add(new int [] {row, col});
+    }
+
+    // TODO: Check for captures.
+    ++movesWoCapture;
+
+    // TODO: Check to see if move was winning move.
+    if (isKing && inCornerLocation(row, col)) {
+      // If the king escaped we won.
+      setGameOver(true);
+    } else {
+      setAttackerTurn(!isAttackerTurn());
+
+      // If we made too many repeat moves the enemy wins.
+      if (tooManyRepeats()) {
+        setGameOver(true);
       }
-      if (col < selCol) {
-        left = col;
-        right = selCol;
-      } else {
-        left = selCol;
-        right = col;
-      }
-      // Make sure piece other than king isn't moving to throne or four corners.
-      if (!square(selRow, selCol).equals(GridSquareState.KING)) {
-        for (int i = 0; i < SPECIAL_SQUARE_POSITIONS.length; i++) {
-          int specialRow = SPECIAL_SQUARE_POSITIONS[i][0];
-          int specialCol = SPECIAL_SQUARE_POSITIONS[i][1];
-          if (row == specialRow && col == specialCol) {
-            moved = false;
-            break;
-          }
-        }
-      }
-      // Walk the path to make sure it is clear.
-      for (int r = top; r <= bottom; r++) {
-        for (int c = left; c <= right; c++) {
-          // Ignore the selected square.
-          if (r != selRow || c != selCol) {
-            // If the square is not empty, stop walking.
-            if (!square(r, c).equals(GridSquareState.EMPTY)) {
-              moved = false;
-              break;
-            }
-          }
-        }
-        // If a barricade was found, stop walking.
-        if (!moved) {
-          break;
-        }
-      }
-      // If there is no conflict, move the piece, deselect, and end turn.
-      if (moved) {
-        board[row][col] = square(selRow, selCol);
-        board[selRow][selCol] = GridSquareState.EMPTY;
-        selRow = -1;
-        selCol = -1;
-        // TODO: Check for captures.
-        // TODO: Check to see if move was winning move.
-        setAttackerTurn(!isAttackerTurn());
+
+      // If made 50 moves without a capture, end the game due to a draw.
+      if (isDraw()) {
+        setGameOver(true);
       }
     }
-    // Return whether the selected piece was moved.
-    return moved;
+
+    // Reset selection.
+    selRow = -1;
+    selCol = -1;
+
+    return true;
   }
 
   /**
@@ -230,6 +361,9 @@ public class Board implements Serializable {
     }
     attackerTurn = true;
     gameOver = false;
+    attackerMoves.clear();
+    defenderMoves.clear();
+    movesWoCapture = 0;
   }
 
   /**

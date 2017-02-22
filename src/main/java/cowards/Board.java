@@ -363,6 +363,7 @@ public class Board implements Serializable {
     gameOver = false;
     attackerMoves.clear();
     defenderMoves.clear();
+    movesWoCapture = 0;
   }
 
   /**

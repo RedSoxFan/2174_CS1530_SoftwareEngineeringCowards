@@ -1141,6 +1141,56 @@ public class MovementTest {
     return;
   }
 
+  private void do50Moves(Board b) throws GridOutOfBoundsException {
+    // First move.
+    b.select(5, 9);
+    assertTrue(b.move(5, 8));
+
+    int le = 7;
+    int ri = 8;
+    int tar = 1;
+    int cur = 5;
+
+    // Another 8 moves. Total = 9
+    for (; tar < cur; --cur) {
+      b.select(cur, le);
+      assertTrue(b.move(cur - 1, le));
+      b.select(cur, ri);
+      assertTrue(b.move(cur - 1, ri));
+    }
+
+    tar = 9;
+    // Another 16 moves. Total = 25
+    for (; tar > cur; ++cur) {
+      b.select(cur, le);
+      assertTrue(b.move(cur + 1, le));
+      b.select(cur, ri);
+      assertTrue(b.move(cur + 1, ri));
+    }
+
+    tar = 1;
+    // Another 16 moves. Total = 41
+    for (; tar < cur; --cur) {
+      b.select(cur, le);
+      assertTrue(b.move(cur - 1, le));
+      b.select(cur, ri);
+      assertTrue(b.move(cur - 1, ri));
+    }
+
+    tar = 5;
+    // Another 8 moves. Total = 49
+    for (; tar > cur; ++cur) {
+      b.select(cur, le);
+      assertTrue(b.move(cur + 1, le));
+      b.select(cur, ri);
+      assertTrue(b.move(cur + 1, ri));
+    }
+
+    // Last move, should draw here.
+    b.select(cur, le);
+    assertTrue(b.move(cur + 1, le));
+  }
+
   /**
    * Verify 50 move draw rule work as expected.
    */
@@ -1149,57 +1199,35 @@ public class MovementTest {
     Board board = new Board();
 
     try {
-      // First move.
-      board.select(5, 9);
-      assertTrue(board.move(5, 8));
-
-      int le = 7;
-      int ri = 8;
-      int tar = 1;
-      int cur = 5;
-
-      // Another 8 moves. Total = 9
-      for (; tar < cur; --cur) {
-        board.select(cur, le);
-        assertTrue(board.move(cur - 1, le));
-        board.select(cur, ri);
-        assertTrue(board.move(cur - 1, ri));
-      }
-
-      tar = 9;
-      // Another 16 moves. Total = 25
-      for (; tar > cur; ++cur) {
-        board.select(cur, le);
-        assertTrue(board.move(cur + 1, le));
-        board.select(cur, ri);
-        assertTrue(board.move(cur + 1, ri));
-      }
-
-      tar = 1;
-      // Another 16 moves. Total = 41
-      for (; tar < cur; --cur) {
-        board.select(cur, le);
-        assertTrue(board.move(cur - 1, le));
-        board.select(cur, ri);
-        assertTrue(board.move(cur - 1, ri));
-      }
-
-      tar = 5;
-      // Another 8 moves. Total = 49
-      for (; tar > cur; ++cur) {
-        board.select(cur, le);
-        assertTrue(board.move(cur + 1, le));
-        board.select(cur, ri);
-        assertTrue(board.move(cur + 1, ri));
-      }
-
-      // Last move, should draw here.
-      board.select(cur, le);
-      assertTrue(board.move(cur + 1, le));
-
       // Check game over state.
+      do50Moves(board);
       assertTrue(board.isGameOver());
       assertTrue(board.isDraw());
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("Movement failed due to GridOutOfBoundsException");
+      fail();
+    }
+
+    // pass
+    return;
+  }
+
+  /**
+   * Verify new game resets move counter properly.
+   */
+  @Test
+  public void noDrawOnReset() {
+    Board board = new Board();
+
+    try {
+      // Check game over state.
+      do50Moves(board);
+      assertTrue(board.isGameOver());
+      assertTrue(board.isDraw());
+      board.reset();
+      assertFalse(board.isGameOver());
+      assertFalse(board.isDraw());
     } catch (GridOutOfBoundsException ex) {
       // This should not happen
       System.out.println("Movement failed due to GridOutOfBoundsException");

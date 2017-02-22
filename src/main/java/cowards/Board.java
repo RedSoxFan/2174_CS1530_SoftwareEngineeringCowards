@@ -3,6 +3,7 @@ package cowards;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.Serializable;
+import java.util.*;
 import javax.swing.*;
 
 public class Board implements Serializable {
@@ -48,6 +49,11 @@ public class Board implements Serializable {
   private boolean attackerTurn = true;
   private boolean gameOver = false;
 
+  // No more than 3 back-and-forth motions (6 moves total).
+  private final int maxRepeatMoves = 6;
+  private LinkedList<int []> attackerMoves;
+  private LinkedList<int []> defenderMoves;
+
   private int selRow = -1;
   private int selCol = -1;
 
@@ -55,6 +61,8 @@ public class Board implements Serializable {
     Constructor.
   */
   public Board() {
+    attackerMoves = new LinkedList<int []>();
+    defenderMoves = new LinkedList<int []>();
     reset();
   }
 
@@ -215,6 +223,47 @@ public class Board implements Serializable {
   }
 
   /**
+    Check if the current opposing player loses on account of repeat moves.
+
+    @return Whether or not the opponant loses on repeat moves.
+    */
+  private boolean tooManyRepeats() {
+    // Check if the last six moves are back and fourth.
+    ListIterator<int []> moves = !isAttackerTurn()
+        ? attackerMoves.listIterator(0) : defenderMoves.listIterator(0);
+    int [] first = new int [2];
+    int [] second = new int [2];
+
+    // Look through the list of previous moves and see if there were more than
+    // the max allowable back-and-forth motions.
+    // Note: max motions = maxRepeatedMoves / 2
+    //
+    // To avoid losing the player must avoid cycling between two squares over
+    // the course of maxRepeatedMoves moves.
+    for (int i = 0; i < maxRepeatMoves && moves.hasNext(); ++i) {
+      int [] nxt = moves.next();
+      if (i == 0) {
+        // First move in sequence.
+        first[0] = nxt[0];
+        first[1] = nxt[1];
+      } else if (i == 1) {
+        // Second move in sequence.
+        second[0] = nxt[0];
+        second[1] = nxt[1];
+      } else if (i % 2 == 0 && (first[0] != nxt[0] || first[1] != nxt[1])) {
+        // Deviation from the first move in the sequence.
+        return false;
+      } else if (i % 2 == 1 && (second[0] != nxt[0] || second[1] != nxt[1])) {
+        // Deviation from the second move in the sequence.
+        return false;
+      } else if (i == maxRepeatMoves - 1) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
     Attempt to move a piece.
    
     @param row The row of the square to move to.
@@ -244,14 +293,28 @@ public class Board implements Serializable {
     board[row][col] = square(selRow, selCol);
     board[selRow][selCol] = GridSquareState.EMPTY;
 
+    // Track the move.
+    LinkedList<int []> moves = isAttackerTurn() ? attackerMoves : defenderMoves;
+    if (moves.size() > 5) {
+      moves.removeFirst();
+      moves.add(new int [] {row, col});
+    } else {
+      moves.add(new int [] {row, col});
+    }
+
     // TODO: Check for captures.
 
     // TODO: Check to see if move was winning move.
-    // If the king escaped we won.
     if (isKing && inCornerLocation(row, col)) {
+      // If the king escaped we won.
       setGameOver(true);
     } else {
       setAttackerTurn(!isAttackerTurn());
+
+      // If we made too many repeat moves the enemy wins.
+      if (tooManyRepeats()) {
+        setGameOver(true);
+      }
     }
 
     // Reset selection.
@@ -280,6 +343,8 @@ public class Board implements Serializable {
     }
     attackerTurn = true;
     gameOver = false;
+    attackerMoves.clear();
+    defenderMoves.clear();
   }
 
   /**

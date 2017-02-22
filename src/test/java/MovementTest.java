@@ -1062,4 +1062,82 @@ public class MovementTest {
     return;
   }  
 
+  /**
+   * Verify moving back and forth as the defender too many times loses the game.
+   */
+  @Test
+  public void backAndForthDefenderTest() {
+    Board board = new Board();
+
+    try {
+      // Move back and forth 3 times.
+      board.setAttackerTurn(false);
+      board.select(5, 7);
+      assertTrue(board.move(5, 8));
+      board.setAttackerTurn(false);
+      board.select(5, 8);
+      assertTrue(board.move(5, 7));
+      board.setAttackerTurn(false);
+      board.select(5, 7);
+      assertTrue(board.move(5, 8));
+      board.setAttackerTurn(false);
+      board.select(5, 8);
+      assertTrue(board.move(5, 7));
+      board.setAttackerTurn(false);
+      board.select(5, 7);
+      assertTrue(board.move(5, 8));
+      board.setAttackerTurn(false);
+      board.select(5, 8);
+      assertTrue(board.move(5, 7));
+
+      // Check game over state.
+      assertTrue(board.isGameOver());
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("Movement failed due to GridOutOfBoundsException");
+      fail();
+    }
+
+    // pass
+    return;
+  }
+
+  /**
+   * Verify moving back and forth as the attacker too many times loses the game.
+   */
+  @Test
+  public void backAndForthAttackerTest() {
+    Board board = new Board();
+
+    try {
+      // Move back and forth 3 times.
+      board.select(5, 9);
+      assertTrue(board.move(4, 9));
+      board.setAttackerTurn(true);
+      board.select(4, 9);
+      assertTrue(board.move(5, 9));
+      board.setAttackerTurn(true);
+      board.select(5, 9);
+      assertTrue(board.move(4, 9));
+      board.setAttackerTurn(true);
+      board.select(4, 9);
+      assertTrue(board.move(5, 9));
+      board.setAttackerTurn(true);
+      board.select(5, 9);
+      assertTrue(board.move(4, 9));
+      board.setAttackerTurn(true);
+      board.select(4, 9);
+      assertTrue(board.move(5, 9));
+
+      // Check game over state.
+      assertTrue(board.isGameOver());
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("Movement failed due to GridOutOfBoundsException");
+      fail();
+    }
+
+    // pass
+    return;
+  }
 }

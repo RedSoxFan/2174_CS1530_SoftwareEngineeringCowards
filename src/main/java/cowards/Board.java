@@ -329,7 +329,7 @@ public class Board implements Serializable {
         setGameOver(true);
       }
 
-      // If we made too many repeat moves the enemy wins.
+      // If made 50 moves without a capture, end the game due to a draw.
       if (isDraw()) {
         setGameOver(true);
       }

@@ -9,9 +9,21 @@ import javax.swing.*;
 public class Board implements Serializable {
 
   public static enum GridSquareState {
-    EMPTY, KING, DEFENDER, ATTACKER
+    EMPTY, KING, DEFENDER, ATTACKER;
+
+    public boolean isAttacking() {
+      return this.equals(ATTACKER);
+    }
+
+    public boolean isDefending() {
+      return this.equals(DEFENDER) || this.equals(KING);
+    }
+
+    public boolean isEmpty() {
+      return this.equals(EMPTY);
+    }
   }
-  
+
   private static final long serialVersionUID = 7526472295622776147L;
   public static int GRID_ROW_MAX = 10;
   public static int GRID_COL_MAX = 10;
@@ -124,7 +136,7 @@ public class Board implements Serializable {
 
   /**
     Attempt to select a piece.
-   
+
     @param row The row of the piece to select.
     @param col The column of the piece to select.
    */
@@ -277,10 +289,10 @@ public class Board implements Serializable {
 
   /**
     Attempt to move a piece.
-   
+
     @param row The row of the square to move to.
     @param col The column of the square to move to.
-   
+
     @return Whether or not the selected piece was moved.
    */
   public boolean move(int row, int col) throws GridOutOfBoundsException {
@@ -314,8 +326,9 @@ public class Board implements Serializable {
       moves.add(new int [] {row, col});
     }
 
-    // TODO: Check for captures.
-    ++movesWoCapture;
+    if (capture(row, col) == 0) {
+      ++movesWoCapture;
+    }
 
     // TODO: Check to see if move was winning move.
     if (isKing && inCornerLocation(row, col)) {
@@ -340,6 +353,82 @@ public class Board implements Serializable {
     selCol = -1;
 
     return true;
+  }
+
+  /**
+     Check to see if there is any captures as a result of a move.
+
+     @param row The destination row of the move.
+     @param column The destination column of the move.
+   */
+  public int capture(int row, int column) throws GridOutOfBoundsException {
+
+    int captured = 0;
+
+    // Try the basic captures.
+    captured += basicCapture(row, column, row - 2, column);
+    captured += basicCapture(row, column, row + 2, column);
+    captured += basicCapture(row, column, row, column - 2);
+    captured += basicCapture(row, column, row, column + 2);
+
+    // TODO: King captures.
+    // TODO: Fort captures.
+
+    return captured;
+  }
+
+  /**
+    Check to see if there is a basic capture between two pieces.
+
+    @param rowA The row of the first piece.
+    @param colA The second of the second piece.
+    @param rowB The row of the second piece.
+    @param colB The column of the second piece.
+  */
+  private int basicCapture(int rowA, int colA, int rowB, int colB) {
+    int captured = 0;
+    
+    // Make sure this pieces for a valid basic capture.
+    if ((Math.abs(rowA - rowB) == 2 && colA == colB)
+        || (Math.abs(colA - colB) == 2 && rowA == rowB)) {
+
+      // Retrieve the state of the squares. If they are out
+      // of bounds, EMPTY will be returned. This is fine
+      // since and will be quietly ignored to simplify the
+      // code.
+      GridSquareState pieceA = safeSquare(rowA, colA);
+      GridSquareState pieceB = safeSquare(rowB, colB);
+
+      // Retrieve the state of the piece that could be captured.
+      GridSquareState pieceC;
+      int rowC;
+      int colC;
+      if (rowA == rowB) {
+        rowC = rowA;
+        colC = colA < colB ? colA + 1 : colB + 1;
+      } else {
+        rowC = rowA < rowB ? rowA + 1 : rowB + 1;
+        colC = colA;
+      }
+      pieceC = safeSquare(rowC, colC);
+
+      // Check capture possibilities.
+      if (pieceA.isAttacking() && pieceB.isAttacking()
+          && pieceC.equals(GridSquareState.DEFENDER)) {
+        // Two Attackers capturing Defender.
+        captured++;
+        board[rowC][colC] = GridSquareState.EMPTY;
+      } else if (pieceA.isDefending() && pieceB.isDefending()
+          && pieceC.isAttacking()) {
+        // Two Defenders or Defender+King capturing Attacker.
+        captured++;
+        board[rowC][colC] = GridSquareState.EMPTY;
+      }
+
+      // TODO: Allow specials to take place.
+    }
+
+    return captured;
   }
 
   /**
@@ -396,16 +485,16 @@ public class Board implements Serializable {
       }
     }
   }
-  
+
   /**
     Takes an instance of a board from a saved game.
-    
+
     @param loadedBoard Board from saved file
   */
   public void loadBoardFromSave(Board loadedBoard) {
     //TODO this method
   }
-  
+
   /**
     Returns the state of the square at the row and column provided.
 
@@ -419,5 +508,24 @@ public class Board implements Serializable {
     }
 
     return board[row][column];
+  }
+
+  /**
+    Returns the state of the square at the row and column provided. If the square
+    is out of bounds, it will be treated as empty instead of throwing an error.
+
+    @param row Row of desired square.
+    @param column Column of desired square.
+  */
+  public GridSquareState safeSquare(int row, int column) {
+    GridSquareState state = GridSquareState.EMPTY;
+
+    try {
+      state = square(row, column);
+    } catch (GridOutOfBoundsException exception) {
+      // Quietly ignore. Treat as default (empty).
+    }
+
+    return state;
   }
 }

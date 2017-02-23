@@ -11,14 +11,39 @@ public class Board implements Serializable {
   public static enum GridSquareState {
     EMPTY, KING, DEFENDER, ATTACKER;
 
+    /**
+     * Convience method for checking whether or not the piece is on the
+     * attacking side.
+     */
     public boolean isAttacking() {
       return this.equals(ATTACKER);
     }
 
-    public boolean isDefending() {
-      return this.equals(DEFENDER) || this.equals(KING);
+    /**
+     * Convience method for checking whether or not the piece is a defender.
+     */
+    public boolean isDefender() {
+      return this.equals(DEFENDER);
     }
 
+    /**
+     * Convience method for checking whether or not the piece is a king.
+     */
+    public boolean isKing() {
+      return this.equals(KING);
+    }
+
+    /**
+     * Convience method for checking whether or not the piece is on the defending
+     * side. This includes both the defenders and the king.
+     */
+    public boolean isDefending() {
+      return isDefender() || isKing();
+    }
+
+    /**
+     * Convience method for checking whether or not the piece is empty.
+     */
     public boolean isEmpty() {
       return this.equals(EMPTY);
     }
@@ -326,7 +351,9 @@ public class Board implements Serializable {
       moves.add(new int [] {row, col});
     }
 
-    if (capture(row, col) == 0) {
+    // Try to capture pieces. If nothing was captured, increment the counter
+    // for moves without a capture.
+    if (!capture(row, col)) {
       ++movesWoCapture;
     }
 
@@ -361,15 +388,14 @@ public class Board implements Serializable {
      @param row The destination row of the move.
      @param column The destination column of the move.
    */
-  public int capture(int row, int column) throws GridOutOfBoundsException {
-
-    int captured = 0;
+  public boolean capture(int row, int column) throws GridOutOfBoundsException {
+    boolean captured = false;
 
     // Try the basic captures.
-    captured += basicCapture(row, column, row - 2, column);
-    captured += basicCapture(row, column, row + 2, column);
-    captured += basicCapture(row, column, row, column - 2);
-    captured += basicCapture(row, column, row, column + 2);
+    captured |= basicCapture(row, column, row - 2, column);
+    captured |= basicCapture(row, column, row + 2, column);
+    captured |= basicCapture(row, column, row, column - 2);
+    captured |= basicCapture(row, column, row, column + 2);
 
     // TODO: King captures.
     // TODO: Fort captures.
@@ -385,17 +411,16 @@ public class Board implements Serializable {
     @param rowB The row of the second piece.
     @param colB The column of the second piece.
   */
-  private int basicCapture(int rowA, int colA, int rowB, int colB) {
-    int captured = 0;
+  private boolean basicCapture(int rowA, int colA, int rowB, int colB) {
+    boolean captured = false;
     
-    // Make sure this pieces for a valid basic capture.
+    // Make sure the two pieces differ by exactly two on one axis
+    // and that the other axis is unchanged
     if ((Math.abs(rowA - rowB) == 2 && colA == colB)
         || (Math.abs(colA - colB) == 2 && rowA == rowB)) {
 
       // Retrieve the state of the squares. If they are out
-      // of bounds, EMPTY will be returned. This is fine
-      // since and will be quietly ignored to simplify the
-      // code.
+      // of bounds, EMPTY will be returned.
       GridSquareState pieceA = safeSquare(rowA, colA);
       GridSquareState pieceB = safeSquare(rowB, colB);
 
@@ -412,20 +437,59 @@ public class Board implements Serializable {
       }
       pieceC = safeSquare(rowC, colC);
 
-      // Check capture possibilities.
-      if (pieceA.isAttacking() && pieceB.isAttacking()
-          && pieceC.equals(GridSquareState.DEFENDER)) {
-        // Two Attackers capturing Defender.
-        captured++;
-        board[rowC][colC] = GridSquareState.EMPTY;
-      } else if (pieceA.isDefending() && pieceB.isDefending()
-          && pieceC.isAttacking()) {
-        // Two Defenders or Defender+King capturing Attacker.
-        captured++;
+      // Test to see if pieceC can be captured.
+      boolean specialA = inSpecialLocation(rowA, colA);
+      boolean specialB = inSpecialLocation(rowB, colB);
+      captured = basicCaptureTest(pieceA, pieceB, pieceC, specialA, specialB);
+
+      // If captured is greater than zero, capture the square.
+      if (captured) {
         board[rowC][colC] = GridSquareState.EMPTY;
       }
+    }
 
-      // TODO: Allow specials to take place.
+    return captured;
+  }
+
+  /**
+     Test to see if two pieces (or a piece and an empty special square) can capture
+     a piece.
+     
+     @param pieceA One of the two capturing pieces (must be EMPTY for special captures).
+     @param pieceB One of the two capturing pieces (must be EMPTY for special captures).
+     @param pieceC The piece to try to capture.
+     @param specialA Whether or not A is a special square.
+     @param specialB Whether or not B is a special square.
+   */
+  private boolean basicCaptureTest(GridSquareState pieceA, GridSquareState pieceB,
+      GridSquareState pieceC, boolean specialA, boolean specialB) {
+
+    boolean captured = false;
+
+    if (pieceA.isAttacking() && pieceB.isAttacking() && pieceC.isDefender()) {
+      // Two attackers capturing a defender.
+      captured = true;
+    } else if (pieceA.isDefending() && pieceB.isDefending() && pieceC.isAttacking()) {
+      // Two defenders or a defender and king capturing an attacker.
+      captured = true; 
+    } else if (pieceA.isEmpty() && specialA) {
+      // Piece A is an empty special and can be treated as an attacker or defender.
+      if (pieceB.isAttacking() && pieceC.isDefender()) {
+        // An attacker and a special capturing a defender.
+        captured = true;
+      } else if (pieceB.isDefending() && pieceC.isAttacking()) {
+        // A defender and a special or a king and a special capturing an attacker.
+        captured = true;
+      }
+    } else if (pieceB.isEmpty() && specialB) {
+      // Piece B is an empty special and can be treated as an attacker or defender.
+      if (pieceA.isAttacking() && pieceC.isDefender()) {
+        // An attacker and a special capturing a defender.
+        captured = true;
+      } else if (pieceA.isDefending() && pieceC.isAttacking()) {
+        // A defender and a special or a king and a special capturing an attacker.
+        captured = true;
+      }
     }
 
     return captured;

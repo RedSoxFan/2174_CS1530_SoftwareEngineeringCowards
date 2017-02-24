@@ -412,42 +412,41 @@ public class Board implements Serializable {
     @param colB The column of the second piece.
   */
   private boolean basicCapture(int rowA, int colA, int rowB, int colB) {
-    boolean captured = false;
-    
     // Make sure the two pieces differ by exactly two on one axis
     // and that the other axis is unchanged
-    if ((Math.abs(rowA - rowB) == 2 && colA == colB)
-        || (Math.abs(colA - colB) == 2 && rowA == rowB)) {
-
-      // Retrieve the state of the squares. If they are out
-      // of bounds, EMPTY will be returned.
-      GridSquareState pieceA = safeSquare(rowA, colA);
-      GridSquareState pieceB = safeSquare(rowB, colB);
-
-      // Retrieve the state of the piece that could be captured.
-      GridSquareState pieceC;
-      int rowC;
-      int colC;
-      if (rowA == rowB) {
-        rowC = rowA;
-        colC = colA < colB ? colA + 1 : colB + 1;
-      } else {
-        rowC = rowA < rowB ? rowA + 1 : rowB + 1;
-        colC = colA;
-      }
-      pieceC = safeSquare(rowC, colC);
-
-      // Test to see if pieceC can be captured.
-      boolean specialA = inSpecialLocation(rowA, colA);
-      boolean specialB = inSpecialLocation(rowB, colB);
-      captured = basicCaptureTest(pieceA, pieceB, pieceC, specialA, specialB);
-
-      // If captured is greater than zero, capture the square.
-      if (captured) {
-        board[rowC][colC] = GridSquareState.EMPTY;
-      }
+    if ((Math.abs(rowA - rowB) != 2 || colA != colB)
+        && (Math.abs(colA - colB) != 2 || rowA != rowB)) {
+      return false;
     }
 
+    // Retrieve the state of the squares. If they are out
+    // of bounds, EMPTY will be returned.
+    GridSquareState pieceA = safeSquare(rowA, colA);
+    GridSquareState pieceB = safeSquare(rowB, colB);
+    
+    // Retrieve the state of the piece that could be captured.
+    GridSquareState pieceC;
+    int rowC;
+    int colC;
+    if (rowA == rowB) {
+      rowC = rowA;
+      colC = colA < colB ? colA + 1 : colB + 1;
+    } else {
+      rowC = rowA < rowB ? rowA + 1 : rowB + 1;
+      colC = colA;
+    }
+    pieceC = safeSquare(rowC, colC);
+
+    // Test to see if pieceC can be captured.
+    boolean specialA = inSpecialLocation(rowA, colA);
+    boolean specialB = inSpecialLocation(rowB, colB);
+    boolean captured = basicCaptureTest(pieceA, pieceB, pieceC, specialA, specialB);
+
+    // If captured is greater than zero, capture the square.
+    if (captured) {
+      board[rowC][colC] = GridSquareState.EMPTY;
+    }
+    
     return captured;
   }
 

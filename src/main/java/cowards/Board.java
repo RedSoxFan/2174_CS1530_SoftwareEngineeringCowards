@@ -463,36 +463,38 @@ public class Board implements Serializable {
    */
   private boolean basicCaptureTest(GridSquareState pieceA, GridSquareState pieceB,
       GridSquareState pieceC, boolean specialA, boolean specialB) {
-
-    boolean captured = false;
-
+    
+    // Two attackers capturing a defender.
     if (pieceA.isAttacking() && pieceB.isAttacking() && pieceC.isDefender()) {
-      // Two attackers capturing a defender.
-      captured = true;
-    } else if (pieceA.isDefending() && pieceB.isDefending() && pieceC.isAttacking()) {
-      // Two defenders or a defender and king capturing an attacker.
-      captured = true; 
-    } else if (pieceA.isEmpty() && specialA) {
-      // Piece A is an empty special and can be treated as an attacker or defender.
-      if (pieceB.isAttacking() && pieceC.isDefender()) {
-        // An attacker and a special capturing a defender.
-        captured = true;
-      } else if (pieceB.isDefending() && pieceC.isAttacking()) {
-        // A defender and a special or a king and a special capturing an attacker.
-        captured = true;
-      }
-    } else if (pieceB.isEmpty() && specialB) {
-      // Piece B is an empty special and can be treated as an attacker or defender.
-      if (pieceA.isAttacking() && pieceC.isDefender()) {
-        // An attacker and a special capturing a defender.
-        captured = true;
-      } else if (pieceA.isDefending() && pieceC.isAttacking()) {
-        // A defender and a special or a king and a special capturing an attacker.
-        captured = true;
-      }
+      return true;
+    }
+    
+    // Two defenders or a defender and king capturing an attacker.
+    if (pieceA.isDefending() && pieceB.isDefending() && pieceC.isAttacking()) {
+      return true; 
+    }
+    
+    // An attacker and a special capturing a defender.
+    if (pieceA.isEmpty() && specialA && pieceB.isAttacking() && pieceC.isDefender()) {
+      return true;
+    }
+      
+    // A defender and a special or a king and a special capturing an attacker.
+    if (pieceA.isEmpty() && specialA && pieceB.isDefending() && pieceC.isAttacking()) {
+      return true;
+    }
+    
+    // An attacker and a special capturing a defender.
+    if (pieceB.isEmpty() && specialB && pieceA.isAttacking() && pieceC.isDefender()) {
+      return true;
+    }
+    
+    // A defender and a special or a king and a special capturing an attacker.
+    if (pieceB.isEmpty() && specialB && pieceA.isDefending() && pieceC.isAttacking()) {
+      return true;
     }
 
-    return captured;
+    return false;
   }
 
   /**

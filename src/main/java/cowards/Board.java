@@ -2,7 +2,8 @@ package cowards;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.Serializable;
+import java.io.*;
+import java.util.*;
 import javax.swing.*;
 
 public class Board implements Serializable {
@@ -243,14 +244,86 @@ public class Board implements Serializable {
       }
     }
   }
+  /**
+    Save the current instance of the board to a text file.
+    
+    @param fileName String to save the board to
+  */
+  public void saveBoard(String fileName) {
+    File dir = new File("saved_games");
+    String pathName = "saved_games/" + fileName + ".txt";
+    
+    //create the saved_games directory if it doesn't exists
+    if (!dir.exists()) {
+      boolean success = dir.mkdir();
+      if (success) {
+        JOptionPane.showMessageDialog(null, "Created a saved_games directory for save files.");
+      } else {
+        JOptionPane.showMessageDialog(null, "Error creating saved_games directory.");
+        return;
+      }
+    }
+    
+    try {
+      PrintWriter pw = new PrintWriter(pathName);
+      pw.println(attackerTurn);
+      for (int r = 0; r < 11; r++) {
+        for (int c = 0; c < 11; c++) {
+          if (board[r][c] == GridSquareState.ATTACKER) {
+            pw.print('A');
+          } else if (board[r][c] == GridSquareState.DEFENDER) {
+            pw.print('D');
+          } else if (board[r][c] == GridSquareState.KING) {
+            pw.print('K');
+          } else {
+            pw.print('E');
+          }
+        }
+        
+        pw.println();
+      }
+      
+      pw.close();
+      JOptionPane.showMessageDialog(null, "Successfully saved game to text file.");
+    } catch (Exception ex) {
+      JOptionPane.showMessageDialog(null, "An error occurred when saving the game to a text file");
+    }
+  }
   
   /**
     Takes an instance of a board from a saved game.
     
-    @param loadedBoard Board from saved file
+    @param fileName String of board to load from saved file
   */
-  public void loadBoardFromSave(Board loadedBoard) {
-    //TODO this method
+  public void loadBoardFromSave(String fileName) {
+    String pathName = "saved_games/" + fileName + ".txt";
+    
+    try {
+      Scanner fileReader = new Scanner(new File(pathName));
+      attackerTurn = fileReader.nextBoolean();
+      fileReader.nextLine();
+      for (int r = 0; r < 11; r++) {
+        String currLine = fileReader.nextLine();
+        
+        for (int c = 0; c < 11; c++) {
+          char currChar = currLine.charAt(c);
+          
+          if (currChar == 'A') {
+            board[r][c] = GridSquareState.ATTACKER;
+          } else if (currChar == 'D') {
+            board[r][c] = GridSquareState.DEFENDER;
+          } else if (currChar == 'K') {
+            board[r][c] = GridSquareState.KING;
+          } else {
+            board[r][c] = GridSquareState.EMPTY;
+          }
+        }
+      }
+      fileReader.close();
+      JOptionPane.showMessageDialog(null, "Successfully loaded game from save file.");
+    } catch (FileNotFoundException ex) {
+      JOptionPane.showMessageDialog(null, "Cannot find the file specified.");
+    }
   }
   
   /**

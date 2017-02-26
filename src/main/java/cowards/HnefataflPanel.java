@@ -46,6 +46,12 @@ public class HnefataflPanel extends JPanel {
       if (grid != null && grid.contains(event.getPoint())) {
         int col = (event.getX() - grid.x) / (grid.width / 11);
         int row = (event.getY() - grid.y) / (grid.height / 11);
+
+        // Freeze the board if the game is over.
+        if (board.isGameOver()) {
+          return;
+        }
+
         try {
           if (board.hasSelection()) {
             // Attempt to move. If it fails, try changing the selection
@@ -172,8 +178,13 @@ public class HnefataflPanel extends JPanel {
 
     // Paint whose turn it is (or who won)
     graph.setColor(Color.WHITE);
-    String turn = board.isAttackerTurn() ? "Attacker's " : "Defender's ";
-    turn += board.isGameOver() ? "Won" : "Turn";
+    String turn;
+    if (board.isDraw()) {
+      turn = "Draw";
+    } else {
+      turn = board.isAttackerTurn() ? "Attacker's " : "Defender's ";
+      turn += board.isGameOver() ? "Won" : "Turn";
+    }
     setMaxFontSize(graph, turn, (gridS * 11) - 10, 25);
     width = graph.getFontMetrics().stringWidth(turn);
     int height = graph.getFontMetrics().getHeight();

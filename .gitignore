@@ -1,5 +1,6 @@
 /bin/
 /build/
+/saved_games/
 .gradle
 
 # Ignore GUI config.

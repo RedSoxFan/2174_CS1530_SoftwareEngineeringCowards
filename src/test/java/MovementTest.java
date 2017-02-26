@@ -797,4 +797,444 @@ public class MovementTest {
     // pass
     return;
   }
+
+  /**
+     Verify attacking side cannot move to upper left corner.
+  */
+  @Test
+  public void moveAttackerToTopLeft() {
+    Board board = new Board();
+    board.setAttackerTurn(true);
+
+    try {
+      board.select(0, 3);
+      assertFalse(board.move(0, 0));
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify attacking side cannot move to upper right corner.
+  */
+  @Test
+  public void moveAttackerToTopRight() {
+    Board board = new Board();
+    board.setAttackerTurn(true);
+
+    try {
+      board.select(0, 7);
+      assertFalse(board.move(0, 10));
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify attacking side cannot move to lower left corner.
+  */
+  @Test
+  public void moveAttackerToBottomLeft() {
+    Board board = new Board();
+    board.setAttackerTurn(true);
+
+    try {
+      board.select(10, 3);
+      assertFalse(board.move(10, 0));
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify attacking side cannot move to lower right corner.
+  */
+  @Test
+  public void moveAttackerToBottomRight() {
+    Board board = new Board();
+    board.setAttackerTurn(true);
+
+    try {
+      board.select(10, 7);
+      assertFalse(board.move(10, 10));
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify defending side cannot move to upper left corner.
+  */
+  @Test
+  public void moveDefenderToTopLeft() {
+    Board board = new Board();
+    board.setAttackerTurn(false);
+
+    try {
+      // Navigate defending piece to corner.
+      board.select(3, 5);
+      board.move(3, 1);
+      board.setAttackerTurn(false);
+      board.select(3, 1);
+      board.move(0, 1);
+      board.setAttackerTurn(false);
+      board.select(0, 1);
+      assertFalse(board.move(0, 0));
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify defending side cannot move to upper right corner.
+  */
+  @Test
+  public void moveDefenderToTopRight() {
+    Board board = new Board();
+    board.setAttackerTurn(false);
+
+    try {
+      // Navigate defending piece to corner.
+      board.select(3, 5);
+      board.move(3, 9);
+      board.setAttackerTurn(false);
+      board.select(3, 9);
+      board.move(0, 9);
+      board.setAttackerTurn(false);
+      board.select(0, 9);
+      assertFalse(board.move(0, 10));
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify defending side cannot move to lower left corner.
+  */
+  @Test
+  public void moveDefenderToBottomLeft() {
+    Board board = new Board();
+    board.setAttackerTurn(false);
+
+    try {
+      // Navigate defending piece to corner.
+      board.select(7, 5);
+      board.move(7, 1);
+      board.setAttackerTurn(false);
+      board.select(7, 1);
+      board.move(10, 1);
+      board.setAttackerTurn(false);
+      board.select(10, 0);
+      assertFalse(board.move(0, 0));
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify defending side cannot move to lower right corner.
+  */
+  @Test
+  public void moveDefenderToBottomRight() {
+    Board board = new Board();
+    board.setAttackerTurn(false);
+
+    try {
+      // Navigate defending piece to corner.
+      board.select(7, 5);
+      board.move(7, 9);
+      board.setAttackerTurn(false);
+      board.select(7, 9);
+      board.move(10, 9);
+      board.setAttackerTurn(false);
+      board.select(10, 9);
+      assertFalse(board.move(10, 10));
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  } 
+
+  /**
+     Verify normal defending piece cannot move to throne.
+  */
+  @Test
+  public void moveDefenderToThrone() {
+    Board board = new Board();
+    board.setAttackerTurn(false);
+
+    try {
+      // Navigate defending piece to throne.
+      board.select(4, 6);
+      board.move(4, 8);
+      board.setAttackerTurn(false);
+      board.select(4, 5);
+      board.move(4, 6);
+      board.setAttackerTurn(false);
+      board.select(5, 5);
+      board.move(4, 5);
+      board.setAttackerTurn(false);
+      board.select(5, 6);
+      assertFalse(board.move(5, 5));
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }  
+
+  /**
+     Verify attacking piece cannot move to throne.
+  */
+  @Test
+  public void moveAttackerToThrone() {
+    Board board = new Board();
+    board.setAttackerTurn(false);
+
+    try {
+      // Move defenders out of the way.
+      board.select(3, 5);
+      board.move(3, 9);
+      board.setAttackerTurn(false);
+      board.select(4, 5);
+      board.move(2, 5);
+      board.setAttackerTurn(false);
+      board.select(2, 5);
+      board.move(2, 0);
+      board.setAttackerTurn(false);
+      board.select(5, 5);
+      board.move(3, 5);
+      board.setAttackerTurn(false);
+      board.select(3, 5);
+      board.move(3, 7);
+      // Try moving attacker to throne.
+      board.select(1, 5);
+      assertFalse(board.move(5, 5));
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }  
+
+  /**
+   * Verify moving back and forth as the defender too many times loses the game.
+   */
+  @Test
+  public void backAndForthDefenderTest() {
+    Board board = new Board();
+
+    try {
+      // Move back and forth 3 times.
+      board.setAttackerTurn(false);
+      board.select(5, 7);
+      assertTrue(board.move(5, 8));
+      board.setAttackerTurn(false);
+      board.select(5, 8);
+      assertTrue(board.move(5, 7));
+      board.setAttackerTurn(false);
+      board.select(5, 7);
+      assertTrue(board.move(5, 8));
+      board.setAttackerTurn(false);
+      board.select(5, 8);
+      assertTrue(board.move(5, 7));
+      board.setAttackerTurn(false);
+      board.select(5, 7);
+      assertTrue(board.move(5, 8));
+      board.setAttackerTurn(false);
+      board.select(5, 8);
+      assertTrue(board.move(5, 7));
+
+      // Check game over state.
+      assertTrue(board.isGameOver());
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("Movement failed due to GridOutOfBoundsException");
+      fail();
+    }
+
+    // pass
+    return;
+  }
+
+  /**
+   * Verify moving back and forth as the attacker too many times loses the game.
+   */
+  @Test
+  public void backAndForthAttackerTest() {
+    Board board = new Board();
+
+    try {
+      // Move back and forth 3 times.
+      board.select(5, 9);
+      assertTrue(board.move(4, 9));
+      board.setAttackerTurn(true);
+      board.select(4, 9);
+      assertTrue(board.move(5, 9));
+      board.setAttackerTurn(true);
+      board.select(5, 9);
+      assertTrue(board.move(4, 9));
+      board.setAttackerTurn(true);
+      board.select(4, 9);
+      assertTrue(board.move(5, 9));
+      board.setAttackerTurn(true);
+      board.select(5, 9);
+      assertTrue(board.move(4, 9));
+      board.setAttackerTurn(true);
+      board.select(4, 9);
+      assertTrue(board.move(5, 9));
+
+      // Check game over state.
+      assertTrue(board.isGameOver());
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("Movement failed due to GridOutOfBoundsException");
+      fail();
+    }
+
+    // pass
+    return;
+  }
+
+  private void do50Moves(Board b) throws GridOutOfBoundsException {
+    // First move.
+    b.select(5, 9);
+    assertTrue(b.move(5, 8));
+
+    int le = 7;
+    int ri = 8;
+    int tar = 1;
+    int cur = 5;
+
+    // Another 8 moves. Total = 9
+    for (; tar < cur; --cur) {
+      b.select(cur, le);
+      assertTrue(b.move(cur - 1, le));
+      b.select(cur, ri);
+      assertTrue(b.move(cur - 1, ri));
+    }
+
+    tar = 9;
+    // Another 16 moves. Total = 25
+    for (; tar > cur; ++cur) {
+      b.select(cur, le);
+      assertTrue(b.move(cur + 1, le));
+      b.select(cur, ri);
+      assertTrue(b.move(cur + 1, ri));
+    }
+
+    tar = 1;
+    // Another 16 moves. Total = 41
+    for (; tar < cur; --cur) {
+      b.select(cur, le);
+      assertTrue(b.move(cur - 1, le));
+      b.select(cur, ri);
+      assertTrue(b.move(cur - 1, ri));
+    }
+
+    tar = 5;
+    // Another 8 moves. Total = 49
+    for (; tar > cur; ++cur) {
+      b.select(cur, le);
+      assertTrue(b.move(cur + 1, le));
+      b.select(cur, ri);
+      assertTrue(b.move(cur + 1, ri));
+    }
+
+    // Last move, should draw here.
+    b.select(cur, le);
+    assertTrue(b.move(cur + 1, le));
+  }
+
+  /**
+   * Verify 50 move draw rule work as expected.
+   */
+  @Test
+  public void drawTest() {
+    Board board = new Board();
+
+    try {
+      // Check game over state.
+      do50Moves(board);
+      assertTrue(board.isGameOver());
+      assertTrue(board.isDraw());
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("Movement failed due to GridOutOfBoundsException");
+      fail();
+    }
+
+    // pass
+    return;
+  }
+
+  /**
+   * Verify new game resets move counter properly.
+   */
+  @Test
+  public void noDrawOnReset() {
+    Board board = new Board();
+
+    try {
+      // Check game over state.
+      do50Moves(board);
+      assertTrue(board.isGameOver());
+      assertTrue(board.isDraw());
+      board.reset();
+      assertFalse(board.isGameOver());
+      assertFalse(board.isDraw());
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen
+      System.out.println("Movement failed due to GridOutOfBoundsException");
+      fail();
+    }
+
+    // pass
+    return;
+  }
 }

@@ -78,7 +78,11 @@ public class HnefataflPanel extends JPanel {
         if (fileName.equals("")) {
           JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
         } else if (fileName != null) {
-          board.saveBoard(fileName);
+          if (board.saveBoard(fileName)) {
+            JOptionPane.showMessageDialog(null, "Successfully saved game file.");
+          } else {
+            JOptionPane.showMessageDialog(null, "Error saving game file.");
+          }
         }
       } else if (loadGame != null && loadGame.contains(event.getPoint())) {
         String fileName = JOptionPane.showInputDialog(null, 
@@ -86,8 +90,12 @@ public class HnefataflPanel extends JPanel {
         if (fileName.equals("")) {
           JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
         } else if (fileName != null) {
-          board.loadBoardFromSave(fileName);
-          repaint();
+          if (board.loadBoardFromSave(fileName)) {
+            JOptionPane.showMessageDialog(null, "Successfully loaded game file.");
+            repaint();
+          } else {
+            JOptionPane.showMessageDialog(null, "Error loading game file.");
+          }
         }
       } else if (exitGame != null && exitGame.contains(event.getPoint())) {
         int selected = JOptionPane.showConfirmDialog(null, "Do you really want to exit the game?", 

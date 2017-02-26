@@ -556,23 +556,22 @@ public class Board implements Serializable {
     
     @param fileName String to save the board to
   */
-  public void saveBoard(String fileName) {
+  public boolean saveBoard(String fileName) {
     File dir = new File("saved_games");
     String pathName = "saved_games/" + fileName + ".txt";
+    boolean result = true;
     
     //create the saved_games directory if it doesn't exists
     if (!dir.exists()) {
       boolean success = dir.mkdir();
-      if (success) {
-        JOptionPane.showMessageDialog(null, "Created a saved_games directory for save files.");
-      } else {
-        JOptionPane.showMessageDialog(null, "Error creating saved_games directory.");
-        return;
+      if (!success) {
+        result = false;
       }
     }
     
     try {
       PrintWriter pw = new PrintWriter(pathName);
+      pw.println(movesWoCapture);
       pw.println(attackerTurn);
       for (int r = 0; r < 11; r++) {
         for (int c = 0; c < 11; c++) {
@@ -591,10 +590,11 @@ public class Board implements Serializable {
       }
       
       pw.close();
-      JOptionPane.showMessageDialog(null, "Successfully saved game to text file.");
     } catch (Exception ex) {
-      JOptionPane.showMessageDialog(null, "An error occurred when saving the game to a text file");
+      result = false;
     }
+    
+    return result;
   }
   
   /**
@@ -602,13 +602,14 @@ public class Board implements Serializable {
     
     @param fileName String of board to load from saved file
   */
-  public void loadBoardFromSave(String fileName) {
+  public boolean loadBoardFromSave(String fileName) {
     String pathName = "saved_games/" + fileName + ".txt";
+    boolean result = true;
     
     try {
       Scanner fileReader = new Scanner(new File(pathName));
-      attackerTurn = fileReader.nextBoolean();
-      fileReader.nextLine();
+      movesWoCapture = Integer.parseInt(fileReader.nextLine());
+      attackerTurn = Boolean.parseBoolean(fileReader.nextLine());
       for (int r = 0; r < 11; r++) {
         String currLine = fileReader.nextLine();
         
@@ -627,10 +628,13 @@ public class Board implements Serializable {
         }
       }
       fileReader.close();
-      JOptionPane.showMessageDialog(null, "Successfully loaded game from save file.");
     } catch (FileNotFoundException ex) {
-      JOptionPane.showMessageDialog(null, "Cannot find the file specified.");
+      result = false;
+    } catch (Exception ex) {
+      result = false;
     }
+    
+    return result;
   }
 
   /**

@@ -97,6 +97,9 @@ public class Board implements Serializable {
   private int selRow = -1;
   private int selCol = -1;
 
+  private int kingRow = 5;
+  private int kingCol = 5;
+
   /**
     Constructor.
   */
@@ -341,6 +344,11 @@ public class Board implements Serializable {
     // If there is no conflict, move the piece, deselect, and end turn.
     board[row][col] = square(selRow, selCol);
     board[selRow][selCol] = GridSquareState.EMPTY;
+    // If piece is king and no conflict, update king location.
+    if (isKing) {
+      kingRow = row;
+      kingCol = col;
+    }
 
     // Track the move.
     LinkedList<int []> moves = isAttackerTurn() ? attackerMoves : defenderMoves;
@@ -397,8 +405,38 @@ public class Board implements Serializable {
     captured |= basicCapture(row, column, row, column - 2);
     captured |= basicCapture(row, column, row, column + 2);
 
-    // TODO: King captures.
+    captured |= kingCapture();
     // TODO: Fort captures.
+
+    return captured;
+  }
+
+  /**
+    Check to see if the king was captured.
+
+    @return Whether or not king was captured.
+   */
+  private boolean kingCapture() throws GridOutOfBoundsException {
+    boolean captured = false;
+
+    //Check if king is not near edge of board.
+    if (kingRow != 0 && kingRow != 10 && kingCol != 0 && kingCol != 10) {
+      // Check if king is surrounded by attackers.
+      if (square(kingRow - 1, kingCol).equals(GridSquareState.ATTACKER) 
+            && square(kingRow + 1, kingCol).equals(GridSquareState.ATTACKER)
+            && square(kingRow, kingCol - 1).equals(GridSquareState.ATTACKER) 
+            && square(kingRow, kingCol + 1).equals(GridSquareState.ATTACKER)) {
+        captured = true;
+      }
+    }  
+
+    if (captured) {
+      System.out.println(kingRow + " " + kingCol);
+      board[kingRow][kingCol] = GridSquareState.EMPTY;
+      kingRow = -1;
+      kingCol = -1;
+      setGameOver(true);
+    }
 
     return captured;
   }

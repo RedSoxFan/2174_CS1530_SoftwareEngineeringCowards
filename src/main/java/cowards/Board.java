@@ -228,7 +228,7 @@ public class Board implements Serializable {
   /**
     Check if the current opposing player loses on account of repeat moves.
 
-    @return Whether or not the opponant loses on repeat moves.
+    @return Whether or not the opponent loses on repeat moves.
     */
   private boolean tooManyRepeats() {
     // Check if the last six moves are back and fourth.

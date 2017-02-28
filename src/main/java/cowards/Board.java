@@ -97,6 +97,7 @@ public class Board implements Serializable {
   private int selRow = -1;
   private int selCol = -1;
 
+  // Keep track of king to make checking for king captures easier.
   private int kingRow = 5;
   private int kingCol = 5;
 
@@ -178,7 +179,7 @@ public class Board implements Serializable {
         }
         break;
 
-        // The defending side can only select defender pieces and the king.
+      // The defending side can only select defender pieces and the king.
       case DEFENDER:
       case KING:
         if (!isAttackerTurn()) {
@@ -187,7 +188,7 @@ public class Board implements Serializable {
         }
         break;
 
-        // For clarity sake, include the default no-op case.
+      // For clarity sake, include the default no-op case.
       default:
         break;
     }
@@ -365,7 +366,7 @@ public class Board implements Serializable {
       ++movesWoCapture;
     }
 
-    // TODO: Check to see if move was winning move.
+    // Check to see if move was winning move.
     if (isKing && inCornerLocation(row, col)) {
       // If the king escaped we won.
       setGameOver(true);
@@ -431,7 +432,6 @@ public class Board implements Serializable {
     }  
 
     if (captured) {
-      System.out.println(kingRow + " " + kingCol);
       board[kingRow][kingCol] = GridSquareState.EMPTY;
       kingRow = -1;
       kingCol = -1;

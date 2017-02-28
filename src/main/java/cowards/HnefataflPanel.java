@@ -73,49 +73,32 @@ public class HnefataflPanel extends JPanel {
           board.reset();
         }
       } else if (saveGame != null && saveGame.contains(event.getPoint())) {
-        String fileName = JOptionPane.showInputDialog(null, 
-            "Enter the name of your save game file");
-        if (fileName != null) {
-          File dir = new File("saved_games");
-          String pathName = "saved_games/" + fileName + ".dat";
-          
-          //create the saved_games directory if it doesn't exists
-          if (!dir.exists()) {
-            boolean success = dir.mkdir();
-            if (success) {
-              JOptionPane.showMessageDialog(null, "Created a saved_games directory for save files");
+        if (board.isGameOver()) {
+          JOptionPane.showMessageDialog(null, "You cannot save a board in a game over state.");
+        } else {
+          String fileName = JOptionPane.showInputDialog(null, 
+              "Enter the name of your save game file");
+          if (fileName.equals("")) {
+            JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
+          } else if (fileName != null) {
+            if (board.saveBoard(fileName)) {
+              JOptionPane.showMessageDialog(null, "Successfully saved game file.");
             } else {
-              JOptionPane.showMessageDialog(null, "Error creating saved_games directory");
+              JOptionPane.showMessageDialog(null, "Error saving game file.");
             }
-          }
-          
-          try {
-            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathName));
-            oos.writeObject(board);
-            oos.close();
-          } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "An error occurred");
           }
         }
       } else if (loadGame != null && loadGame.contains(event.getPoint())) {
         String fileName = JOptionPane.showInputDialog(null, 
             "Enter the name of the game you want to load");
-        if (fileName != null) {
-          String pathName = "saved_games/" + fileName + ".dat";
-          try {
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(pathName));
-            Board loadedBoard = (Board) ois.readObject();
-            ois.close();
-            //TODO actually load the board and reset it appropriately
-          } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(null, "That is not a valid file name.");
-          } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, "Failed to open file.");
-          } catch (ClassNotFoundException ex) {
-            JOptionPane.showMessageDialog(
-                null, "Failed to load file. Critical error. Contact developers."
-            );
-            System.exit(1);
+        if (fileName.equals("")) {
+          JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
+        } else if (fileName != null) {
+          if (board.loadBoardFromSave(fileName)) {
+            JOptionPane.showMessageDialog(null, "Successfully loaded game file.");
+            repaint();
+          } else {
+            JOptionPane.showMessageDialog(null, "Error loading game file.");
           }
         }
       } else if (exitGame != null && exitGame.contains(event.getPoint())) {

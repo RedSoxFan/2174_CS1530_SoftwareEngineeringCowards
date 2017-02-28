@@ -2,7 +2,7 @@ package cowards;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
@@ -594,12 +594,127 @@ public class Board implements Serializable {
   }
 
   /**
-    Takes an instance of a board from a saved game.
-
-    @param loadedBoard Board from saved file
+    Save the current instance of the board to a text file.
+    
+    @param fileName String to save the board to
   */
-  public void loadBoardFromSave(Board loadedBoard) {
-    //TODO this method
+  public boolean saveBoard(String fileName) {
+    File dir = new File("saved_games");
+    String pathName = "saved_games/" + fileName + ".txt";
+    boolean result = true;
+    
+    //create the saved_games directory if it doesn't exists
+    if (!dir.exists()) {
+      boolean success = dir.mkdir();
+      if (!success) {
+        result = false;
+      }
+    }
+    
+    try {
+      PrintWriter pw = new PrintWriter(pathName);
+      pw.println(movesWoCapture);
+      pw.println(attackerTurn);
+      pw.println(attackerMoves.size());
+      pw.println(defenderMoves.size());
+      
+      for (int i = 0; i < attackerMoves.size(); i++) {
+        int[] currMove = attackerMoves.get(i);
+        pw.print("A");
+        pw.print(currMove[0]);
+        pw.print(currMove[1]);
+        pw.println();
+      }
+      
+      for (int i = 0; i < defenderMoves.size(); i++) {
+        int[] currMove = defenderMoves.get(i);
+        pw.print("D");
+        pw.print(currMove[0]);
+        pw.print(currMove[1]);
+        pw.println();
+      }
+      
+      for (int r = 0; r < 11; r++) {
+        for (int c = 0; c < 11; c++) {
+          if (board[r][c] == GridSquareState.ATTACKER) {
+            pw.print('A');
+          } else if (board[r][c] == GridSquareState.DEFENDER) {
+            pw.print('D');
+          } else if (board[r][c] == GridSquareState.KING) {
+            pw.print('K');
+          } else {
+            pw.print('E');
+          }
+        }
+        pw.println();
+      }
+      
+      pw.close();
+    } catch (Exception ex) {
+      result = false;
+    }
+    
+    return result;
+  }
+  
+  /**
+    Takes an instance of a board from a saved game.
+    
+    @param fileName String of board to load from saved file
+  */
+  public boolean loadBoardFromSave(String fileName) {
+    String pathName = "saved_games/" + fileName + ".txt";
+    boolean result = true;
+    attackerMoves.clear();
+    defenderMoves.clear();
+    
+    try {
+      Scanner fileReader = new Scanner(new File(pathName));
+      movesWoCapture = Integer.parseInt(fileReader.nextLine());
+      attackerTurn = Boolean.parseBoolean(fileReader.nextLine());
+      int numAttacks = Integer.parseInt(fileReader.nextLine());
+      int numDefends = Integer.parseInt(fileReader.nextLine());
+      
+      for (int i = 0; i < numAttacks; i++) {
+        String currLine = fileReader.nextLine();
+        int row = Character.getNumericValue(currLine.charAt(1));
+        int col = Character.getNumericValue(currLine.charAt(2));
+        attackerMoves.add(new int[] {row, col});
+      }
+      
+      for (int i = 0; i < numDefends; i++) {
+        String currLine = fileReader.nextLine();
+        int row = Character.getNumericValue(currLine.charAt(1));
+        int col = Character.getNumericValue(currLine.charAt(2));
+        defenderMoves.add(new int[] {row, col});
+      }
+      
+      for (int r = 0; r < 11; r++) {
+        String currLine = fileReader.nextLine();
+        for (int c = 0; c < 11; c++) {
+          char currChar = currLine.charAt(c);
+          
+          if (currChar == 'A') {
+            board[r][c] = GridSquareState.ATTACKER;
+          } else if (currChar == 'D') {
+            board[r][c] = GridSquareState.DEFENDER;
+          } else if (currChar == 'K') {
+            board[r][c] = GridSquareState.KING;
+            kingRow = r;
+            kingCol = c;
+          } else {
+            board[r][c] = GridSquareState.EMPTY;
+          }
+        }
+      }
+      fileReader.close();
+    } catch (FileNotFoundException ex) {
+      result = false;
+    } catch (Exception ex) {
+      result = false;
+    }
+    
+    return result;
   }
 
   /**

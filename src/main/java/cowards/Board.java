@@ -367,7 +367,9 @@ public class Board implements Serializable {
     }
 
     // Check to see if move was winning move.
-    if (isKing && inCornerLocation(row, col)) {
+    if (isGameOver()) {
+      //King was captured.
+    } else if (isKing && inCornerLocation(row, col)) {
       // If the king escaped we won.
       setGameOver(true);
     } else {

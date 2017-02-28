@@ -97,6 +97,10 @@ public class Board implements Serializable {
   private int selRow = -1;
   private int selCol = -1;
 
+  // Keep track of king to make checking for king captures easier.
+  private int kingRow = 5;
+  private int kingCol = 5;
+
   /**
     Constructor.
   */
@@ -175,7 +179,7 @@ public class Board implements Serializable {
         }
         break;
 
-        // The defending side can only select defender pieces and the king.
+      // The defending side can only select defender pieces and the king.
       case DEFENDER:
       case KING:
         if (!isAttackerTurn()) {
@@ -184,7 +188,7 @@ public class Board implements Serializable {
         }
         break;
 
-        // For clarity sake, include the default no-op case.
+      // For clarity sake, include the default no-op case.
       default:
         break;
     }
@@ -265,7 +269,7 @@ public class Board implements Serializable {
   /**
     Check if the current opposing player loses on account of repeat moves.
 
-    @return Whether or not the opponant loses on repeat moves.
+    @return Whether or not the opponent loses on repeat moves.
     */
   private boolean tooManyRepeats() {
     // Check if the last six moves are back and fourth.
@@ -341,6 +345,11 @@ public class Board implements Serializable {
     // If there is no conflict, move the piece, deselect, and end turn.
     board[row][col] = square(selRow, selCol);
     board[selRow][selCol] = GridSquareState.EMPTY;
+    // If piece is king and no conflict, update king location.
+    if (isKing) {
+      kingRow = row;
+      kingCol = col;
+    }
 
     // Track the move.
     LinkedList<int []> moves = isAttackerTurn() ? attackerMoves : defenderMoves;
@@ -357,7 +366,7 @@ public class Board implements Serializable {
       ++movesWoCapture;
     }
 
-    // TODO: Check to see if move was winning move.
+    // Check to see if move was winning move.
     if (isKing && inCornerLocation(row, col)) {
       // If the king escaped we won.
       setGameOver(true);
@@ -397,8 +406,37 @@ public class Board implements Serializable {
     captured |= basicCapture(row, column, row, column - 2);
     captured |= basicCapture(row, column, row, column + 2);
 
-    // TODO: King captures.
+    captured |= kingCapture();
     // TODO: Fort captures.
+
+    return captured;
+  }
+
+  /**
+    Check to see if the king was captured.
+
+    @return Whether or not king was captured.
+   */
+  private boolean kingCapture() throws GridOutOfBoundsException {
+    boolean captured = false;
+
+    //Check if king is not near edge of board.
+    if (kingRow != 0 && kingRow != 10 && kingCol != 0 && kingCol != 10) {
+      // Check if king is surrounded by attackers.
+      if (square(kingRow - 1, kingCol).equals(GridSquareState.ATTACKER) 
+            && square(kingRow + 1, kingCol).equals(GridSquareState.ATTACKER)
+            && square(kingRow, kingCol - 1).equals(GridSquareState.ATTACKER) 
+            && square(kingRow, kingCol + 1).equals(GridSquareState.ATTACKER)) {
+        captured = true;
+      }
+    }  
+
+    if (captured) {
+      board[kingRow][kingCol] = GridSquareState.EMPTY;
+      kingRow = -1;
+      kingCol = -1;
+      setGameOver(true);
+    }
 
     return captured;
   }
@@ -544,6 +582,8 @@ public class Board implements Serializable {
           board[r][c] = GridSquareState.DEFENDER;
         } else if (square == 'K') {
           board[r][c] = GridSquareState.KING;
+          kingRow = r;
+          kingCol = c;
         } else {
           board[r][c] = GridSquareState.EMPTY;
         }

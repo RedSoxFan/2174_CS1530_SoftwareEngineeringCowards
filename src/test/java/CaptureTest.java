@@ -533,12 +533,45 @@ public class CaptureTest {
       fail();
     }
   }
-
+  
   /**
     Test to make sure king can be captured.
    */
   @Test
   public void captureKingBasic() {
+    try {
+      Board board = new Board();
+      board.loadBoardFromChar(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'A', 'K', ' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+      board.setAttackerTurn(true);
+
+      board.select(2, 3);
+      board.move(2, 2);
+
+      assertEquals(Board.GridSquareState.EMPTY, board.square(2, 1));
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException exception) {
+      fail();
+    }
+  }
+
+  /**
+    Test to make sure king can be captured at throne.
+   */
+  @Test
+  public void captureKingAtThrone() {
     try {
       Board board = new Board();
       board.loadBoardFromChar(new char[][]{
@@ -565,5 +598,5 @@ public class CaptureTest {
     } catch (GridOutOfBoundsException exception) {
       fail();
     }
-  }
+  }  
 }

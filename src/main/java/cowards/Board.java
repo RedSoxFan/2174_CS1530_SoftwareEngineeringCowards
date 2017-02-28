@@ -582,6 +582,8 @@ public class Board implements Serializable {
           board[r][c] = GridSquareState.DEFENDER;
         } else if (square == 'K') {
           board[r][c] = GridSquareState.KING;
+          kingRow = r;
+          kingCol = c;
         } else {
           board[r][c] = GridSquareState.EMPTY;
         }

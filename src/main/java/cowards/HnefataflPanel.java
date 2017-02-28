@@ -73,15 +73,19 @@ public class HnefataflPanel extends JPanel {
           board.reset();
         }
       } else if (saveGame != null && saveGame.contains(event.getPoint())) {
-        String fileName = JOptionPane.showInputDialog(null, 
-            "Enter the name of your save game file");
-        if (fileName.equals("")) {
-          JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
-        } else if (fileName != null) {
-          if (board.saveBoard(fileName)) {
-            JOptionPane.showMessageDialog(null, "Successfully saved game file.");
-          } else {
-            JOptionPane.showMessageDialog(null, "Error saving game file.");
+        if (board.isGameOver()) {
+          JOptionPane.showMessageDialog(null, "You cannot save a board in a game over state.");
+        } else {
+          String fileName = JOptionPane.showInputDialog(null, 
+              "Enter the name of your save game file");
+          if (fileName.equals("")) {
+            JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
+          } else if (fileName != null) {
+            if (board.saveBoard(fileName)) {
+              JOptionPane.showMessageDialog(null, "Successfully saved game file.");
+            } else {
+              JOptionPane.showMessageDialog(null, "Error saving game file.");
+            }
           }
         }
       } else if (loadGame != null && loadGame.contains(event.getPoint())) {

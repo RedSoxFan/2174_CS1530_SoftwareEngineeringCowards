@@ -573,6 +573,25 @@ public class Board implements Serializable {
       PrintWriter pw = new PrintWriter(pathName);
       pw.println(movesWoCapture);
       pw.println(attackerTurn);
+      pw.println(attackerMoves.size());
+      pw.println(defenderMoves.size());
+      
+      for (int i = 0; i < attackerMoves.size(); i++) {
+        int[] currMove = attackerMoves.get(i);
+        pw.print("A");
+        pw.print(currMove[0]);
+        pw.print(currMove[1]);
+        pw.println();
+      }
+      
+      for (int i = 0; i < defenderMoves.size(); i++) {
+        int[] currMove = defenderMoves.get(i);
+        pw.print("D");
+        pw.print(currMove[0]);
+        pw.print(currMove[1]);
+        pw.println();
+      }
+      
       for (int r = 0; r < 11; r++) {
         for (int c = 0; c < 11; c++) {
           if (board[r][c] == GridSquareState.ATTACKER) {
@@ -585,7 +604,6 @@ public class Board implements Serializable {
             pw.print('E');
           }
         }
-        
         pw.println();
       }
       
@@ -605,14 +623,32 @@ public class Board implements Serializable {
   public boolean loadBoardFromSave(String fileName) {
     String pathName = "saved_games/" + fileName + ".txt";
     boolean result = true;
+    attackerMoves.clear();
+    defenderMoves.clear();
     
     try {
       Scanner fileReader = new Scanner(new File(pathName));
       movesWoCapture = Integer.parseInt(fileReader.nextLine());
       attackerTurn = Boolean.parseBoolean(fileReader.nextLine());
+      int numAttacks = Integer.parseInt(fileReader.nextLine());
+      int numDefends = Integer.parseInt(fileReader.nextLine());
+      
+      for (int i = 0; i < numAttacks; i++) {
+        String currLine = fileReader.nextLine();
+        int row = Character.getNumericValue(currLine.charAt(1));
+        int col = Character.getNumericValue(currLine.charAt(2));
+        attackerMoves.add(new int[] {row, col});
+      }
+      
+      for (int i = 0; i < numDefends; i++) {
+        String currLine = fileReader.nextLine();
+        int row = Character.getNumericValue(currLine.charAt(1));
+        int col = Character.getNumericValue(currLine.charAt(2));
+        defenderMoves.add(new int[] {row, col});
+      }
+      
       for (int r = 0; r < 11; r++) {
         String currLine = fileReader.nextLine();
-        
         for (int c = 0; c < 11; c++) {
           char currChar = currLine.charAt(c);
           

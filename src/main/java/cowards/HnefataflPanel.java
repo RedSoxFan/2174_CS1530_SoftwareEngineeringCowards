@@ -241,6 +241,14 @@ public class HnefataflPanel extends JPanel {
     graph.drawString(exitText, exitGame.x, exitGame.y + height);
   }
 
+  /**
+    Sets the max font size.
+
+    @param graph Graphics object to paint on.
+    @param text  Text for which to get the font size.
+    @param maxw  Max width.
+    @param maxh  Max height.
+  */
   private void setMaxFontSize(Graphics graph, String text, int maxw, int maxh) {
     graph.setFont(graph.getFont().deriveFont(1f));
     FontMetrics fm = graph.getFontMetrics();

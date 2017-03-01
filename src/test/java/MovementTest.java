@@ -37,6 +37,42 @@ public class MovementTest {
   }
 
   /**
+   * Verify that the selected row is reported correctly.
+   */
+  @Test
+  public void selectGetSelectedRowTest() {
+    Board board = new Board();
+    board.setAttackerTurn(true);
+
+    try {
+      board.select(5, 0);
+    } catch (GridOutOfBoundsException ex) {
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    assertEquals(5, board.getSelectedRow());
+  }
+
+  /**
+   * Verify that the selected column is reported correctly.
+   */
+  @Test
+  public void selectGetSelectedColumnTest() {
+    Board board = new Board();
+    board.setAttackerTurn(true);
+
+    try {
+      board.select(5, 10);
+    } catch (GridOutOfBoundsException ex) {
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    assertEquals(10, board.getSelectedColumn());
+  }
+
+  /**
    * Verify that the attacking side cannot select an attacker.
    */
   @Test

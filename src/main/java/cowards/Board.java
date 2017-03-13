@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
-public class Board implements Serializable {
+public class Board {
 
   public static enum GridSquareState {
     EMPTY, KING, DEFENDER, ATTACKER;
@@ -48,8 +48,7 @@ public class Board implements Serializable {
       return this.equals(EMPTY);
     }
   }
-
-  private static final long serialVersionUID = 7526472295622776147L;
+  
   public static int GRID_ROW_MAX = 10;
   public static int GRID_COL_MAX = 10;
 
@@ -634,8 +633,8 @@ public class Board implements Serializable {
         pw.println();
       }
       
-      for (int r = 0; r < 11; r++) {
-        for (int c = 0; c < 11; c++) {
+      for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
+        for (int c = 0; c < GRID_COL_MAX + 1; c++) {
           if (board[r][c] == GridSquareState.ATTACKER) {
             pw.print('A');
           } else if (board[r][c] == GridSquareState.DEFENDER) {
@@ -689,9 +688,9 @@ public class Board implements Serializable {
         defenderMoves.add(new int[] {row, col});
       }
       
-      for (int r = 0; r < 11; r++) {
+      for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
         String currLine = fileReader.nextLine();
-        for (int c = 0; c < 11; c++) {
+        for (int c = 0; c < GRID_COL_MAX + 1; c++) {
           char currChar = currLine.charAt(c);
           
           if (currChar == 'A') {

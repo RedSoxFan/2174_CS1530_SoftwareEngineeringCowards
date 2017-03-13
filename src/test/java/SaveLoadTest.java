@@ -19,14 +19,15 @@ public class SaveLoadTest {
       board.select(5, 3);
       board.move(5, 2);
       String fileName = "SAVETEST";
+      String saveTestPath = "saved_games/SAVETEST.txt";
+      String testPath = "saved_games/TEST.txt";
       assertTrue(board.saveBoard(fileName));
-      Scanner saveReader = new Scanner(new File("saved_games/SAVETEST.txt"));
-      Scanner testReader = new Scanner(new File("saved_games/TEST.txt"));
+      Scanner saveReader = new Scanner(new File(saveTestPath));
+      Scanner testReader = new Scanner(new File(testPath));
       
       while (saveReader.hasNextLine() && testReader.hasNextLine()) {
         String line1 = saveReader.nextLine();
         String line2 = testReader.nextLine();
-        
         if (!line1.equals(line2)) {
           fail();
         }

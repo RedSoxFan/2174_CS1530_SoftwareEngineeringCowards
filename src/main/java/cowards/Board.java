@@ -748,7 +748,7 @@ public class Board {
   }
 
   /**
-    Reads in the saved board layout.
+    Reads in the board layout from the scanner provided.
   */
   private void readAsciiBoard(Scanner sc) {
     for (int r = 0; r < GRID_ROW_MAX + 1; r++) {

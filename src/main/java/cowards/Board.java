@@ -627,6 +627,61 @@ public class Board {
   }
 
   /**
+    Write out the simple information about the board state.
+  */
+  private void writeState(PrintWriter pw) {
+    pw.println(movesWoCapture);
+    pw.println(attackerTurn);
+  }
+
+  /**
+    Writes out all of the recorded moves thus far. Used for loading in data
+    required for calculating repeat moves.
+  */
+  private void writeStoredMoves(PrintWriter pw) {
+    pw.println(attackerMoves.size());
+    pw.println(defenderMoves.size());
+
+    // Write attacker moves.
+    for (int i = 0; i < attackerMoves.size(); i++) {
+      int[] currMove = attackerMoves.get(i);
+      pw.print("A");
+      pw.print(currMove[0]);
+      pw.print(currMove[1]);
+      pw.println();
+    }
+
+    // Write defender moves.
+    for (int i = 0; i < defenderMoves.size(); i++) {
+      int[] currMove = defenderMoves.get(i);
+      pw.print("D");
+      pw.print(currMove[0]);
+      pw.print(currMove[1]);
+      pw.println();
+    }
+  }
+
+  /**
+    Writes out an ASCII representation of the current board layout.
+  */
+  private void writeAsciiBoard(PrintWriter pw) {
+    for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
+      for (int c = 0; c < GRID_COL_MAX + 1; c++) {
+        if (board[r][c] == GridSquareState.ATTACKER) {
+          pw.print('A');
+        } else if (board[r][c] == GridSquareState.DEFENDER) {
+          pw.print('D');
+        } else if (board[r][c] == GridSquareState.KING) {
+          pw.print('K');
+        } else {
+          pw.print('E');
+        }
+      }
+      pw.println();
+    }
+  }
+
+  /**
     Save the current instance of the board to a text file.
     
     @param fileName String to save the board to
@@ -636,7 +691,7 @@ public class Board {
     String pathName = "saved_games/" + fileName + ".txt";
     boolean result = true;
     
-    //create the saved_games directory if it doesn't exists
+    // Create the saved_games directory if it doesn't exist.
     if (!dir.exists()) {
       boolean success = dir.mkdir();
       if (!success) {
@@ -646,50 +701,76 @@ public class Board {
     
     try {
       PrintWriter pw = new PrintWriter(pathName);
-      pw.println(movesWoCapture);
-      pw.println(attackerTurn);
-      pw.println(attackerMoves.size());
-      pw.println(defenderMoves.size());
-      
-      for (int i = 0; i < attackerMoves.size(); i++) {
-        int[] currMove = attackerMoves.get(i);
-        pw.print("A");
-        pw.print(currMove[0]);
-        pw.print(currMove[1]);
-        pw.println();
-      }
-      
-      for (int i = 0; i < defenderMoves.size(); i++) {
-        int[] currMove = defenderMoves.get(i);
-        pw.print("D");
-        pw.print(currMove[0]);
-        pw.print(currMove[1]);
-        pw.println();
-      }
-      
-      for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
-        for (int c = 0; c < GRID_COL_MAX + 1; c++) {
-          if (board[r][c] == GridSquareState.ATTACKER) {
-            pw.print('A');
-          } else if (board[r][c] == GridSquareState.DEFENDER) {
-            pw.print('D');
-          } else if (board[r][c] == GridSquareState.KING) {
-            pw.print('K');
-          } else {
-            pw.print('E');
-          }
-        }
-        pw.println();
-      }
+      writeState(pw);
+      writeStoredMoves(pw);
+      writeAsciiBoard(pw);
       
       pw.close();
     } catch (Exception ex) {
-      result = false;
+      return false;
     }
     
-    return result;
+    return true;
   }
   
+  /**
+    Loads basic state information from the scanner provided.
+  */
+  private void readState(Scanner sc) {
+    movesWoCapture = Integer.parseInt(sc.nextLine());
+    attackerTurn = Boolean.parseBoolean(sc.nextLine());
+  }
+
+  /**
+    Loads recorded moves from the scanner provided. Used for calculating
+    repeat moves.
+  */
+  private void readStoredMoves(Scanner sc) {
+    attackerMoves.clear();
+    defenderMoves.clear();
+
+    int numAttacks = Integer.parseInt(sc.nextLine());
+    int numDefends = Integer.parseInt(sc.nextLine());
+
+    for (int i = 0; i < numAttacks; i++) {
+      String currLine = sc.nextLine();
+      int row = Character.getNumericValue(currLine.charAt(1));
+      int col = Character.getNumericValue(currLine.charAt(2));
+      attackerMoves.add(new int[] {row, col});
+    }
+
+    for (int i = 0; i < numDefends; i++) {
+      String currLine = sc.nextLine();
+      int row = Character.getNumericValue(currLine.charAt(1));
+      int col = Character.getNumericValue(currLine.charAt(2));
+      defenderMoves.add(new int[] {row, col});
+    }
+  }
+
+  /**
+    Reads in the saved board layout.
+  */
+  private void readAsciiBoard(Scanner sc) {
+    for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
+      String currLine = sc.nextLine();
+      for (int c = 0; c < GRID_COL_MAX + 1; c++) {
+        char currChar = currLine.charAt(c);
+
+        if (currChar == 'A') {
+          board[r][c] = GridSquareState.ATTACKER;
+        } else if (currChar == 'D') {
+          board[r][c] = GridSquareState.DEFENDER;
+        } else if (currChar == 'K') {
+          board[r][c] = GridSquareState.KING;
+          kingRow = r;
+          kingCol = c;
+        } else {
+          board[r][c] = GridSquareState.EMPTY;
+        }
+      }
+    }
+  }
+
   /**
     Takes an instance of a board from a saved game.
     
@@ -698,48 +779,13 @@ public class Board {
   public boolean loadBoardFromSave(String fileName) {
     String pathName = "saved_games/" + fileName + ".txt";
     boolean result = true;
-    attackerMoves.clear();
-    defenderMoves.clear();
     
     try {
       Scanner fileReader = new Scanner(new File(pathName));
-      movesWoCapture = Integer.parseInt(fileReader.nextLine());
-      attackerTurn = Boolean.parseBoolean(fileReader.nextLine());
-      int numAttacks = Integer.parseInt(fileReader.nextLine());
-      int numDefends = Integer.parseInt(fileReader.nextLine());
+      readState(fileReader);
+      readStoredMoves(fileReader);
+      readAsciiBoard(fileReader);
       
-      for (int i = 0; i < numAttacks; i++) {
-        String currLine = fileReader.nextLine();
-        int row = Character.getNumericValue(currLine.charAt(1));
-        int col = Character.getNumericValue(currLine.charAt(2));
-        attackerMoves.add(new int[] {row, col});
-      }
-      
-      for (int i = 0; i < numDefends; i++) {
-        String currLine = fileReader.nextLine();
-        int row = Character.getNumericValue(currLine.charAt(1));
-        int col = Character.getNumericValue(currLine.charAt(2));
-        defenderMoves.add(new int[] {row, col});
-      }
-      
-      for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
-        String currLine = fileReader.nextLine();
-        for (int c = 0; c < GRID_COL_MAX + 1; c++) {
-          char currChar = currLine.charAt(c);
-          
-          if (currChar == 'A') {
-            board[r][c] = GridSquareState.ATTACKER;
-          } else if (currChar == 'D') {
-            board[r][c] = GridSquareState.DEFENDER;
-          } else if (currChar == 'K') {
-            board[r][c] = GridSquareState.KING;
-            kingRow = r;
-            kingCol = c;
-          } else {
-            board[r][c] = GridSquareState.EMPTY;
-          }
-        }
-      }
       fileReader.close();
     } catch (FileNotFoundException ex) {
       result = false;

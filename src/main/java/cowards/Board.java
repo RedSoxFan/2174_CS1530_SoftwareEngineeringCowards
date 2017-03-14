@@ -689,13 +689,12 @@ public class Board {
   public boolean saveBoard(String fileName) {
     File dir = new File("saved_games");
     String pathName = "saved_games/" + fileName + ".txt";
-    boolean result = true;
     
     // Create the saved_games directory if it doesn't exist.
     if (!dir.exists()) {
       boolean success = dir.mkdir();
       if (!success) {
-        result = false;
+        return false;
       }
     }
     
@@ -778,7 +777,6 @@ public class Board {
   */
   public boolean loadBoardFromSave(String fileName) {
     String pathName = "saved_games/" + fileName + ".txt";
-    boolean result = true;
     
     try {
       Scanner fileReader = new Scanner(new File(pathName));
@@ -788,12 +786,12 @@ public class Board {
       
       fileReader.close();
     } catch (FileNotFoundException ex) {
-      result = false;
+      return false;
     } catch (Exception ex) {
-      result = false;
+      return false;
     }
     
-    return result;
+    return true;
   }
 
   /**

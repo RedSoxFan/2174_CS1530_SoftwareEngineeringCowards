@@ -6,81 +6,7 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
-public class Board {
-
-  public static enum GridSquareState {
-    EMPTY, KING, DEFENDER, ATTACKER;
-
-    /**
-     * Convience method for checking whether or not the piece is on the
-     * attacking side.
-     */
-    public boolean isAttacking() {
-      return this.equals(ATTACKER);
-    }
-
-    /**
-     * Convience method for checking whether or not the piece is a defender.
-     */
-    public boolean isDefender() {
-      return this.equals(DEFENDER);
-    }
-
-    /**
-     * Convience method for checking whether or not the piece is a king.
-     */
-    public boolean isKing() {
-      return this.equals(KING);
-    }
-
-    /**
-     * Convience method for checking whether or not the piece is on the defending
-     * side. This includes both the defenders and the king.
-     */
-    public boolean isDefending() {
-      return isDefender() || isKing();
-    }
-
-    /**
-     * Convience method for checking whether or not the piece is empty.
-     */
-    public boolean isEmpty() {
-      return this.equals(EMPTY);
-    }
-  }
-  
-  public static int GRID_ROW_MAX = 10;
-  public static int GRID_COL_MAX = 10;
-
-  public static final char[][] INITIAL_BOARD = new char[][]{
-      {' ', ' ', ' ', 'A', 'A', 'A', 'A', 'A', ' ', ' ', ' '},
-      {' ', ' ', ' ', ' ', ' ', 'A', ' ', ' ', ' ', ' ', ' '},
-      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-      {'A', ' ', ' ', ' ', ' ', 'D', ' ', ' ', ' ', ' ', 'A'},
-      {'A', ' ', ' ', ' ', 'D', 'D', 'D', ' ', ' ', ' ', 'A'},
-      {'A', 'A', ' ', 'D', 'D', 'K', 'D', 'D', ' ', 'A', 'A'},
-      {'A', ' ', ' ', ' ', 'D', 'D', 'D', ' ', ' ', ' ', 'A'},
-      {'A', ' ', ' ', ' ', ' ', 'D', ' ', ' ', ' ', ' ', 'A'},
-      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-      {' ', ' ', ' ', ' ', ' ', 'A', ' ', ' ', ' ', ' ', ' '},
-      {' ', ' ', ' ', 'A', 'A', 'A', 'A', 'A', ' ', ' ', ' '}
-  };
-
-  public static final int[][] SPECIAL_SQUARE_POSITIONS = new int[][]{
-    {0, 0},
-    {0, 10},
-    {10, 0},
-    {10, 10},
-    {5, 5}
-  };
-
-  public static final int[][] CORNER_SQUARE_POSITIONS = new int[][]{
-    {0, 0},
-    {0, 10},
-    {10, 0},
-    {10, 10},
-  };
-
+public class Board extends BoardLayout {
   private GridSquareState[][] board = new GridSquareState[11][11];
   private boolean attackerTurn = true;
   private boolean gameOver = false;
@@ -316,23 +242,22 @@ public class Board {
   }
 
   /**
-    Attempt to move a piece.
+    Return if the selected tile holds the king.
 
-    @param row The row of the square to move to.
-    @param col The column of the square to move to.
+    @return If the selected tile holds the king.
+  */
+  private boolean isKing(int row, int col) throws GridOutOfBoundsException {
+    return square(selRow, selCol).equals(GridSquareState.KING);
+  }
 
-    @return Whether or not the selected piece was moved.
-   */
-  public boolean move(int row, int col) throws GridOutOfBoundsException {
-    // Verify there is a selection and only one axis differs.
-    if (!hasSelection() || ((row != selRow) == (col != selCol))) {
-      return false;
-    }
+  /**
+    Return if the proposed move is valid.
 
-    boolean isKing = square(selRow, selCol).equals(GridSquareState.KING);
-
+    @return If the move is valid.
+  */
+  private boolean isValidMove(int row, int col) throws GridOutOfBoundsException {
     // Make sure piece other than king isn't moving to throne or four corners.
-    if (!isKing && inSpecialLocation(row, col)) {
+    if (!isKing(row, col) && inSpecialLocation(row, col)) {
       return false;
     }
 
@@ -341,15 +266,22 @@ public class Board {
       return false;
     }
 
+    return true;
+  }
+
+  /**
+    Executes the move and tracks state related to the move.
+  */
+  private void processMove(int row, int col) throws GridOutOfBoundsException {
     // If there is no conflict, move the piece, deselect, and end turn.
     board[row][col] = square(selRow, selCol);
     board[selRow][selCol] = GridSquareState.EMPTY;
+
     // If piece is king and no conflict, update king location.
-    if (isKing) {
+    if (isKing(selRow, selCol)) {
       kingRow = row;
       kingCol = col;
     }
-
     // Track the move.
     LinkedList<int []> moves = isAttackerTurn() ? attackerMoves : defenderMoves;
     if (moves.size() > 5) {
@@ -358,17 +290,16 @@ public class Board {
     } else {
       moves.add(new int [] {row, col});
     }
+  }
 
-    // Try to capture pieces. If nothing was captured, increment the counter
-    // for moves without a capture.
-    if (!capture(row, col)) {
-      ++movesWoCapture;
-    }
-
+  /**
+    Handles if a game winning or losing move was made.
+  */
+  private void handleEndMove(int row, int col) throws GridOutOfBoundsException {
     // Check to see if move was winning move.
     if (isGameOver()) {
       //King was captured.
-    } else if (isKing && inCornerLocation(row, col)) {
+    } else if (isKing(selRow, selCol) && inCornerLocation(row, col)) {
       // If the king escaped we won.
       setGameOver(true);
     } else {
@@ -384,6 +315,35 @@ public class Board {
         setGameOver(true);
       }
     }
+  }
+
+  /**
+    Attempt to move a piece.
+
+    @param row The row of the square to move to.
+    @param col The column of the square to move to.
+
+    @return Whether or not the selected piece was moved.
+   */
+  public boolean move(int row, int col) throws GridOutOfBoundsException {
+    // Verify there is a selection and only one axis differs.
+    if (!hasSelection() || ((row != selRow) == (col != selCol))) {
+      return false;
+    }
+
+    if (!isValidMove(row, col)) {
+      return false;
+    }
+
+    processMove(row, col);
+
+    // Try to capture pieces. If nothing was captured, increment the counter
+    // for moves without a capture.
+    if (!capture(row, col)) {
+      ++movesWoCapture;
+    }
+
+    handleEndMove(row, col);
 
     // Reset selection.
     selRow = -1;
@@ -593,6 +553,61 @@ public class Board {
   }
 
   /**
+    Write out the simple information about the board state.
+  */
+  private void writeState(PrintWriter pw) {
+    pw.println(movesWoCapture);
+    pw.println(attackerTurn);
+  }
+
+  /**
+    Writes out all of the recorded moves thus far. Used for loading in data
+    required for calculating repeat moves.
+  */
+  private void writeStoredMoves(PrintWriter pw) {
+    pw.println(attackerMoves.size());
+    pw.println(defenderMoves.size());
+
+    // Write attacker moves.
+    for (int i = 0; i < attackerMoves.size(); i++) {
+      int[] currMove = attackerMoves.get(i);
+      pw.print("A");
+      pw.print(currMove[0]);
+      pw.print(currMove[1]);
+      pw.println();
+    }
+
+    // Write defender moves.
+    for (int i = 0; i < defenderMoves.size(); i++) {
+      int[] currMove = defenderMoves.get(i);
+      pw.print("D");
+      pw.print(currMove[0]);
+      pw.print(currMove[1]);
+      pw.println();
+    }
+  }
+
+  /**
+    Writes out an ASCII representation of the current board layout.
+  */
+  private void writeAsciiBoard(PrintWriter pw) {
+    for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
+      for (int c = 0; c < GRID_COL_MAX + 1; c++) {
+        if (board[r][c] == GridSquareState.ATTACKER) {
+          pw.print('A');
+        } else if (board[r][c] == GridSquareState.DEFENDER) {
+          pw.print('D');
+        } else if (board[r][c] == GridSquareState.KING) {
+          pw.print('K');
+        } else {
+          pw.print('E');
+        }
+      }
+      pw.println();
+    }
+  }
+
+  /**
     Save the current instance of the board to a text file.
     
     @param fileName String to save the board to
@@ -600,62 +615,87 @@ public class Board {
   public boolean saveBoard(String fileName) {
     File dir = new File("saved_games");
     String pathName = "saved_games/" + fileName + ".txt";
-    boolean result = true;
     
-    //create the saved_games directory if it doesn't exists
+    // Create the saved_games directory if it doesn't exist.
     if (!dir.exists()) {
       boolean success = dir.mkdir();
       if (!success) {
-        result = false;
+        return false;
       }
     }
     
     try {
       PrintWriter pw = new PrintWriter(pathName);
-      pw.println(movesWoCapture);
-      pw.println(attackerTurn);
-      pw.println(attackerMoves.size());
-      pw.println(defenderMoves.size());
-      
-      for (int i = 0; i < attackerMoves.size(); i++) {
-        int[] currMove = attackerMoves.get(i);
-        pw.print("A");
-        pw.print(currMove[0]);
-        pw.print(currMove[1]);
-        pw.println();
-      }
-      
-      for (int i = 0; i < defenderMoves.size(); i++) {
-        int[] currMove = defenderMoves.get(i);
-        pw.print("D");
-        pw.print(currMove[0]);
-        pw.print(currMove[1]);
-        pw.println();
-      }
-      
-      for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
-        for (int c = 0; c < GRID_COL_MAX + 1; c++) {
-          if (board[r][c] == GridSquareState.ATTACKER) {
-            pw.print('A');
-          } else if (board[r][c] == GridSquareState.DEFENDER) {
-            pw.print('D');
-          } else if (board[r][c] == GridSquareState.KING) {
-            pw.print('K');
-          } else {
-            pw.print('E');
-          }
-        }
-        pw.println();
-      }
+      writeState(pw);
+      writeStoredMoves(pw);
+      writeAsciiBoard(pw);
       
       pw.close();
     } catch (Exception ex) {
-      result = false;
+      return false;
     }
     
-    return result;
+    return true;
   }
   
+  /**
+    Loads basic state information from the scanner provided.
+  */
+  private void readState(Scanner sc) {
+    movesWoCapture = Integer.parseInt(sc.nextLine());
+    attackerTurn = Boolean.parseBoolean(sc.nextLine());
+  }
+
+  /**
+    Loads recorded moves from the scanner provided. Used for calculating
+    repeat moves.
+  */
+  private void readStoredMoves(Scanner sc) {
+    attackerMoves.clear();
+    defenderMoves.clear();
+
+    int numAttacks = Integer.parseInt(sc.nextLine());
+    int numDefends = Integer.parseInt(sc.nextLine());
+
+    for (int i = 0; i < numAttacks; i++) {
+      String currLine = sc.nextLine();
+      int row = Character.getNumericValue(currLine.charAt(1));
+      int col = Character.getNumericValue(currLine.charAt(2));
+      attackerMoves.add(new int[] {row, col});
+    }
+
+    for (int i = 0; i < numDefends; i++) {
+      String currLine = sc.nextLine();
+      int row = Character.getNumericValue(currLine.charAt(1));
+      int col = Character.getNumericValue(currLine.charAt(2));
+      defenderMoves.add(new int[] {row, col});
+    }
+  }
+
+  /**
+    Reads in the board layout from the scanner provided.
+  */
+  private void readAsciiBoard(Scanner sc) {
+    for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
+      String currLine = sc.nextLine();
+      for (int c = 0; c < GRID_COL_MAX + 1; c++) {
+        char currChar = currLine.charAt(c);
+
+        if (currChar == 'A') {
+          board[r][c] = GridSquareState.ATTACKER;
+        } else if (currChar == 'D') {
+          board[r][c] = GridSquareState.DEFENDER;
+        } else if (currChar == 'K') {
+          board[r][c] = GridSquareState.KING;
+          kingRow = r;
+          kingCol = c;
+        } else {
+          board[r][c] = GridSquareState.EMPTY;
+        }
+      }
+    }
+  }
+
   /**
     Takes an instance of a board from a saved game.
     
@@ -663,57 +703,21 @@ public class Board {
   */
   public boolean loadBoardFromSave(String fileName) {
     String pathName = "saved_games/" + fileName + ".txt";
-    boolean result = true;
-    attackerMoves.clear();
-    defenderMoves.clear();
     
     try {
       Scanner fileReader = new Scanner(new File(pathName));
-      movesWoCapture = Integer.parseInt(fileReader.nextLine());
-      attackerTurn = Boolean.parseBoolean(fileReader.nextLine());
-      int numAttacks = Integer.parseInt(fileReader.nextLine());
-      int numDefends = Integer.parseInt(fileReader.nextLine());
+      readState(fileReader);
+      readStoredMoves(fileReader);
+      readAsciiBoard(fileReader);
       
-      for (int i = 0; i < numAttacks; i++) {
-        String currLine = fileReader.nextLine();
-        int row = Character.getNumericValue(currLine.charAt(1));
-        int col = Character.getNumericValue(currLine.charAt(2));
-        attackerMoves.add(new int[] {row, col});
-      }
-      
-      for (int i = 0; i < numDefends; i++) {
-        String currLine = fileReader.nextLine();
-        int row = Character.getNumericValue(currLine.charAt(1));
-        int col = Character.getNumericValue(currLine.charAt(2));
-        defenderMoves.add(new int[] {row, col});
-      }
-      
-      for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
-        String currLine = fileReader.nextLine();
-        for (int c = 0; c < GRID_COL_MAX + 1; c++) {
-          char currChar = currLine.charAt(c);
-          
-          if (currChar == 'A') {
-            board[r][c] = GridSquareState.ATTACKER;
-          } else if (currChar == 'D') {
-            board[r][c] = GridSquareState.DEFENDER;
-          } else if (currChar == 'K') {
-            board[r][c] = GridSquareState.KING;
-            kingRow = r;
-            kingCol = c;
-          } else {
-            board[r][c] = GridSquareState.EMPTY;
-          }
-        }
-      }
       fileReader.close();
     } catch (FileNotFoundException ex) {
-      result = false;
+      return false;
     } catch (Exception ex) {
-      result = false;
+      return false;
     }
     
-    return result;
+    return true;
   }
 
   /**

@@ -316,23 +316,22 @@ public class Board {
   }
 
   /**
-    Attempt to move a piece.
+    Return if the selected tile holds the king.
 
-    @param row The row of the square to move to.
-    @param col The column of the square to move to.
+    @return If the selected tile holds the king.
+  */
+  private boolean isKing(int row, int col) throws GridOutOfBoundsException {
+    return square(selRow, selCol).equals(GridSquareState.KING);
+  }
 
-    @return Whether or not the selected piece was moved.
-   */
-  public boolean move(int row, int col) throws GridOutOfBoundsException {
-    // Verify there is a selection and only one axis differs.
-    if (!hasSelection() || ((row != selRow) == (col != selCol))) {
-      return false;
-    }
+  /**
+    Return if the proposed move is valid.
 
-    boolean isKing = square(selRow, selCol).equals(GridSquareState.KING);
-
+    @return If the move is valid.
+  */
+  private boolean isValidMove(int row, int col) throws GridOutOfBoundsException {
     // Make sure piece other than king isn't moving to throne or four corners.
-    if (!isKing && inSpecialLocation(row, col)) {
+    if (!isKing(row, col) && inSpecialLocation(row, col)) {
       return false;
     }
 
@@ -341,15 +340,22 @@ public class Board {
       return false;
     }
 
+    return true;
+  }
+
+  /**
+    Executes the move and tracks state related to the move.
+  */
+  private void processMove(int row, int col) throws GridOutOfBoundsException {
     // If there is no conflict, move the piece, deselect, and end turn.
     board[row][col] = square(selRow, selCol);
     board[selRow][selCol] = GridSquareState.EMPTY;
+
     // If piece is king and no conflict, update king location.
-    if (isKing) {
+    if (isKing(selRow, selCol)) {
       kingRow = row;
       kingCol = col;
     }
-
     // Track the move.
     LinkedList<int []> moves = isAttackerTurn() ? attackerMoves : defenderMoves;
     if (moves.size() > 5) {
@@ -358,17 +364,16 @@ public class Board {
     } else {
       moves.add(new int [] {row, col});
     }
+  }
 
-    // Try to capture pieces. If nothing was captured, increment the counter
-    // for moves without a capture.
-    if (!capture(row, col)) {
-      ++movesWoCapture;
-    }
-
+  /**
+    Handles if a game winning or losing move was made.
+  */
+  private void handleEndMove(int row, int col) throws GridOutOfBoundsException {
     // Check to see if move was winning move.
     if (isGameOver()) {
       //King was captured.
-    } else if (isKing && inCornerLocation(row, col)) {
+    } else if (isKing(selRow, selCol) && inCornerLocation(row, col)) {
       // If the king escaped we won.
       setGameOver(true);
     } else {
@@ -384,6 +389,35 @@ public class Board {
         setGameOver(true);
       }
     }
+  }
+
+  /**
+    Attempt to move a piece.
+
+    @param row The row of the square to move to.
+    @param col The column of the square to move to.
+
+    @return Whether or not the selected piece was moved.
+   */
+  public boolean move(int row, int col) throws GridOutOfBoundsException {
+    // Verify there is a selection and only one axis differs.
+    if (!hasSelection() || ((row != selRow) == (col != selCol))) {
+      return false;
+    }
+
+    if (!isValidMove(row, col)) {
+      return false;
+    }
+
+    processMove(row, col);
+
+    // Try to capture pieces. If nothing was captured, increment the counter
+    // for moves without a capture.
+    if (!capture(row, col)) {
+      ++movesWoCapture;
+    }
+
+    handleEndMove(row, col);
 
     // Reset selection.
     selRow = -1;

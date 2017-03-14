@@ -181,7 +181,7 @@ public class Board extends BoardLayout {
         // Ignore the selected square.
         if (r != selRow || c != selCol) {
           // If the square is not empty, stop walking.
-          if (!square(r, c).equals(GridSquareState.EMPTY)) {
+          if (!square(r, c).isEmpty()) {
             return false;
           }
         }
@@ -242,22 +242,13 @@ public class Board extends BoardLayout {
   }
 
   /**
-    Return if the selected tile holds the king.
-
-    @return If the selected tile holds the king.
-  */
-  private boolean isKing(int row, int col) throws GridOutOfBoundsException {
-    return square(selRow, selCol).equals(GridSquareState.KING);
-  }
-
-  /**
     Return if the proposed move is valid.
 
     @return If the move is valid.
   */
   private boolean isValidMove(int row, int col) throws GridOutOfBoundsException {
     // Make sure piece other than king isn't moving to throne or four corners.
-    if (!isKing(row, col) && inSpecialLocation(row, col)) {
+    if (!square(row, col).isKing() && inSpecialLocation(row, col)) {
       return false;
     }
 
@@ -278,7 +269,7 @@ public class Board extends BoardLayout {
     board[selRow][selCol] = GridSquareState.EMPTY;
 
     // If piece is king and no conflict, update king location.
-    if (isKing(selRow, selCol)) {
+    if (square(selRow, selCol).isKing()) {
       kingRow = row;
       kingCol = col;
     }
@@ -299,7 +290,7 @@ public class Board extends BoardLayout {
     // Check to see if move was winning move.
     if (isGameOver()) {
       //King was captured.
-    } else if (isKing(selRow, selCol) && inCornerLocation(row, col)) {
+    } else if (square(selRow, selCol).isKing() && inCornerLocation(row, col)) {
       // If the king escaped we won.
       setGameOver(true);
     } else {
@@ -384,10 +375,10 @@ public class Board extends BoardLayout {
     //Check if king is not near edge of board.
     if (kingRow != 0 && kingRow != 10 && kingCol != 0 && kingCol != 10) {
       // Check if king is surrounded by attackers.
-      if (square(kingRow - 1, kingCol).equals(GridSquareState.ATTACKER) 
-            && square(kingRow + 1, kingCol).equals(GridSquareState.ATTACKER)
-            && square(kingRow, kingCol - 1).equals(GridSquareState.ATTACKER) 
-            && square(kingRow, kingCol + 1).equals(GridSquareState.ATTACKER)) {
+      if (square(kingRow - 1, kingCol).isAttacking()
+            && square(kingRow + 1, kingCol).isAttacking()
+            && square(kingRow, kingCol - 1).isAttacking() 
+            && square(kingRow, kingCol + 1).isAttacking()) {
         captured = true;
       }
     }  
@@ -593,11 +584,11 @@ public class Board extends BoardLayout {
   private void writeAsciiBoard(PrintWriter pw) {
     for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
       for (int c = 0; c < GRID_COL_MAX + 1; c++) {
-        if (board[r][c] == GridSquareState.ATTACKER) {
+        if (board[r][c].isAttacking()) {
           pw.print('A');
-        } else if (board[r][c] == GridSquareState.DEFENDER) {
+        } else if (board[r][c].isDefender()) {
           pw.print('D');
-        } else if (board[r][c] == GridSquareState.KING) {
+        } else if (board[r][c].isKing()) {
           pw.print('K');
         } else {
           pw.print('E');

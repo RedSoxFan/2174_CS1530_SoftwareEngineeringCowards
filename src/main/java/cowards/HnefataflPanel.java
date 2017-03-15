@@ -28,7 +28,7 @@ public class HnefataflPanel extends JPanel {
       }
     });
 
-    // Initialize timer to repaint
+    // Initialize timer to repaint.
     new java.util.Timer().scheduleAtFixedRate(new java.util.TimerTask() {
       public void run() {
         repaint();
@@ -54,7 +54,7 @@ public class HnefataflPanel extends JPanel {
 
         try {
           if (board.hasSelection()) {
-            // Attempt to move. If it fails, try changing the selection
+            // Attempt to move. If it fails, try changing the selection.
             if (!board.move(row, col)) {
               board.select(row, col);
             }
@@ -63,7 +63,7 @@ public class HnefataflPanel extends JPanel {
           }
         } catch (GridOutOfBoundsException ex) {
           // Something went wrong with the geometry of the board painted.
-          // Since this should not happen, just log a warning
+          // Since this should not happen, just log a warning.
           System.out.println("WARNING: The board geometry is not synced");
         }
       } else if (newGame != null && newGame.contains(event.getPoint())) {
@@ -117,43 +117,43 @@ public class HnefataflPanel extends JPanel {
     @param graph Graphics object used to draw the screen.
    */
   public void paintComponent(Graphics graph) {
-    // Wipe the buffer with black
+    // Wipe the buffer with black.
     graph.setColor(Color.BLACK);
     graph.fillRect(0, 0, getWidth(), getHeight());
 
-    // Set the minimum grid margins
+    // Set the minimum grid margins.
     int marginLeft = 10;
     int marginRight = 10;
     int marginTop = 100;
     int marginBottom = 100;
 
-    // Get the maximum size of the grid
+    // Get the maximum size of the grid.
     int maxWidth = getWidth() - marginLeft - marginRight;
     int maxHeight = getHeight() - marginTop - marginBottom;
 
-    // Determine the bounds of the grid
+    // Determine the bounds of the grid.
     int squares = BoardLayout.GRID_COL_MAX + 1;
     int gridSize = Math.min(maxWidth, maxHeight) / squares;
     int gridX = marginLeft + (maxWidth / 2 - (gridSize * squares) / 2);
     int gridY = marginTop + (maxHeight / 2 - (gridSize * squares) / 2);
     grid = new Rectangle(gridX, gridY, gridSize * squares, gridSize * squares);
 
-    // Paint the board
+    // Paint the board.
     paintBoard(graph, grid);
 
-    // Paint the title
+    // Paint the title.
     Rectangle title = new Rectangle(grid.x, 0, grid.width, grid.y);
     paintTitle(graph, title);
     
-    // Determine the available height for the bottom sections
+    // Determine the available height for the bottom sections.
     int bottom = (int) grid.getMaxY();
     int remaining = getHeight() - bottom;
 
-    // Bottom -> Status
+    // Bottom -> Status.
     Rectangle status = new Rectangle(grid.x, bottom, grid.width, remaining / 2);
     paintStatus(graph, status);
 
-    // Bottom -> Buttons
+    // Bottom -> Buttons.
     int statusBot = (int) status.getMaxY();
     Rectangle buttons = new Rectangle(grid.x, statusBot, grid.width, remaining / 2);
     paintButtons(graph, buttons);
@@ -231,7 +231,7 @@ public class HnefataflPanel extends JPanel {
     @param bounds The bounds to paint in.
    */
   private void paintStatus(Graphics graph, Rectangle bounds) {
-    // Determine the status
+    // Determine the status.
     String turn;
     if (board.isDraw()) {
       turn = "Draw";
@@ -240,7 +240,7 @@ public class HnefataflPanel extends JPanel {
       turn += board.isGameOver() ? "Won" : "Turn";
     }
     
-    // Draw the text
+    // Draw the text.
     graph.setColor(Color.WHITE);
     drawText(graph, turn, bounds, true);
   }
@@ -252,27 +252,27 @@ public class HnefataflPanel extends JPanel {
     @param bounds The bounds to paint in.
    */
   private void paintButtons(Graphics graph, Rectangle bounds) {
-    // Paint buttons
+    // Paint buttons.
     int buttonX = bounds.x;
     int buttonWidth = bounds.width / 4;
     setMaxFontSize(graph, "MMMMMMMMM", buttonWidth, bounds.height);
 
-    // New Game
+    // New Game.
     newGame = new Rectangle(buttonX, bounds.y, buttonWidth, bounds.height);
     drawText(graph, "New Game", newGame, false);
     buttonX += buttonWidth;
 
-    // Save
+    // Save.
     saveGame = new Rectangle(buttonX, bounds.y, buttonWidth, bounds.height);
     drawText(graph, "Save Game", saveGame, false);
     buttonX += buttonWidth;
     
-    // Load
+    // Load.
     loadGame = new Rectangle(buttonX, bounds.y, buttonWidth, bounds.height);
     drawText(graph, "Load Game", loadGame, false);
     buttonX += buttonWidth;
  
-    // Exit
+    // Exit.
     exitGame = new Rectangle(buttonX, bounds.y, buttonWidth, bounds.height);
     drawText(graph, "Exit Game", exitGame, false);
     buttonX += buttonWidth;
@@ -292,15 +292,15 @@ public class HnefataflPanel extends JPanel {
   private void drawSquare(Graphics graph, Rectangle bounds, int row, int col,
       int margin, boolean fill) {
 
-    // Determine the size of a grid square
+    // Determine the size of a grid square.
     int squareSize = bounds.width / (BoardLayout.GRID_COL_MAX + 1);
 
-    // Determine the bounds of the square to paint
+    // Determine the bounds of the square to paint.
     int xloc = bounds.x + squareSize * col + margin;
     int yloc = bounds.y + squareSize * row + margin;
     int size = squareSize - margin - margin;
 
-    // Paint
+    // Paint.
     if (fill) {
       graph.fillRect(xloc, yloc, size, size);
     } else {
@@ -317,7 +317,7 @@ public class HnefataflPanel extends JPanel {
     @param maxfont Whether or not to set the maximum font size possible.
    **/
   private void drawText(Graphics graph, String text, Rectangle bounds, boolean maxfont) {
-    // If desired, set the maximum font size that fits the bounds
+    // If desired, set the maximum font size that fits the bounds.
     if (maxfont) {
       setMaxFontSize(graph, text, bounds.width, bounds.height);
     }
@@ -327,11 +327,11 @@ public class HnefataflPanel extends JPanel {
     int width = fm.stringWidth(text);
     int height = fm.getHeight();
 
-    // Get the top left x and bottom left y coordinates
+    // Get the top left x and bottom left y coordinates.
     int xloc = bounds.x + bounds.width / 2 - width / 2;
     int yloc = bounds.y + bounds.height / 2 - height / 2 + fm.getAscent();
 
-    // Paint the text
+    // Paint the text.
     graph.drawString(text, xloc, yloc);
   }
 

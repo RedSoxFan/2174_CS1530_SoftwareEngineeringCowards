@@ -8,37 +8,37 @@ public class BoardLayout {
     EMPTY, KING, DEFENDER, ATTACKER;
 
     /**
-     * Convience method for checking whether or not the piece is on the
-     * attacking side.
+       Convenience method for checking whether or not the piece is on the
+       attacking side.
      */
     public boolean isAttacking() {
       return this.equals(ATTACKER);
     }
 
     /**
-     * Convience method for checking whether or not the piece is a defender.
+       Convenience method for checking whether or not the piece is a defender.
      */
     public boolean isDefender() {
       return this.equals(DEFENDER);
     }
 
     /**
-     * Convience method for checking whether or not the piece is a king.
+       Convenience method for checking whether or not the piece is a king.
      */
     public boolean isKing() {
       return this.equals(KING);
     }
 
     /**
-     * Convience method for checking whether or not the piece is on the defending
-     * side. This includes both the defenders and the king.
+       Convenience method for checking whether or not the piece is on the defending
+       side. This includes both the defenders and the king.
      */
     public boolean isDefending() {
       return isDefender() || isKing();
     }
 
     /**
-     * Convience method for checking whether or not the piece is empty.
+       Convenience method for checking whether or not the piece is empty.
      */
     public boolean isEmpty() {
       return this.equals(EMPTY);

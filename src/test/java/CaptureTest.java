@@ -162,7 +162,7 @@ public class CaptureTest {
   }
 
   /**
-   * Test horizontal capture between an attacker and a special.
+     Test horizontal capture between an attacker and a special square.
    */
   @Test
   public void captureHorizontalAttackerAndSpecialTest() {
@@ -191,7 +191,7 @@ public class CaptureTest {
   }
 
   /**
-   * Test vertical capture between an attacker and a special.
+     Test vertical capture between an attacker and a special square.
    */
   @Test
   public void captureVerticalAttackerAndSpecialTest() {
@@ -220,7 +220,7 @@ public class CaptureTest {
   }
 
   /**
-   * Test horizontal capture between a defender and a special.
+     Test horizontal capture between a defender and a special square.
    */
   @Test
   public void captureHorizontalDefenderAndSpecialTest() {
@@ -246,7 +246,7 @@ public class CaptureTest {
   }
 
   /**
-   * Test vertical capture between a defender and a special.
+     Test vertical capture between a defender and a special square.
    */
   @Test
   public void captureVerticalDefenderAndSpecialTest() {
@@ -272,7 +272,7 @@ public class CaptureTest {
   }
  
   /**
-    Test horizontal capture between a king and a special.
+    Test horizontal capture between a king and a special square.
    */
   @Test
   public void captureHorizontalKingAndSpecialTest() {
@@ -339,7 +339,7 @@ public class CaptureTest {
 
   /**
     Test to make sure two attackers cannot horizontally capture
-    a King.
+    a king.
    */
   @Test
   public void noCaptureKingHorizontalTwoAttackersTest() {
@@ -372,7 +372,7 @@ public class CaptureTest {
 
   /**
     Test to make sure two attackers cannot vertically capture
-    a King.
+    a king.
    */
   @Test
   public void noCaptureKingVerticalTwoAttackersTest() {
@@ -404,8 +404,8 @@ public class CaptureTest {
   }
 
   /**
-    Test to make sure an attacker and a special cannot horizontally
-    capture a King.
+    Test to make sure an attacker and a special square cannot horizontally
+    capture a king.
    */
   @Test
   public void noCaptureKingHorizontalAttackerAndSpecialTest() {
@@ -437,8 +437,8 @@ public class CaptureTest {
   }
 
   /**
-    Test to make sure an attacker and a special cannot vertically
-    capturea King.
+    Test to make sure an attacker and a special square cannot vertically
+    capture a king.
    */
   @Test
   public void noCaptureKingVerticalAttackerAndSpecialTest() {
@@ -535,7 +535,7 @@ public class CaptureTest {
   }
   
   /**
-    Test to make sure king can be captured.
+    Test to make sure the king can be captured.
    */
   @Test
   public void captureKingBasic() {
@@ -568,7 +568,7 @@ public class CaptureTest {
   }
 
   /**
-    Test to make sure king can be captured at throne.
+    Test to make sure the king can be captured at the throne.
    */
   @Test
   public void captureKingAtThrone() {

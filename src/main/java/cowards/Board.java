@@ -296,7 +296,7 @@ public class Board extends BoardLayout {
     // Check to see if move was winning move.
     if (isGameOver()) {
       // King was captured.
-    } else if (square(selRow, selCol).isKing() && inCornerLocation(row, col)) {
+    } else if (square(row, col).isKing() && inCornerLocation(row, col)) {
       // If the king escaped we won.
       setGameOver(true);
     } else {

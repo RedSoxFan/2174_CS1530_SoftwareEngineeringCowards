@@ -836,29 +836,36 @@ public class MovementTest {
   }
 
   /**
+   * Retrieve a board with only one king.
+   */
+  private Board getBoardWithOneKing() throws BadAsciiBoardFormatException {
+    Board board = new Board();
+    board.loadBoardFromChar(new char[][]{
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {'K', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+    });
+    return board;
+  }
+
+  /**
      Verify that the king can move to the uppper left corner.
   */
   @Test
   public void moveKingToTopLeft() {
-    Board board = new Board();
-
     try {
-      board.loadBoardFromChar(new char[][]{
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {'K', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
-      });
+      Board board = getBoardWithOneKing();
       board.setAttackerTurn(false);
 
-      board.select(1, 0);
+      board.select(5, 0);
       assertTrue(board.move(0, 0));
     } catch (BadAsciiBoardFormatException exception) {
       fail();
@@ -877,25 +884,16 @@ public class MovementTest {
   */
   @Test
   public void moveKingToTopRight() {
-    Board board = new Board();
-
     try {
-      board.loadBoardFromChar(new char[][]{
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'K'},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
-      });
+      Board board = getBoardWithOneKing();
       board.setAttackerTurn(false);
 
-      board.select(1, 10);
+      board.select(5, 0);
+      board.move(5, 10);
+     
+      board.setAttackerTurn(false);
+
+      board.select(5, 10);
       assertTrue(board.move(0, 10));
     } catch (BadAsciiBoardFormatException exception) {
       fail();
@@ -914,25 +912,11 @@ public class MovementTest {
   */
   @Test
   public void moveKingToBottomLeft() {
-    Board board = new Board();
-
     try {
-      board.loadBoardFromChar(new char[][]{
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {'K', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
-      });
+      Board board = getBoardWithOneKing();
       board.setAttackerTurn(false);
 
-      board.select(9, 0);
+      board.select(5, 0);
       assertTrue(board.move(10, 0));
     } catch (BadAsciiBoardFormatException exception) {
       fail();
@@ -951,25 +935,16 @@ public class MovementTest {
   */
   @Test
   public void moveKingToBottomRight() {
-    Board board = new Board();
-
     try {
-      board.loadBoardFromChar(new char[][]{
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'K'},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
-      });
+      Board board = getBoardWithOneKing();
       board.setAttackerTurn(false);
 
-      board.select(9, 10);
+      board.select(5, 0);
+      board.move(5, 10);
+
+      board.setAttackerTurn(false);
+
+      board.select(5, 10);
       assertTrue(board.move(10, 10));
     } catch (BadAsciiBoardFormatException exception) {
       fail();
@@ -988,26 +963,147 @@ public class MovementTest {
   */
   @Test
   public void moveKingToThrone() {
-    Board board = new Board();
-
     try {
-      board.loadBoardFromChar(new char[][]{
-        {' ', ' ', ' ', ' ', ' ', 'K', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
-      });
+      Board board = getBoardWithOneKing();
       board.setAttackerTurn(false);
 
-      board.select(0, 5);
+      board.select(5, 0);
       assertTrue(board.move(5, 5));
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen.
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify that the king causes a game over when moved the top left.
+  */
+  @Test
+  public void gameKingToTopLeft() {
+    try {
+      Board board = getBoardWithOneKing();
+      board.setAttackerTurn(false);
+
+      board.select(5, 0);
+      board.move(0, 0);
+
+      assertTrue(board.isGameOver());
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen.
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify that the king causes a game over when moved to the top right.
+  */
+  @Test
+  public void gameKingToTopRight() {
+    try {
+      Board board = getBoardWithOneKing();
+      board.setAttackerTurn(false);
+
+      board.select(5, 0);
+      board.move(5, 10);
+     
+      board.setAttackerTurn(false);
+
+      board.select(5, 10);
+      board.move(0, 10);
+
+      assertTrue(board.isGameOver());
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen.
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify that the king causes a game over when moved to the bottom left.
+  */
+  @Test
+  public void gameKingToBottomLeft() {
+    try {
+      Board board = getBoardWithOneKing();
+      board.setAttackerTurn(false);
+
+      board.select(5, 0);
+      board.move(10, 0);
+
+      assertTrue(board.isGameOver());
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen.
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify that the king causes a game over when moved to the bottom right.
+  */
+  @Test
+  public void gameKingToBottomRight() {
+    try {
+      Board board = getBoardWithOneKing();
+      board.setAttackerTurn(false);
+
+      board.select(5, 0);
+      board.move(5, 10);
+
+      board.setAttackerTurn(false);
+
+      board.select(5, 10);
+      board.move(10, 10);
+
+      assertTrue(board.isGameOver());
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen.
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify that the king does not cause a game over when moved to the throne.
+  */
+  @Test
+  public void noGameKingToThrone() {
+    try {
+      Board board = getBoardWithOneKing();
+      board.setAttackerTurn(false);
+
+      board.select(5, 0);
+      board.move(5, 5);
+
+      assertFalse(board.isGameOver());
     } catch (BadAsciiBoardFormatException exception) {
       fail();
     } catch (GridOutOfBoundsException ex) {

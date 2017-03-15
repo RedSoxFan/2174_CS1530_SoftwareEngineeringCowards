@@ -15,15 +15,15 @@ public class Hnefatafl extends JFrame {
     Constructor.
    */
   public Hnefatafl() {
-    // Set window properties
+    // Set window properties.
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setTitle("Copenhagen Hnefatafl 11x11");
 
-    // Create a panel
+    // Create a panel.
     game = new HnefataflPanel();
     add(game);
 
-    // Set size and show
+    // Set size and display game.
     setMinimumSize(new Dimension(480, 640));
     setSize(new Dimension(570, 750));
     setVisible(true);

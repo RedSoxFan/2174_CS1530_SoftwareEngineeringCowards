@@ -262,6 +262,9 @@ public class Board extends BoardLayout {
 
   /**
     Executes the move and tracks state related to the move.
+
+    @param row The row of the square.
+    @param col The column of the square.
   */
   private void processMove(int row, int col) throws GridOutOfBoundsException {
     // If there is no conflict, move the piece, deselect, and end turn.
@@ -285,11 +288,14 @@ public class Board extends BoardLayout {
 
   /**
     Handles if a game winning or losing move was made.
+
+    @param row The row of the square.
+    @param col The column of the square.
   */
   private void handleEndMove(int row, int col) throws GridOutOfBoundsException {
     // Check to see if move was winning move.
     if (isGameOver()) {
-      //King was captured.
+      // King was captured.
     } else if (square(selRow, selCol).isKing() && inCornerLocation(row, col)) {
       // If the king escaped we won.
       setGameOver(true);
@@ -301,7 +307,7 @@ public class Board extends BoardLayout {
         setGameOver(true);
       }
 
-      // If made 50 moves without a capture, end the game due to a draw.
+      // If we made 50 moves without a capture, end the game due to a draw.
       if (isDraw()) {
         setGameOver(true);
       }

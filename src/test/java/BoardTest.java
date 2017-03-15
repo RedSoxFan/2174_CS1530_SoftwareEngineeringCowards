@@ -89,7 +89,7 @@ public class BoardTest {
   public void badBoardFormatTest() {
     Board board = new Board();
 
-    // This board is bad because it doesn't fill the board properly.
+    // This board is invalid because it doesn't fill the board properly.
     char[][] badBoard = new char[][]{
         {' ', ' ', ' '},
         {' ', ' ', ' '},
@@ -106,7 +106,7 @@ public class BoardTest {
     try {
       board.loadBoardFromChar(badBoard);
     } catch (BadAsciiBoardFormatException exception) {
-      // pass
+      // Pass.
       return;
     }
 
@@ -119,7 +119,7 @@ public class BoardTest {
   @Test
   public void boardGridNotOutOfBoundsTest() {
     Board board = new Board();
-    // Make sure the good edge case passes.
+    // Make sure the valid edge case passes.
     try {
       board.square(Board.GRID_ROW_MAX, Board.GRID_COL_MAX);
     } catch (GridOutOfBoundsException exception) {
@@ -140,7 +140,7 @@ public class BoardTest {
       try {
         board.square(0, -1);
       } catch (GridOutOfBoundsException nestedException) {
-        // pass
+        // Pass.
         return;
       }
     }
@@ -154,7 +154,7 @@ public class BoardTest {
   @Test
   public void boardGridOutOfBoundsUpperTest() {
     Board board = new Board();
-    // Make sure the good edge case passes.
+    // Make sure the valid edge case passes.
     try {
       board.square(Board.GRID_ROW_MAX, Board.GRID_COL_MAX);
     } catch (GridOutOfBoundsException exception) {
@@ -168,7 +168,7 @@ public class BoardTest {
       try {
         board.square(0, Board.GRID_COL_MAX + 1);
       } catch (GridOutOfBoundsException nestedException) {
-        // pass
+        // Pass.
         return;
       }
     }

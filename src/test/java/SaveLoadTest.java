@@ -38,7 +38,7 @@ public class SaveLoadTest {
   }
   
   /**
-    Test loading a known game save file and ensuring the contents are read properly.
+    Test loading a known save file and ensuring the contents are read properly.
    */
   @Test
   public void loadTest() {

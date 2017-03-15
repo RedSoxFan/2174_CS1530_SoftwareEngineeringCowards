@@ -1,5 +1,6 @@
 import static org.junit.Assert.*;
 
+import cowards.BadAsciiBoardFormatException;
 import cowards.Board;
 import cowards.GridOutOfBoundsException;
 import org.junit.Test;
@@ -827,6 +828,287 @@ public class MovementTest {
     } catch (GridOutOfBoundsException ex) {
       // This should not happen.
       System.out.println("Movement failed due to GridOutOfBoundsException");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+   * Retrieve a board with only one king.
+   */
+  private Board getBoardWithOneKing() throws BadAsciiBoardFormatException {
+    Board board = new Board();
+    board.loadBoardFromChar(new char[][]{
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {'K', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+    });
+    return board;
+  }
+
+  /**
+     Verify that the king can move to the uppper left corner.
+  */
+  @Test
+  public void moveKingToTopLeft() {
+    try {
+      Board board = getBoardWithOneKing();
+      board.setAttackerTurn(false);
+
+      board.select(5, 0);
+      assertTrue(board.move(0, 0));
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen.
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify that the king can move to the uppper right corner.
+  */
+  @Test
+  public void moveKingToTopRight() {
+    try {
+      Board board = getBoardWithOneKing();
+      board.setAttackerTurn(false);
+
+      board.select(5, 0);
+      board.move(5, 10);
+     
+      board.setAttackerTurn(false);
+
+      board.select(5, 10);
+      assertTrue(board.move(0, 10));
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen.
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify that the king can move to the lower left corner.
+  */
+  @Test
+  public void moveKingToBottomLeft() {
+    try {
+      Board board = getBoardWithOneKing();
+      board.setAttackerTurn(false);
+
+      board.select(5, 0);
+      assertTrue(board.move(10, 0));
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen.
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify that the king can move to the lower right corner.
+  */
+  @Test
+  public void moveKingToBottomRight() {
+    try {
+      Board board = getBoardWithOneKing();
+      board.setAttackerTurn(false);
+
+      board.select(5, 0);
+      board.move(5, 10);
+
+      board.setAttackerTurn(false);
+
+      board.select(5, 10);
+      assertTrue(board.move(10, 10));
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen.
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify that the king can move to the throne.
+  */
+  @Test
+  public void moveKingToThrone() {
+    try {
+      Board board = getBoardWithOneKing();
+      board.setAttackerTurn(false);
+
+      board.select(5, 0);
+      assertTrue(board.move(5, 5));
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen.
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify that the king causes a game over when moved the top left.
+  */
+  @Test
+  public void gameKingToTopLeft() {
+    try {
+      Board board = getBoardWithOneKing();
+      board.setAttackerTurn(false);
+
+      board.select(5, 0);
+      board.move(0, 0);
+
+      assertTrue(board.isGameOver());
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen.
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify that the king causes a game over when moved to the top right.
+  */
+  @Test
+  public void gameKingToTopRight() {
+    try {
+      Board board = getBoardWithOneKing();
+      board.setAttackerTurn(false);
+
+      board.select(5, 0);
+      board.move(5, 10);
+     
+      board.setAttackerTurn(false);
+
+      board.select(5, 10);
+      board.move(0, 10);
+
+      assertTrue(board.isGameOver());
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen.
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify that the king causes a game over when moved to the bottom left.
+  */
+  @Test
+  public void gameKingToBottomLeft() {
+    try {
+      Board board = getBoardWithOneKing();
+      board.setAttackerTurn(false);
+
+      board.select(5, 0);
+      board.move(10, 0);
+
+      assertTrue(board.isGameOver());
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen.
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify that the king causes a game over when moved to the bottom right.
+  */
+  @Test
+  public void gameKingToBottomRight() {
+    try {
+      Board board = getBoardWithOneKing();
+      board.setAttackerTurn(false);
+
+      board.select(5, 0);
+      board.move(5, 10);
+
+      board.setAttackerTurn(false);
+
+      board.select(5, 10);
+      board.move(10, 10);
+
+      assertTrue(board.isGameOver());
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen.
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    }
+
+    // Pass.
+    return;
+  }
+
+  /**
+     Verify that the king does not cause a game over when moved to the throne.
+  */
+  @Test
+  public void noGameKingToThrone() {
+    try {
+      Board board = getBoardWithOneKing();
+      board.setAttackerTurn(false);
+
+      board.select(5, 0);
+      board.move(5, 5);
+
+      assertFalse(board.isGameOver());
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException ex) {
+      // This should not happen.
+      System.out.println("A GridOutOfBoundsException has been thrown");
       fail();
     }
 

@@ -248,7 +248,7 @@ public class Board extends BoardLayout {
   */
   private boolean isValidMove(int row, int col) throws GridOutOfBoundsException {
     // Make sure piece other than king isn't moving to throne or four corners.
-    if (!square(row, col).isKing() && inSpecialLocation(row, col)) {
+    if (!square(selRow, selCol).isKing() && inSpecialLocation(row, col)) {
       return false;
     }
 

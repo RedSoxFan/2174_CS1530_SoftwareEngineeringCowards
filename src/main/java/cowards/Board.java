@@ -127,7 +127,7 @@ public class Board extends BoardLayout {
 
     @return Whether or not the square is a corner.
     */
-  private boolean inCornerLocation(int row, int col) {
+  public boolean inCornerLocation(int row, int col) {
     for (int i = 0; i < CORNER_SQUARE_POSITIONS.length; i++) {
       int cornerRow = CORNER_SQUARE_POSITIONS[i][0];
       int cornerCol = CORNER_SQUARE_POSITIONS[i][1];
@@ -147,7 +147,7 @@ public class Board extends BoardLayout {
 
     @return Whether or not the square is special.
     */
-  private boolean inSpecialLocation(int row, int col) {
+  public boolean inSpecialLocation(int row, int col) {
     for (int i = 0; i < SPECIAL_SQUARE_POSITIONS.length; i++) {
       int specialRow = SPECIAL_SQUARE_POSITIONS[i][0];
       int specialCol = SPECIAL_SQUARE_POSITIONS[i][1];
@@ -167,7 +167,7 @@ public class Board extends BoardLayout {
 
     @return Whether or not the path is clear.
     */
-  private boolean isPathClear(int row, int col) throws GridOutOfBoundsException {
+  public boolean isPathClear(int row, int col) throws GridOutOfBoundsException {
     // Determine the top, bottom, left, and right.
     // Either top and bottom or left and right will be the same.
     int top    = (row < selRow) ? row    : selRow;

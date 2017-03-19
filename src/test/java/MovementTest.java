@@ -1555,4 +1555,140 @@ public class MovementTest {
     // Pass.
     return;
   }
+
+  /**
+    Test that corners are properly identified by inCornerLocation().
+   */
+  @Test
+  public void identifyCornersTest() {
+    Board board = new Board();
+    assertTrue(board.inCornerLocation(0,0));
+    assertTrue(board.inCornerLocation(10,0));
+    assertTrue(board.inCornerLocation(0,10));
+    assertTrue(board.inCornerLocation(10,10));
+  }
+
+  /**
+    Test that special squares are properly identified by inSpecialLocation().
+   */
+  @Test
+  public void identifySpecialTest() {
+    Board board = new Board();
+    assertTrue(board.inSpecialLocation(0,0));
+    assertTrue(board.inSpecialLocation(5,5));
+    assertTrue(board.inSpecialLocation(10,0));
+    assertTrue(board.inSpecialLocation(0,10));
+    assertTrue(board.inSpecialLocation(10,10));
+  }
+
+  /**
+    Test that isPathClear() correctly identifies when the path isn't clear when
+    an attacker is immediately adjacent.
+   */
+  @Test
+  public void pathNotClearAdjacentTest() {
+    Board board = new Board();
+    try {
+      board.loadBoardFromChar(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'D', 'K', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      board.setAttackerTurn(false);
+      board.select(8,2);
+
+      assertFalse(board.isPathClear(6,2));
+      assertFalse(board.isPathClear(10,2));
+      assertFalse(board.isPathClear(8,0));
+      assertFalse(board.isPathClear(8,4));
+    } catch (GridOutOfBoundsException gex) {
+      fail();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
+  }
+
+  /**
+    Test that isPathClear() correctly identifies when the path isn't clear when
+    an attacker is on the target square.
+   */
+  @Test
+  public void pathNotClearOnTargetTest() {
+    Board board = new Board();
+    try {
+      board.loadBoardFromChar(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'D', ' ', 'K', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      board.setAttackerTurn(false);
+      board.select(8,2);
+
+      assertFalse(board.isPathClear(6,2));
+      assertFalse(board.isPathClear(10,2));
+      assertFalse(board.isPathClear(8,0));
+      assertFalse(board.isPathClear(8,4));
+    } catch (GridOutOfBoundsException gex) {
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    } catch (BadAsciiBoardFormatException bex) {
+      System.out.println("A BadAsciiBoardFormatException has been thrown");
+      fail();
+    }
+  }
+
+  /**
+    Test that isPathClear() correctly identifies when the path is clear.
+   */
+  @Test
+  public void pathClearTest() {
+    Board board = new Board();
+    try {
+      board.loadBoardFromChar(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'K', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      board.setAttackerTurn(false);
+      board.select(8,2);
+
+      assertTrue(board.isPathClear(6,2));
+      assertTrue(board.isPathClear(10,2));
+      assertTrue(board.isPathClear(8,0));
+      assertTrue(board.isPathClear(8,4));
+    } catch (GridOutOfBoundsException gex) {
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    } catch (BadAsciiBoardFormatException bex) {
+      System.out.println("A BadAsciiBoardFormatException has been thrown");
+      fail();
+    }
+  }
 }

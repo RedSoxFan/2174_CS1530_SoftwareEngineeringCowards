@@ -272,10 +272,11 @@ public class Board extends BoardLayout {
     board[selRow][selCol] = GridSquareState.EMPTY;
 
     // If piece is king and no conflict, update king location.
-    if (square(selRow, selCol).isKing()) {
+    if (square(row, col).isKing()) {
       kingRow = row;
       kingCol = col;
     }
+
     // Track the move.
     LinkedList<int []> moves = isAttackerTurn() ? attackerMoves : defenderMoves;
     if (moves.size() > 5) {

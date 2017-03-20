@@ -7,7 +7,7 @@ import java.util.*;
 import javax.swing.*;
 
 public class Board extends BoardLayout {
-  private GridSquareState[][] board = new GridSquareState[11][11];
+  private GridSquareState[][] board;
   private boolean attackerTurn = true;
   private boolean gameOver = false;
 
@@ -30,9 +30,85 @@ public class Board extends BoardLayout {
     Constructor.
   */
   public Board() {
+    board         = new GridSquareState[11][11];
     attackerMoves = new LinkedList<int []>();
     defenderMoves = new LinkedList<int []>();
     reset();
+  }
+
+  /**
+    Copy constructor.
+   */
+  public Board(Board orig) {
+    board          = orig.getBoard();
+    attackerMoves  = orig.getAttMoves();
+    defenderMoves  = orig.getDefMoves();
+    movesWoCapture = orig.getMovesWoCapture();
+    kingRow        = orig.getKingRow();
+    kingCol        = orig.getKingCol();
+    attackerTurn   = orig.isAttackerTurn();
+    gameOver       = orig.isGameOver();
+  }
+
+  /**
+    Returns a copy of the LinkedList describing the recent attacker move
+    history.
+   */
+  public LinkedList<int []> getAttMoves() {
+    LinkedList<int []> ret = new LinkedList<int []>();
+    for (int i = 0; i < attackerMoves.size(); ++i) {
+      ret.add(attackerMoves.get(i).clone());
+    }
+
+    return ret;
+  }
+
+  /**
+    Returns a copy of the LinkedList describing the recent defender move
+    history.
+   */
+  public LinkedList<int []> getDefMoves() {
+    LinkedList<int []> ret = new LinkedList<int []>();
+    for (int i = 0; i < defenderMoves.size(); ++i) {
+      ret.add(defenderMoves.get(i).clone());
+    }
+
+    return ret;
+  }
+
+  /**
+    Returns a copy of the internal board.
+   */
+  public GridSquareState[][] getBoard() {
+    GridSquareState[][] ret = new GridSquareState[11][11];
+    for (int i = 0; i <= GRID_ROW_MAX; ++i) {
+      for (int j = 0; j <= GRID_COL_MAX; ++j) {
+        ret[i][j] = board[i][j];
+      }
+    }
+
+    return ret;
+  }
+
+  /**
+    Return the number of moves without capture.
+   */
+  public int getMovesWoCapture() {
+    return movesWoCapture;
+  }
+
+  /**
+    Return the king's row.
+   */
+  public int getKingRow() {
+    return kingRow;
+  }
+
+  /**
+    Get the king's column.
+   */
+  public int getKingCol() {
+    return kingCol;
   }
 
   /**

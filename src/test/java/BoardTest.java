@@ -4,6 +4,8 @@ import cowards.BadAsciiBoardFormatException;
 import cowards.Board;
 import cowards.GridOutOfBoundsException;
 
+import java.util.LinkedList;
+
 import org.junit.Test;
 
 public class BoardTest {
@@ -204,5 +206,94 @@ public class BoardTest {
     // Try setting the state.
     board.setAttackerTurn(false);
     assertFalse(board.isAttackerTurn());
+  }
+
+  /**
+    Helper method to cut down on duplication.
+   */
+  private void doCopyTestMoves(Board board) throws GridOutOfBoundsException {
+    board.select(5, 9);
+    board.move(5, 8);
+
+    board.select(5, 7);
+    board.move(4, 7);
+
+    board.select(7, 10);
+    board.move(8, 10);
+
+    board.select(5, 6);
+    board.move(5, 7);
+
+    board.select(8, 10);
+    board.move(9, 10);
+
+    board.select(5, 5);
+    board.move(5, 6);
+  }
+
+  /**
+    Test that the copy constructor copies all of the state correctly.
+   */
+  @Test
+  public void copyTest() {
+    Board board = new Board();
+
+    try {
+      /* Move just enough to properly test the copy constructor. */
+      doCopyTestMoves(board);
+
+      Board copy = new Board(board);
+
+      /* Check all state that should be copied. */
+
+      /* Spot check board config. */
+      assertTrue(copy.square(5, 6).isKing());
+      assertTrue(copy.square(9, 10).isAttacking());
+
+      /* Make sure the attacker and defender move lists are preserved. */
+      LinkedList<int []> att = copy.getAttMoves();
+      LinkedList<int []> attOrig = board.getAttMoves();
+      for (int i = 0; i < attOrig.size(); ++i) {
+        assertArrayEquals(attOrig.get(i), att.get(i));
+      }
+
+      LinkedList<int []> def = copy.getAttMoves();
+      LinkedList<int []> defOrig = board.getAttMoves();
+      for (int i = 0; i < defOrig.size(); ++i) {
+        assertArrayEquals(defOrig.get(i), def.get(i));
+      }
+
+      /* Check the rest of the board state. */
+      assertEquals(6, copy.getMovesWoCapture());
+      assertEquals(5, copy.getKingRow());
+      assertEquals(6, copy.getKingCol());
+      assertTrue(copy.isAttackerTurn());
+      assertFalse(copy.isGameOver());
+    } catch (GridOutOfBoundsException ex) {
+      fail();
+    }
+  }
+
+  /**
+    Make sure that the state between a copy and original are completely
+    unlinked.
+   */
+  @Test
+  public void deepCopyTest() {
+    Board board = new Board();
+    Board copy  = new Board(board);
+    try {
+      doCopyTestMoves(board);
+
+      assertFalse(copy.square(5, 6).isKing());
+      assertFalse(copy.square(9, 10).isAttacking());
+      assertEquals(0, copy.getAttMoves().size());
+      assertEquals(0, copy.getDefMoves().size());
+      assertEquals(0, copy.getMovesWoCapture());
+      assertEquals(5, copy.getKingRow());
+      assertEquals(5, copy.getKingCol());
+    } catch (GridOutOfBoundsException ex) {
+      fail();
+    }
   }
 }

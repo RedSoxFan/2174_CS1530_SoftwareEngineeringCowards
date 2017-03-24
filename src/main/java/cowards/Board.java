@@ -616,6 +616,8 @@ public class Board extends BoardLayout {
   /**
     Takes a char AoA and interprets the characters as pieces and spaces.
 
+    Does not reset other aspects of the object.
+
     Throws an exception if the board is poorly formatted.
 
     @param charBoard Character AoA for ascii representation of board.

@@ -51,6 +51,24 @@ public class Board extends BoardLayout {
   }
 
   /**
+    Constructor.
+   */
+  public Board(
+      GridSquareState[][] innerBoard, LinkedList<int []> am,
+      LinkedList<int []> dm, int mwoCap, int kr, int kc, boolean at) {
+    board = innerBoard;
+
+    attackerMoves = am;
+    defenderMoves = dm;
+
+    movesWoCapture = mwoCap;
+    kingRow        = kr;
+    kingCol        = kc;
+    attackerTurn   = at;
+    gameOver       = false;
+  }
+
+  /**
     Returns a copy of the LinkedList describing the recent attacker move
     history.
    */
@@ -591,6 +609,8 @@ public class Board extends BoardLayout {
     attackerMoves.clear();
     defenderMoves.clear();
     movesWoCapture = 0;
+    kingRow = 5;
+    kingCol = 5;
   }
 
   /**
@@ -611,189 +631,15 @@ public class Board extends BoardLayout {
     for (int r = 0; r < 11; r++) {
       for (int c = 0; c < 11; c++) {
         char square = charBoard[r][c];
-        if (square == 'A') {
-          board[r][c] = GridSquareState.ATTACKER;
-        } else if (square == 'D') {
-          board[r][c] = GridSquareState.DEFENDER;
-        } else if (square == 'K') {
-          board[r][c] = GridSquareState.KING;
+        board[r][c] = BoardLoader.charToState(square);
+        if (square == 'K') {
           kingRow = r;
           kingCol = c;
-        } else {
-          board[r][c] = GridSquareState.EMPTY;
         }
       }
     }
-  }
-
-  /**
-    Write out the simple information about the board state.
-  */
-  private void writeState(PrintWriter pw) {
-    pw.println(movesWoCapture);
-    pw.println(attackerTurn);
-  }
-
-  /**
-    Writes out all of the recorded moves thus far. Used for loading in data
-    required for calculating repeat moves.
-  */
-  private void writeStoredMoves(PrintWriter pw) {
-    pw.println(attackerMoves.size());
-    pw.println(defenderMoves.size());
-
-    // Write attacker moves.
-    for (int i = 0; i < attackerMoves.size(); i++) {
-      int[] currMove = attackerMoves.get(i);
-      pw.print("A");
-      pw.print(currMove[0]);
-      pw.print(currMove[1]);
-      pw.println();
-    }
-
-    // Write defender moves.
-    for (int i = 0; i < defenderMoves.size(); i++) {
-      int[] currMove = defenderMoves.get(i);
-      pw.print("D");
-      pw.print(currMove[0]);
-      pw.print(currMove[1]);
-      pw.println();
-    }
-  }
-
-  /**
-    Writes out an ASCII representation of the current board layout.
-  */
-  private void writeAsciiBoard(PrintWriter pw) {
-    for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
-      for (int c = 0; c < GRID_COL_MAX + 1; c++) {
-        if (board[r][c].isAttacking()) {
-          pw.print('A');
-        } else if (board[r][c].isDefender()) {
-          pw.print('D');
-        } else if (board[r][c].isKing()) {
-          pw.print('K');
-        } else {
-          pw.print('E');
-        }
-      }
-      pw.println();
-    }
-  }
-
-  /**
-    Save the current instance of the board to a text file.
-    
-    @param fileName String to save the board to
-  */
-  public boolean saveBoard(String fileName) {
-    File dir = new File("saved_games");
-    String pathName = "saved_games/" + fileName + ".txt";
-    
-    // Create the saved_games directory if it doesn't exist.
-    if (!dir.exists()) {
-      boolean success = dir.mkdir();
-      if (!success) {
-        return false;
-      }
-    }
-    
-    try {
-      PrintWriter pw = new PrintWriter(pathName);
-      writeState(pw);
-      writeStoredMoves(pw);
-      writeAsciiBoard(pw);
-      
-      pw.close();
-    } catch (Exception ex) {
-      return false;
-    }
-    
-    return true;
   }
   
-  /**
-    Loads basic state information from the scanner provided.
-  */
-  private void readState(Scanner sc) {
-    movesWoCapture = Integer.parseInt(sc.nextLine());
-    attackerTurn = Boolean.parseBoolean(sc.nextLine());
-  }
-
-  /**
-    Loads recorded moves from the scanner provided. Used for calculating
-    repeat moves.
-  */
-  private void readStoredMoves(Scanner sc) {
-    attackerMoves.clear();
-    defenderMoves.clear();
-
-    int numAttacks = Integer.parseInt(sc.nextLine());
-    int numDefends = Integer.parseInt(sc.nextLine());
-
-    for (int i = 0; i < numAttacks; i++) {
-      String currLine = sc.nextLine();
-      int row = Character.getNumericValue(currLine.charAt(1));
-      int col = Character.getNumericValue(currLine.charAt(2));
-      attackerMoves.add(new int[] {row, col});
-    }
-
-    for (int i = 0; i < numDefends; i++) {
-      String currLine = sc.nextLine();
-      int row = Character.getNumericValue(currLine.charAt(1));
-      int col = Character.getNumericValue(currLine.charAt(2));
-      defenderMoves.add(new int[] {row, col});
-    }
-  }
-
-  /**
-    Reads in the board layout from the scanner provided.
-  */
-  private void readAsciiBoard(Scanner sc) {
-    for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
-      String currLine = sc.nextLine();
-      for (int c = 0; c < GRID_COL_MAX + 1; c++) {
-        char currChar = currLine.charAt(c);
-
-        if (currChar == 'A') {
-          board[r][c] = GridSquareState.ATTACKER;
-        } else if (currChar == 'D') {
-          board[r][c] = GridSquareState.DEFENDER;
-        } else if (currChar == 'K') {
-          board[r][c] = GridSquareState.KING;
-          kingRow = r;
-          kingCol = c;
-        } else {
-          board[r][c] = GridSquareState.EMPTY;
-        }
-      }
-    }
-  }
-
-  /**
-    Takes an instance of a board from a saved game.
-    
-    @param fileName String of board to load from saved file
-  */
-  public boolean loadBoardFromSave(String fileName) {
-    String pathName = "saved_games/" + fileName + ".txt";
-    
-    try {
-      Scanner fileReader = new Scanner(new File(pathName));
-      readState(fileReader);
-      readStoredMoves(fileReader);
-      readAsciiBoard(fileReader);
-      
-      fileReader.close();
-    } catch (FileNotFoundException ex) {
-      return false;
-    } catch (Exception ex) {
-      return false;
-    }
-    
-    return true;
-  }
-
   /**
     Returns the state of the square at the row and column provided.
 

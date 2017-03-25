@@ -7,6 +7,39 @@ import java.util.*;
 import javax.swing.*;
 
 public class Board extends BoardLayout {
+  /**
+    The amount of seconds to initialize the timers to. By default,
+    this is 300 seconds or 5 minutes.
+   */
+  private static int TIMER_INITIAL = 300;
+
+  /**
+    The amount of seconds to append to the timers after a turn has
+    been ended. By default, this is 3 seconds.
+   */
+  private static int TIMER_APPEND = 3;
+
+  /**
+    Set the amount of seconds to initialize timers to. Any value less
+    than or equal to zero will be set as the default of 300 seconds.
+   */
+  public static void setTimerInitial(int initial) {
+    TIMER_INITIAL = initial > 0 ? initial : 300;
+  }
+
+  /**
+    Set the amount of seconds to append to the timers after each
+    turn. Any negative value will be treated as the default of
+    3 seconds.
+
+    NOTE: Unlike setTimerInitial, zero is not treated as the
+    default value since zero is a valid amount of seconds to
+    append.
+   */
+  public static void setTimerAppend(int append) {
+    TIMER_APPEND = append >= 0 ? append : 3;
+  }
+
   private GridSquareState[][] board = new GridSquareState[11][11];
   private boolean attackerTurn = true;
   private boolean gameOver = false;
@@ -27,12 +60,42 @@ public class Board extends BoardLayout {
   private int kingCol = 5;
 
   /**
+    The timer for the attacking side.
+   */
+  private BoardTimer attackerTimer;
+
+  /**
+    The timer for the defending side.
+   */
+  private BoardTimer defenderTimer;
+
+  /**
     Constructor.
   */
   public Board() {
     attackerMoves = new LinkedList<int []>();
     defenderMoves = new LinkedList<int []>();
+    attackerTimer = new BoardTimer(TIMER_INITIAL, TIMER_APPEND);
+    defenderTimer = new BoardTimer(TIMER_INITIAL, TIMER_APPEND);
     reset();
+
+    // Check to make sure neither timer hits zero.
+    java.util.Timer timer = new java.util.Timer();
+    timer.scheduleAtFixedRate(new java.util.TimerTask() {
+      public void run() {
+        if (!isGameOver()) {
+          if (isAttackerTurn() && attackerTimer.getTimeRemaining() <= 0) {
+            gameOver = true;
+            setAttackerTurn(false);
+            defenderTimer.stop(true);
+          } else  if (!isAttackerTurn() && defenderTimer.getTimeRemaining() <= 0) {
+            gameOver = true;
+            setAttackerTurn(true);
+            attackerTimer.stop(true);
+          }
+        }
+      }
+    }, 1, 500);
   }
 
   /**
@@ -48,7 +111,40 @@ public class Board extends BoardLayout {
     @param turn Boolean of whether it is the attacker's turn or not.
    */
   public void setAttackerTurn(boolean turn) {
+    // Set the turn.
     attackerTurn = turn;
+
+    if (attackerTurn) {
+      // If the defender's timer is running, stop it.
+      if (defenderTimer.isCountingDown()) {
+        defenderTimer.stop(false);
+      }
+
+      // Start the attacker's timer.
+      attackerTimer.start();
+    } else {
+      // If the attacker's timer is running, stop it.
+      if (attackerTimer.isCountingDown()) {
+        attackerTimer.stop(false);
+      }
+
+      // Start the defender's timer.
+      defenderTimer.start();
+    }
+  }
+
+  /**
+    Retrieve the timer for the attacker's side.
+   */
+  public BoardTimer getAttackerTimer() {
+    return attackerTimer;
+  }
+
+  /**
+    Retrieve the timer for the defender's side.
+   */
+  public BoardTimer getDefenderTimer() {
+    return defenderTimer;
   }
 
   /**
@@ -295,7 +391,7 @@ public class Board extends BoardLayout {
   private void handleEndMove(int row, int col) throws GridOutOfBoundsException {
     // Check to see if move was winning move.
     if (isGameOver()) {
-      // King was captured.
+      // King was captured or timer ran out.
     } else if (square(row, col).isKing() && inCornerLocation(row, col)) {
       // If the king escaped we won.
       setGameOver(true);
@@ -514,6 +610,9 @@ public class Board extends BoardLayout {
     attackerMoves.clear();
     defenderMoves.clear();
     movesWoCapture = 0;
+    attackerTimer.reconfigure(TIMER_INITIAL, TIMER_APPEND);
+    defenderTimer.reconfigure(TIMER_INITIAL, TIMER_APPEND);
+    attackerTimer.start();
   }
 
   /**

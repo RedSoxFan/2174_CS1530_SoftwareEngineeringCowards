@@ -15,7 +15,12 @@ public class MovementTest {
    */
   @Test
   public void noStartingSelectionTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     assertFalse(board.hasSelection());
   }
 
@@ -24,7 +29,12 @@ public class MovementTest {
    */
   @Test
   public void selectAttackerAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -42,7 +52,12 @@ public class MovementTest {
    */
   @Test
   public void selectGetSelectedRowTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -60,7 +75,12 @@ public class MovementTest {
    */
   @Test
   public void selectGetSelectedColumnTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -78,7 +98,12 @@ public class MovementTest {
    */
   @Test
   public void selectDefenderAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -96,7 +121,12 @@ public class MovementTest {
    */
   @Test
   public void selectKingAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -114,7 +144,12 @@ public class MovementTest {
    */
   @Test
   public void selectEmptyAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -133,7 +168,12 @@ public class MovementTest {
    */
   @Test
   public void selectLowerBoundAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -156,7 +196,12 @@ public class MovementTest {
    */
   @Test
   public void selectUpperBoundAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -178,7 +223,12 @@ public class MovementTest {
    */
   @Test
   public void selectAttackerAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -196,7 +246,12 @@ public class MovementTest {
    */
   @Test
   public void selectDefenderAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -214,7 +269,12 @@ public class MovementTest {
    */
   @Test
   public void selectKingAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -232,7 +292,12 @@ public class MovementTest {
    */
   @Test
   public void selectEmptyAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -251,7 +316,12 @@ public class MovementTest {
    */
   @Test
   public void selectLowerBoundAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -274,7 +344,12 @@ public class MovementTest {
    */
   @Test
   public void selectUpperBoundAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -296,7 +371,12 @@ public class MovementTest {
    */
   @Test
   public void moveNoSelectionAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -316,7 +396,12 @@ public class MovementTest {
    */
   @Test
   public void moveLeftAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -337,7 +422,12 @@ public class MovementTest {
    */
   @Test
   public void moveRightAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -358,7 +448,12 @@ public class MovementTest {
    */
   @Test
   public void moveUpAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -379,7 +474,12 @@ public class MovementTest {
    */
   @Test
   public void moveDownAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -400,7 +500,12 @@ public class MovementTest {
    */
   @Test
   public void moveLeftMultipleAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -421,7 +526,12 @@ public class MovementTest {
    */
   @Test
   public void moveRightMutipleAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -442,7 +552,12 @@ public class MovementTest {
    */
   @Test
   public void moveUpMulitpleAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -463,7 +578,12 @@ public class MovementTest {
    */
   @Test
   public void moveDownMultipleAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -484,7 +604,12 @@ public class MovementTest {
    */
   @Test
   public void moveLeftBarricadeAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -505,7 +630,12 @@ public class MovementTest {
    */
   @Test
   public void moveRightBarricadeAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -526,7 +656,12 @@ public class MovementTest {
    */
   @Test
   public void moveUpBarricadeAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -547,7 +682,12 @@ public class MovementTest {
    */
   @Test
   public void moveDownBarricadeAsAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -568,7 +708,12 @@ public class MovementTest {
    */
   @Test
   public void moveNoSelectionAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -588,7 +733,12 @@ public class MovementTest {
    */
   @Test
   public void moveLeftAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -609,7 +759,12 @@ public class MovementTest {
    */
   @Test
   public void moveRightAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -630,7 +785,12 @@ public class MovementTest {
    */
   @Test
   public void moveUpAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -651,7 +811,12 @@ public class MovementTest {
    */
   @Test
   public void moveDownAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -672,7 +837,12 @@ public class MovementTest {
    */
   @Test
   public void moveLeftMultipleAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -693,7 +863,12 @@ public class MovementTest {
    */
   @Test
   public void moveRightMutipleAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -714,7 +889,12 @@ public class MovementTest {
    */
   @Test
   public void moveUpMulitpleAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -735,7 +915,12 @@ public class MovementTest {
    */
   @Test
   public void moveDownMultipleAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -756,7 +941,12 @@ public class MovementTest {
    */
   @Test
   public void moveLeftBarricadeAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -777,7 +967,12 @@ public class MovementTest {
    */
   @Test
   public void moveRightBarricadeAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -798,7 +993,12 @@ public class MovementTest {
    */
   @Test
   public void moveUpBarricadeAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -819,7 +1019,12 @@ public class MovementTest {
    */
   @Test
   public void moveDownBarricadeAsDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -839,8 +1044,7 @@ public class MovementTest {
    * Retrieve a board with only one king.
    */
   private Board getBoardWithOneKing() throws BadAsciiBoardFormatException {
-    Board board = new Board();
-    board.loadBoardFromChar(new char[][]{
+    return new Board(new char[][]{
       {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
       {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
       {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -853,7 +1057,6 @@ public class MovementTest {
       {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
       {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
     });
-    return board;
   }
 
   /**
@@ -1121,7 +1324,12 @@ public class MovementTest {
   */
   @Test
   public void moveAttackerToTopLeft() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -1142,7 +1350,12 @@ public class MovementTest {
   */
   @Test
   public void moveAttackerToTopRight() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -1163,7 +1376,12 @@ public class MovementTest {
   */
   @Test
   public void moveAttackerToBottomLeft() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -1184,7 +1402,12 @@ public class MovementTest {
   */
   @Test
   public void moveAttackerToBottomRight() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    }
     board.setAttackerTurn(true);
 
     try {
@@ -1205,7 +1428,12 @@ public class MovementTest {
   */
   @Test
   public void moveDefenderToTopLeft() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -1233,7 +1461,12 @@ public class MovementTest {
   */
   @Test
   public void moveDefenderToTopRight() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -1261,7 +1494,12 @@ public class MovementTest {
   */
   @Test
   public void moveDefenderToBottomLeft() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -1289,7 +1527,12 @@ public class MovementTest {
   */
   @Test
   public void moveDefenderToBottomRight() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -1317,7 +1560,12 @@ public class MovementTest {
   */
   @Test
   public void moveDefenderToThrone() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -1348,7 +1596,12 @@ public class MovementTest {
   */
   @Test
   public void moveAttackerToThrone() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    }
     board.setAttackerTurn(false);
 
     try {
@@ -1385,7 +1638,12 @@ public class MovementTest {
    */
   @Test
   public void backAndForthDefenderTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    }
 
     try {
       // Move back and forth 3 times.
@@ -1425,7 +1683,12 @@ public class MovementTest {
    */
   @Test
   public void backAndForthAttackerTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    }
 
     try {
       // Move back and forth 3 times.
@@ -1514,7 +1777,12 @@ public class MovementTest {
    */
   @Test
   public void drawTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    }
 
     try {
       // Check game over state.
@@ -1532,27 +1800,148 @@ public class MovementTest {
   }
 
   /**
-     Verify new game resets move counter properly.
+    Test that corners are properly identified by inCornerLocation().
    */
   @Test
-  public void noDrawOnReset() {
-    Board board = new Board();
-
+  public void identifyCornersTest() {
+    Board board = null;
     try {
-      // Check game over state.
-      do50Moves(board);
-      assertTrue(board.isGameOver());
-      assertTrue(board.isDraw());
-      board.reset();
-      assertFalse(board.isGameOver());
-      assertFalse(board.isDraw());
-    } catch (GridOutOfBoundsException ex) {
-      // This should not happen.
-      System.out.println("Movement failed due to GridOutOfBoundsException");
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
       fail();
     }
+    assertTrue(board.inCornerLocation(0,0));
+    assertTrue(board.inCornerLocation(10,0));
+    assertTrue(board.inCornerLocation(0,10));
+    assertTrue(board.inCornerLocation(10,10));
+  }
 
-    // Pass.
-    return;
+  /**
+    Test that special squares are properly identified by inSpecialLocation().
+   */
+  @Test
+  public void identifySpecialTest() {
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    }
+    assertTrue(board.inSpecialLocation(0,0));
+    assertTrue(board.inSpecialLocation(5,5));
+    assertTrue(board.inSpecialLocation(10,0));
+    assertTrue(board.inSpecialLocation(0,10));
+    assertTrue(board.inSpecialLocation(10,10));
+  }
+
+  /**
+    Test that isPathClear() correctly identifies when the path isn't clear when
+    an attacker is immediately adjacent.
+   */
+  @Test
+  public void pathNotClearAdjacentTest() {
+    Board board = null;
+    try {
+      board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'D', 'K', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      board.setAttackerTurn(false);
+      board.select(8,2);
+
+      assertFalse(board.isPathClear(6,2));
+      assertFalse(board.isPathClear(10,2));
+      assertFalse(board.isPathClear(8,0));
+      assertFalse(board.isPathClear(8,4));
+    } catch (GridOutOfBoundsException gex) {
+      fail();
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
+  }
+
+  /**
+    Test that isPathClear() correctly identifies when the path isn't clear when
+    an attacker is on the target square.
+   */
+  @Test
+  public void pathNotClearOnTargetTest() {
+    Board board = null;
+    try {
+      board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'D', ' ', 'K', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      board.setAttackerTurn(false);
+      board.select(8,2);
+
+      assertFalse(board.isPathClear(6,2));
+      assertFalse(board.isPathClear(10,2));
+      assertFalse(board.isPathClear(8,0));
+      assertFalse(board.isPathClear(8,4));
+    } catch (GridOutOfBoundsException gex) {
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    } catch (BadAsciiBoardFormatException bex) {
+      System.out.println("A BadAsciiBoardFormatException has been thrown");
+      fail();
+    }
+  }
+
+  /**
+    Test that isPathClear() correctly identifies when the path is clear.
+   */
+  @Test
+  public void pathClearTest() {
+    Board board = null;
+    try {
+      board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'K', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      board.setAttackerTurn(false);
+      board.select(8,2);
+
+      assertTrue(board.isPathClear(6,2));
+      assertTrue(board.isPathClear(10,2));
+      assertTrue(board.isPathClear(8,0));
+      assertTrue(board.isPathClear(8,4));
+    } catch (GridOutOfBoundsException gex) {
+      System.out.println("A GridOutOfBoundsException has been thrown");
+      fail();
+    } catch (BadAsciiBoardFormatException bex) {
+      System.out.println("A BadAsciiBoardFormatException has been thrown");
+      fail();
+    }
   }
 }

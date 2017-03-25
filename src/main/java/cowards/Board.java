@@ -7,7 +7,7 @@ import java.util.*;
 import javax.swing.*;
 
 public class Board extends BoardLayout {
-  private GridSquareState[][] board = new GridSquareState[11][11];
+  private GridSquareState[][] board;
   private boolean attackerTurn = true;
   private boolean gameOver = false;
 
@@ -29,10 +29,140 @@ public class Board extends BoardLayout {
   /**
     Constructor.
   */
-  public Board() {
+  public Board() throws BadAsciiBoardFormatException {
+    this(INITIAL_BOARD);
+  }
+
+  /**
+    Copy constructor.
+
+    @param orig The board from which we are copying.
+   */
+  public Board(Board orig) {
+    board          = orig.getBoard();
+    attackerMoves  = orig.getAttMoves();
+    defenderMoves  = orig.getDefMoves();
+    movesWoCapture = orig.getMovesWoCapture();
+    kingRow        = orig.getKingRow();
+    kingCol        = orig.getKingCol();
+    attackerTurn   = orig.isAttackerTurn();
+    gameOver       = orig.isGameOver();
+  }
+
+  /**
+    Constructor.
+   */
+  public Board(
+      GridSquareState[][] innerBoard, LinkedList<int []> am,
+      LinkedList<int []> dm, int mwoCap, int kr, int kc, boolean at) {
+    board = innerBoard;
+
+    attackerMoves = am;
+    defenderMoves = dm;
+
+    movesWoCapture = mwoCap;
+    kingRow        = kr;
+    kingCol        = kc;
+    attackerTurn   = at;
+    gameOver       = false;
+  }
+
+  /**
+    Constructor for building a board out of an initial configuration.
+
+    Throws an exception if the board is poorly formatted.
+
+    @param charBoard Character AoA for ascii representation of board.
+    */
+  public Board(char[][] charBoard) throws BadAsciiBoardFormatException {
+    board = new GridSquareState[GRID_ROW_MAX + 1][GRID_COL_MAX + 1];
     attackerMoves = new LinkedList<int []>();
     defenderMoves = new LinkedList<int []>();
-    reset();
+    if (charBoard == null
+        || charBoard.length < GRID_ROW_MAX + 1
+        || charBoard[0].length < GRID_COL_MAX + 1) {
+      throw new BadAsciiBoardFormatException();
+    }
+
+    attackerTurn = true;
+    gameOver = false;
+    attackerMoves.clear();
+    defenderMoves.clear();
+    movesWoCapture = 0;
+    kingRow = 5;
+    kingCol = 5;
+
+    for (int r = 0; r < 11; ++r) {
+      for (int c = 0; c < 11; ++c) {
+        char square = charBoard[r][c];
+        board[r][c] = BoardLoader.charToState(square);
+        if (square == 'K') {
+          kingRow = r;
+          kingCol = c;
+        }
+      }
+    }
+  }
+
+  /**
+    Returns a copy of the LinkedList describing the recent attacker move
+    history.
+   */
+  public LinkedList<int []> getAttMoves() {
+    LinkedList<int []> ret = new LinkedList<int []>();
+    for (int i = 0; i < attackerMoves.size(); ++i) {
+      ret.add(attackerMoves.get(i).clone());
+    }
+
+    return ret;
+  }
+
+  /**
+    Returns a copy of the LinkedList describing the recent defender move
+    history.
+   */
+  public LinkedList<int []> getDefMoves() {
+    LinkedList<int []> ret = new LinkedList<int []>();
+    for (int i = 0; i < defenderMoves.size(); ++i) {
+      ret.add(defenderMoves.get(i).clone());
+    }
+
+    return ret;
+  }
+
+  /**
+    Returns a copy of the internal board.
+   */
+  public GridSquareState[][] getBoard() {
+    GridSquareState[][] ret = new GridSquareState[11][11];
+    for (int i = 0; i <= GRID_ROW_MAX; ++i) {
+      for (int j = 0; j <= GRID_COL_MAX; ++j) {
+        ret[i][j] = board[i][j];
+      }
+    }
+
+    return ret;
+  }
+
+  /**
+    Return the number of moves without capture.
+   */
+  public int getMovesWoCapture() {
+    return movesWoCapture;
+  }
+
+  /**
+    Return the king's row.
+   */
+  public int getKingRow() {
+    return kingRow;
+  }
+
+  /**
+    Get the king's column.
+   */
+  public int getKingCol() {
+    return kingCol;
   }
 
   /**
@@ -127,7 +257,7 @@ public class Board extends BoardLayout {
 
     @return Whether or not the square is a corner.
     */
-  private boolean inCornerLocation(int row, int col) {
+  public boolean inCornerLocation(int row, int col) {
     for (int i = 0; i < CORNER_SQUARE_POSITIONS.length; i++) {
       int cornerRow = CORNER_SQUARE_POSITIONS[i][0];
       int cornerCol = CORNER_SQUARE_POSITIONS[i][1];
@@ -147,7 +277,7 @@ public class Board extends BoardLayout {
 
     @return Whether or not the square is special.
     */
-  private boolean inSpecialLocation(int row, int col) {
+  public boolean inSpecialLocation(int row, int col) {
     for (int i = 0; i < SPECIAL_SQUARE_POSITIONS.length; i++) {
       int specialRow = SPECIAL_SQUARE_POSITIONS[i][0];
       int specialCol = SPECIAL_SQUARE_POSITIONS[i][1];
@@ -167,7 +297,7 @@ public class Board extends BoardLayout {
 
     @return Whether or not the path is clear.
     */
-  private boolean isPathClear(int row, int col) throws GridOutOfBoundsException {
+  public boolean isPathClear(int row, int col) throws GridOutOfBoundsException {
     // Determine the top, bottom, left, and right.
     // Either top and bottom or left and right will be the same.
     int top    = (row < selRow) ? row    : selRow;
@@ -272,10 +402,11 @@ public class Board extends BoardLayout {
     board[selRow][selCol] = GridSquareState.EMPTY;
 
     // If piece is king and no conflict, update king location.
-    if (square(selRow, selCol).isKing()) {
+    if (square(row, col).isKing()) {
       kingRow = row;
       kingCol = col;
     }
+
     // Track the move.
     LinkedList<int []> moves = isAttackerTurn() ? attackerMoves : defenderMoves;
     if (moves.size() > 5) {
@@ -490,231 +621,6 @@ public class Board extends BoardLayout {
     }
 
     return false;
-  }
-
-  /**
-    Reset the board to starting conditions.
-   */
-  public void reset() {
-    // Initialize the board.
-    try {
-      loadBoardFromChar(INITIAL_BOARD);
-    } catch (BadAsciiBoardFormatException exception) {
-      // This should never fire, as the starting board is pre-configured.
-      System.out.println(
-          "CRITICAL ERROR: Bad initial board configuration."
-      );
-
-      // TODO: Refactor critical error messages into a single critical error
-      // function.
-      System.exit(1);
-    }
-    attackerTurn = true;
-    gameOver = false;
-    attackerMoves.clear();
-    defenderMoves.clear();
-    movesWoCapture = 0;
-  }
-
-  /**
-    Takes a char AoA and interprets the characters as pieces and spaces.
-
-    Throws an exception if the board is poorly formatted.
-
-    @param charBoard Character AoA for ascii representation of board.
-    */
-  public void loadBoardFromChar(char[][] charBoard)
-      throws BadAsciiBoardFormatException {
-
-    if (charBoard == null
-        || charBoard.length < GRID_ROW_MAX + 1
-        || charBoard[0].length < GRID_COL_MAX + 1) {
-      throw new BadAsciiBoardFormatException();
-    }
-    for (int r = 0; r < 11; r++) {
-      for (int c = 0; c < 11; c++) {
-        char square = charBoard[r][c];
-        if (square == 'A') {
-          board[r][c] = GridSquareState.ATTACKER;
-        } else if (square == 'D') {
-          board[r][c] = GridSquareState.DEFENDER;
-        } else if (square == 'K') {
-          board[r][c] = GridSquareState.KING;
-          kingRow = r;
-          kingCol = c;
-        } else {
-          board[r][c] = GridSquareState.EMPTY;
-        }
-      }
-    }
-  }
-
-  /**
-    Write out the simple information about the board state.
-  */
-  private void writeState(PrintWriter pw) {
-    pw.println(movesWoCapture);
-    pw.println(attackerTurn);
-  }
-
-  /**
-    Writes out all of the recorded moves thus far. Used for loading in data
-    required for calculating repeat moves.
-  */
-  private void writeStoredMoves(PrintWriter pw) {
-    pw.println(attackerMoves.size());
-    pw.println(defenderMoves.size());
-
-    // Write attacker moves.
-    for (int i = 0; i < attackerMoves.size(); i++) {
-      int[] currMove = attackerMoves.get(i);
-      pw.print("A");
-      pw.print(currMove[0]);
-      pw.print(currMove[1]);
-      pw.println();
-    }
-
-    // Write defender moves.
-    for (int i = 0; i < defenderMoves.size(); i++) {
-      int[] currMove = defenderMoves.get(i);
-      pw.print("D");
-      pw.print(currMove[0]);
-      pw.print(currMove[1]);
-      pw.println();
-    }
-  }
-
-  /**
-    Writes out an ASCII representation of the current board layout.
-  */
-  private void writeAsciiBoard(PrintWriter pw) {
-    for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
-      for (int c = 0; c < GRID_COL_MAX + 1; c++) {
-        if (board[r][c].isAttacking()) {
-          pw.print('A');
-        } else if (board[r][c].isDefender()) {
-          pw.print('D');
-        } else if (board[r][c].isKing()) {
-          pw.print('K');
-        } else {
-          pw.print('E');
-        }
-      }
-      pw.println();
-    }
-  }
-
-  /**
-    Save the current instance of the board to a text file.
-    
-    @param fileName String to save the board to
-  */
-  public boolean saveBoard(String fileName) {
-    File dir = new File("saved_games");
-    String pathName = "saved_games/" + fileName + ".txt";
-    
-    // Create the saved_games directory if it doesn't exist.
-    if (!dir.exists()) {
-      boolean success = dir.mkdir();
-      if (!success) {
-        return false;
-      }
-    }
-    
-    try {
-      PrintWriter pw = new PrintWriter(pathName);
-      writeState(pw);
-      writeStoredMoves(pw);
-      writeAsciiBoard(pw);
-      
-      pw.close();
-    } catch (Exception ex) {
-      return false;
-    }
-    
-    return true;
-  }
-  
-  /**
-    Loads basic state information from the scanner provided.
-  */
-  private void readState(Scanner sc) {
-    movesWoCapture = Integer.parseInt(sc.nextLine());
-    attackerTurn = Boolean.parseBoolean(sc.nextLine());
-  }
-
-  /**
-    Loads recorded moves from the scanner provided. Used for calculating
-    repeat moves.
-  */
-  private void readStoredMoves(Scanner sc) {
-    attackerMoves.clear();
-    defenderMoves.clear();
-
-    int numAttacks = Integer.parseInt(sc.nextLine());
-    int numDefends = Integer.parseInt(sc.nextLine());
-
-    for (int i = 0; i < numAttacks; i++) {
-      String currLine = sc.nextLine();
-      int row = Character.getNumericValue(currLine.charAt(1));
-      int col = Character.getNumericValue(currLine.charAt(2));
-      attackerMoves.add(new int[] {row, col});
-    }
-
-    for (int i = 0; i < numDefends; i++) {
-      String currLine = sc.nextLine();
-      int row = Character.getNumericValue(currLine.charAt(1));
-      int col = Character.getNumericValue(currLine.charAt(2));
-      defenderMoves.add(new int[] {row, col});
-    }
-  }
-
-  /**
-    Reads in the board layout from the scanner provided.
-  */
-  private void readAsciiBoard(Scanner sc) {
-    for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
-      String currLine = sc.nextLine();
-      for (int c = 0; c < GRID_COL_MAX + 1; c++) {
-        char currChar = currLine.charAt(c);
-
-        if (currChar == 'A') {
-          board[r][c] = GridSquareState.ATTACKER;
-        } else if (currChar == 'D') {
-          board[r][c] = GridSquareState.DEFENDER;
-        } else if (currChar == 'K') {
-          board[r][c] = GridSquareState.KING;
-          kingRow = r;
-          kingCol = c;
-        } else {
-          board[r][c] = GridSquareState.EMPTY;
-        }
-      }
-    }
-  }
-
-  /**
-    Takes an instance of a board from a saved game.
-    
-    @param fileName String of board to load from saved file
-  */
-  public boolean loadBoardFromSave(String fileName) {
-    String pathName = "saved_games/" + fileName + ".txt";
-    
-    try {
-      Scanner fileReader = new Scanner(new File(pathName));
-      readState(fileReader);
-      readStoredMoves(fileReader);
-      readAsciiBoard(fileReader);
-      
-      fileReader.close();
-    } catch (FileNotFoundException ex) {
-      return false;
-    } catch (Exception ex) {
-      return false;
-    }
-    
-    return true;
   }
 
   /**

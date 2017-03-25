@@ -38,6 +38,8 @@ public class Board extends BoardLayout {
 
   /**
     Copy constructor.
+
+    @param orig The board from which we are copying.
    */
   public Board(Board orig) {
     board          = orig.getBoard();

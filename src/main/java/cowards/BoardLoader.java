@@ -7,6 +7,8 @@ public class BoardLoader extends BoardLayout {
 
   /**
     Returns the GridSquareState for the piece represented by the character ch.
+
+    @param ch Character to convert.
    */
   public static GridSquareState charToState(char ch) {
     if (ch == 'A') {
@@ -24,10 +26,13 @@ public class BoardLoader extends BoardLayout {
 
   /**
     Fetches the LinkedList of moves that was stored in  the save file.
+
+    @param sc The Scanner from which we are reading.
+    @param numMoves How many moves we expect to read from the file.
    */
-  public static LinkedList<int []> getNextMoveList(Scanner sc, int numAttacks) {
+  public static LinkedList<int []> getNextMoveList(Scanner sc, int numMoves) {
     LinkedList<int []> ret = new LinkedList<int []>();
-    for (int i = 0; i < numAttacks; ++i) {
+    for (int i = 0; i < numMoves; ++i) {
       String currLine = sc.nextLine();
       int row = Character.getNumericValue(currLine.charAt(1));
       int col = Character.getNumericValue(currLine.charAt(2));
@@ -39,6 +44,8 @@ public class BoardLoader extends BoardLayout {
   /**
     Loads the characters representing the board and reconstructs them into the
     GridSquareState AoA.
+
+    @param sc The Scanner from which we are reading.
    */
   private static GridSquareState[][] loadInnerBoard(Scanner sc) {
     int rowSize = GRID_ROW_MAX + 1;
@@ -56,7 +63,7 @@ public class BoardLoader extends BoardLayout {
   /**
     Creates and return a Board instance from a savefile.
     
-    @param fileName String of board to load from saved file.
+    @param fileName The string of the filename containing save data.
    */
   public static Board loadBoardFromSave(String fileName) {
     String pathName = "saved_games/" + fileName + ".txt";

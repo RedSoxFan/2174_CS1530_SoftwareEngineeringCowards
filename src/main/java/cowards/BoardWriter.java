@@ -10,6 +10,9 @@ public class BoardWriter extends BoardLayout {
 
   /**
     Write out the simple information about the board state.
+
+    @param pw Where we are writing to.
+    @param board The Board who's information we are writing.
   */
   private static void writeState(PrintWriter pw, Board board) {
     pw.println(board.getMovesWoCapture());
@@ -19,6 +22,9 @@ public class BoardWriter extends BoardLayout {
   /**
     Writes out all of the recorded moves thus far. Used for loading in data
     required for calculating repeat moves.
+
+    @param pw Where we are writing to.
+    @param board The Board who's information we are writing.
   */
   private static void writeStoredMoves(PrintWriter pw, Board board) {
     LinkedList<int []> attackerMoves = board.getAttMoves();
@@ -47,6 +53,9 @@ public class BoardWriter extends BoardLayout {
 
   /**
     Writes out an ASCII representation of the current board layout.
+
+    @param pw Where we are writing to.
+    @param board The Board who's information we are writing.
   */
   private static void writeAsciiBoard(PrintWriter pw, Board board) {
     GridSquareState[][] innerBoard = board.getBoard();
@@ -72,7 +81,8 @@ public class BoardWriter extends BoardLayout {
   /**
     Save the current instance of the board to a text file.
     
-    @param fileName String to save the board to
+    @param fileName Filename of the file to which we are saving.
+    @param board The Board who's information we are writing.
   */
   public static boolean saveBoard(String fileName, Board board) {
     File dir = new File("saved_games");

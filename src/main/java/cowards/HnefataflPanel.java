@@ -21,7 +21,12 @@ public class HnefataflPanel extends JPanel {
     super();
 
     // Create initial game board.
-    board = new Board();
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bx) {
+      JOptionPane.showMessageDialog(null, "Critical: Cannot load initial board.");
+      System.exit(1);
+    }
     addMouseListener(new MouseAdapter() {
       public void mouseReleased(MouseEvent event) {
         mouseReleaseEvent(event);
@@ -70,7 +75,12 @@ public class HnefataflPanel extends JPanel {
         int selected = JOptionPane.showConfirmDialog(null, "Do you really want to start new game?", 
             "New Game", JOptionPane.YES_NO_OPTION);
         if (selected == JOptionPane.YES_OPTION) {
-          board.reset();
+          try {
+            board = new Board();
+          } catch (BadAsciiBoardFormatException bx) {
+            JOptionPane.showMessageDialog(null, "Critical: Cannot load initial board.");
+            System.exit(1);
+          }
         }
       } else if (saveGame != null && saveGame.contains(event.getPoint())) {
         if (board.isGameOver()) {

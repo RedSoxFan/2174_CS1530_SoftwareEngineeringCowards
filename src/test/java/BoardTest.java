@@ -14,13 +14,15 @@ public class BoardTest {
    */
   @Test
   public void initPositionsTest() {
-    Board board = new Board();
 
     try {
+      Board board = new Board();
       assertEquals(Board.GridSquareState.EMPTY, board.square(0, 0));
       assertEquals(Board.GridSquareState.KING, board.square(5, 5));
       assertEquals(Board.GridSquareState.ATTACKER, board.square(5, 1));
-    } catch (GridOutOfBoundsException exception) {
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    } catch (GridOutOfBoundsException gx) {
       fail();
     }
   }
@@ -30,13 +32,11 @@ public class BoardTest {
    */
   @Test
   public void boardFromCharLoadNullTest() {
-    Board board = new Board();
-
     // Null.
     char[][] badBoard = null;
 
     try {
-      board.loadBoardFromChar(badBoard);
+      new Board(badBoard);
     } catch (BadAsciiBoardFormatException exception) {
       return;
     }
@@ -45,40 +45,35 @@ public class BoardTest {
   }
 
   /**
-    Test that BadAsciiBoardFormatExceptions are thrown appropriately.
+    Test that custom boards are loaded appropriately.
    */
   @Test
   public void boardFromCharLoadTest() {
-    Board board = new Board();
-
-    // Note that this isn't a valid configuration, but that isn't this method's
-    // problem.
-    char[][] badBoard = new char[][]{
-      {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
-      {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
-      {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
-      {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
-      {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
-      {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
-      {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
-      {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
-      {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
-      {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
-      {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'}
-    };
     try {
-      board.loadBoardFromChar(badBoard);
-    } catch (BadAsciiBoardFormatException exception) {
-      fail();
-    }
+      // Note that this isn't a valid configuration, but that isn't this
+      // method's problem.
+      Board board = new Board(new char[][]{
+        {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
+        {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
+        {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
+        {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
+        {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
+        {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
+        {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
+        {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
+        {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
+        {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'},
+        {'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K', 'K'}
+      });
 
-    // Check that the board was loaded in correctly.
-    try {
+      // Check that the board was loaded in correctly.
       for (int i = 0; i < 11; ++i) {
         for (int j = 0; j < 11; ++j) {
           assertEquals(Board.GridSquareState.KING, board.square(i, j));
         }
       }
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
     } catch (GridOutOfBoundsException exception) {
       fail();
     }
@@ -89,10 +84,9 @@ public class BoardTest {
    */
   @Test
   public void badBoardFormatTest() {
-    Board board = new Board();
-
     // This board is invalid because it doesn't fill the board properly.
-    char[][] badBoard = new char[][]{
+    try {
+      new Board(new char[][]{
         {' ', ' ', ' '},
         {' ', ' ', ' '},
         {' ', ' ', ' '},
@@ -104,9 +98,7 @@ public class BoardTest {
         {' ', ' ', ' '},
         {' ', ' ', ' '},
         {' ', ' ', ' '}
-    };
-    try {
-      board.loadBoardFromChar(badBoard);
+      });
     } catch (BadAsciiBoardFormatException exception) {
       // Pass.
       return;
@@ -120,11 +112,13 @@ public class BoardTest {
    */
   @Test
   public void boardGridNotOutOfBoundsTest() {
-    Board board = new Board();
     // Make sure the valid edge case passes.
     try {
+      Board board = new Board();
       board.square(Board.GRID_ROW_MAX, Board.GRID_COL_MAX);
-    } catch (GridOutOfBoundsException exception) {
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    } catch (GridOutOfBoundsException gx) {
       fail();
     }
   }
@@ -134,10 +128,13 @@ public class BoardTest {
    */
   @Test
   public void boardGridOutOfBoundsLowerTest() {
-    Board board = new Board();
     // Any call under 0 is bad.
+    Board board = null;
     try {
+      board = new Board();
       board.square(-1, 0);
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
     } catch (GridOutOfBoundsException exception) {
       try {
         board.square(0, -1);
@@ -155,11 +152,11 @@ public class BoardTest {
    */
   @Test
   public void boardGridOutOfBoundsUpperTest() {
-    Board board = new Board();
+    Board board = null;
     // Make sure the valid edge case passes.
     try {
-      board.square(Board.GRID_ROW_MAX, Board.GRID_COL_MAX);
-    } catch (GridOutOfBoundsException exception) {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bx) {
       fail();
     }
 
@@ -183,7 +180,12 @@ public class BoardTest {
    */
   @Test
   public void gameOverTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
 
     // Check for appropriate start state.
     assertFalse(board.isGameOver());
@@ -198,7 +200,12 @@ public class BoardTest {
    */
   @Test
   public void attackerTurnTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
 
     // Check for appropriate start state.
     assertTrue(board.isAttackerTurn());
@@ -236,7 +243,12 @@ public class BoardTest {
    */
   @Test
   public void copyTest() {
-    Board board = new Board();
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
 
     try {
       /* Move just enough to properly test the copy constructor. */
@@ -280,9 +292,9 @@ public class BoardTest {
    */
   @Test
   public void deepCopyTest() {
-    Board board = new Board();
-    Board copy  = new Board(board);
     try {
+      Board board = new Board();
+      Board copy  = new Board(board);
       doCopyTestMoves(board);
 
       assertFalse(copy.square(5, 6).isKing());
@@ -292,6 +304,8 @@ public class BoardTest {
       assertEquals(0, copy.getMovesWoCapture());
       assertEquals(5, copy.getKingRow());
       assertEquals(5, copy.getKingCol());
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
     } catch (GridOutOfBoundsException ex) {
       fail();
     }

@@ -29,11 +29,8 @@ public class Board extends BoardLayout {
   /**
     Constructor.
   */
-  public Board() {
-    board         = new GridSquareState[11][11];
-    attackerMoves = new LinkedList<int []>();
-    defenderMoves = new LinkedList<int []>();
-    reset();
+  public Board() throws BadAsciiBoardFormatException {
+    this(INITIAL_BOARD);
   }
 
   /**
@@ -68,6 +65,43 @@ public class Board extends BoardLayout {
     kingCol        = kc;
     attackerTurn   = at;
     gameOver       = false;
+  }
+
+  /**
+    Constructor for building a board out of an initial configuration.
+
+    Throws an exception if the board is poorly formatted.
+
+    @param charBoard Character AoA for ascii representation of board.
+    */
+  public Board(char[][] charBoard) throws BadAsciiBoardFormatException {
+    board = new GridSquareState[GRID_ROW_MAX + 1][GRID_COL_MAX + 1];
+    attackerMoves = new LinkedList<int []>();
+    defenderMoves = new LinkedList<int []>();
+    if (charBoard == null
+        || charBoard.length < GRID_ROW_MAX + 1
+        || charBoard[0].length < GRID_COL_MAX + 1) {
+      throw new BadAsciiBoardFormatException();
+    }
+
+    attackerTurn = true;
+    gameOver = false;
+    attackerMoves.clear();
+    defenderMoves.clear();
+    movesWoCapture = 0;
+    kingRow = 5;
+    kingCol = 5;
+
+    for (int r = 0; r < 11; ++r) {
+      for (int c = 0; c < 11; ++c) {
+        char square = charBoard[r][c];
+        board[r][c] = BoardLoader.charToState(square);
+        if (square == 'K') {
+          kingRow = r;
+          kingCol = c;
+        }
+      }
+    }
   }
 
   /**
@@ -589,61 +623,6 @@ public class Board extends BoardLayout {
     return false;
   }
 
-  /**
-    Reset the board to starting conditions.
-   */
-  public void reset() {
-    // Initialize the board.
-    try {
-      loadBoardFromChar(INITIAL_BOARD);
-    } catch (BadAsciiBoardFormatException exception) {
-      // This should never fire, as the starting board is pre-configured.
-      System.out.println(
-          "CRITICAL ERROR: Bad initial board configuration."
-      );
-
-      // TODO: Refactor critical error messages into a single critical error
-      // function.
-      System.exit(1);
-    }
-    attackerTurn = true;
-    gameOver = false;
-    attackerMoves.clear();
-    defenderMoves.clear();
-    movesWoCapture = 0;
-    kingRow = 5;
-    kingCol = 5;
-  }
-
-  /**
-    Takes a char AoA and interprets the characters as pieces and spaces.
-
-    Does not reset other aspects of the object.
-
-    Throws an exception if the board is poorly formatted.
-
-    @param charBoard Character AoA for ascii representation of board.
-    */
-  public void loadBoardFromChar(char[][] charBoard)
-      throws BadAsciiBoardFormatException {
-
-    if (charBoard == null
-        || charBoard.length < GRID_ROW_MAX + 1
-        || charBoard[0].length < GRID_COL_MAX + 1) {
-      throw new BadAsciiBoardFormatException();
-    }
-    for (int r = 0; r < 11; r++) {
-      for (int c = 0; c < 11; c++) {
-        char square = charBoard[r][c];
-        board[r][c] = BoardLoader.charToState(square);
-        if (square == 'K') {
-          kingRow = r;
-          kingCol = c;
-        }
-      }
-    }
-  }
-  
   /**
     Returns the state of the square at the row and column provided.
 

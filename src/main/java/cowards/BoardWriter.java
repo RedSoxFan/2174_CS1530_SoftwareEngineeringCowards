@@ -52,6 +52,18 @@ public class BoardWriter extends BoardLayout {
   }
 
   /**
+    Writes out the timer states.
+
+    @param pw Where we are writing to.
+    @param board The Board who's information we are writing.
+   */
+  private static void writeTimers(PrintWriter pw, Board board) {
+    pw.println(board.getAttackerTimer().getTimeRemaining());
+    pw.println(board.getDefenderTimer().getTimeRemaining());
+    pw.println(board.getAttackerTimer().getTimeAppended());
+  }
+
+  /**
     Writes out an ASCII representation of the current board layout.
 
     @param pw Where we are writing to.
@@ -100,6 +112,7 @@ public class BoardWriter extends BoardLayout {
       PrintWriter pw = new PrintWriter(pathName);
       writeState(pw, board);
       writeStoredMoves(pw, board);
+      writeTimers(pw, board);
       writeAsciiBoard(pw, board);
       
       pw.close();

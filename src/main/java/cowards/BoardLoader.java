@@ -80,6 +80,12 @@ public class BoardLoader extends BoardLayout {
       LinkedList<int []> am = getNextMoveList(fileReader, numAttacks);
       LinkedList<int []> dm = getNextMoveList(fileReader, numDefends);
 
+      // Get the timer info.
+      int atc = Integer.parseInt(fileReader.nextLine());
+      int dtc = Integer.parseInt(fileReader.nextLine());
+      int append = Integer.parseInt(fileReader.nextLine());
+
+      // Get the king's location.
       int kr = Integer.parseInt(fileReader.nextLine());
       int kc = Integer.parseInt(fileReader.nextLine());
 
@@ -87,7 +93,7 @@ public class BoardLoader extends BoardLayout {
       GridSquareState[][] innerBoard = loadInnerBoard(fileReader);
 
       fileReader.close();
-      return new Board(innerBoard, am, dm, mwoCap, kr, kc, at);
+      return new Board(innerBoard, am, dm, mwoCap, kr, kc, at, atc, dtc, append);
     } catch (FileNotFoundException ex) {
       /* Fall through */
     }

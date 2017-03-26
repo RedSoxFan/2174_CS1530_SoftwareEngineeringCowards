@@ -160,8 +160,16 @@ public class HnefataflPanel extends JPanel {
     int remaining = getHeight() - bottom;
 
     // Bottom -> Status.
-    Rectangle status = new Rectangle(grid.x, bottom, grid.width, remaining / 2);
+    Rectangle status = new Rectangle(grid.x + grid.width / 4, bottom,
+        grid.width / 2, remaining / 2);
     paintStatus(graph, status);
+
+    // Bottom -> Timers.
+    Rectangle attacker = new Rectangle(grid.x + grid.width / 16, bottom,
+        grid.width / 8, remaining / 2);
+    Rectangle defender = new Rectangle(grid.x + grid.width / 16 * 13, bottom,
+        grid.width / 8, remaining / 2);
+    paintTimers(graph, attacker, defender);
 
     // Bottom -> Buttons.
     int statusBot = (int) status.getMaxY();
@@ -253,6 +261,25 @@ public class HnefataflPanel extends JPanel {
     // Draw the text.
     graph.setColor(Color.WHITE);
     drawText(graph, turn, bounds, true);
+  }
+
+  /**
+    Paint the timers.
+
+    @param graph The graphics handle.
+    @param attacker The bounds of the timer for the attacker's side.
+    @param defender The bounds of the timer for the defender's side.
+   */
+  private void paintTimers(Graphics graph, Rectangle attacker, Rectangle defender) {
+    // Paint attacker's timer.
+    String attackTime = board.getAttackerTimer().getTimeRemainingAsText();
+    graph.setColor(board.isAttackerTurn() ? Color.WHITE : Color.GRAY);
+    drawText(graph, attackTime, attacker, true);
+
+    // Paint defender's timer.
+    String defendTime = board.getDefenderTimer().getTimeRemainingAsText();
+    graph.setColor(board.isAttackerTurn() ? Color.GRAY : Color.WHITE);
+    drawText(graph, defendTime, defender, true);
   }
 
   /**

@@ -21,7 +21,12 @@ public class HnefataflPanel extends JPanel {
     super();
 
     // Create initial game board.
-    board = new Board();
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException bx) {
+      JOptionPane.showMessageDialog(null, "Critical: Cannot load initial board.");
+      System.exit(1);
+    }
     addMouseListener(new MouseAdapter() {
       public void mouseReleased(MouseEvent event) {
         mouseReleaseEvent(event);
@@ -67,46 +72,62 @@ public class HnefataflPanel extends JPanel {
           System.out.println("WARNING: The board geometry is not synced");
         }
       } else if (newGame != null && newGame.contains(event.getPoint())) {
+        board.pauseTimers();
         int selected = JOptionPane.showConfirmDialog(null, "Do you really want to start new game?", 
             "New Game", JOptionPane.YES_NO_OPTION);
         if (selected == JOptionPane.YES_OPTION) {
-          board.reset();
+          try {
+            board.setGameOver(true);
+            board = new Board();
+          } catch (BadAsciiBoardFormatException bx) {
+            JOptionPane.showMessageDialog(null, "Critical: Cannot load initial board.");
+            System.exit(1);
+          }
         }
+        board.resumeTimers();
       } else if (saveGame != null && saveGame.contains(event.getPoint())) {
         if (board.isGameOver()) {
           JOptionPane.showMessageDialog(null, "You cannot save a board in a game over state.");
         } else {
+          board.pauseTimers();
           String fileName = JOptionPane.showInputDialog(null, 
               "Enter the name of your save game file");
-          if (fileName.equals("")) {
-            JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
-          } else if (fileName != null) {
-            if (board.saveBoard(fileName)) {
+          if (fileName != null) {
+            if (fileName.equals("")) {
+              JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
+            } else if (BoardWriter.saveBoard(fileName, board)) {
               JOptionPane.showMessageDialog(null, "Successfully saved game file.");
             } else {
               JOptionPane.showMessageDialog(null, "Error saving game file.");
             }
           }
+          board.resumeTimers();
         }
       } else if (loadGame != null && loadGame.contains(event.getPoint())) {
+        board.pauseTimers();
         String fileName = JOptionPane.showInputDialog(null, 
             "Enter the name of the game you want to load");
-        if (fileName.equals("")) {
-          JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
-        } else if (fileName != null) {
-          if (board.loadBoardFromSave(fileName)) {
+        if (fileName != null) {
+          board.setGameOver(true);
+          if (fileName.equals("")) {
+            JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
+          } else if (null != (board = BoardLoader.loadBoardFromSave(fileName))) {
             JOptionPane.showMessageDialog(null, "Successfully loaded game file.");
             repaint();
           } else {
             JOptionPane.showMessageDialog(null, "Error loading game file.");
           }
+          board.setGameOver(false);
         }
+        board.resumeTimers();
       } else if (exitGame != null && exitGame.contains(event.getPoint())) {
+        board.pauseTimers();
         int selected = JOptionPane.showConfirmDialog(null, "Do you really want to exit the game?", 
             "Exit Game", JOptionPane.YES_NO_OPTION);
         if (selected == JOptionPane.YES_OPTION) {
           System.exit(0);
         }
+        board.resumeTimers();
       }
     }
   }
@@ -150,8 +171,16 @@ public class HnefataflPanel extends JPanel {
     int remaining = getHeight() - bottom;
 
     // Bottom -> Status.
-    Rectangle status = new Rectangle(grid.x, bottom, grid.width, remaining / 2);
+    Rectangle status = new Rectangle(grid.x + grid.width / 4, bottom,
+        grid.width / 2, remaining / 2);
     paintStatus(graph, status);
+
+    // Bottom -> Timers.
+    Rectangle attacker = new Rectangle(grid.x + grid.width / 16, bottom,
+        grid.width / 8, remaining / 2);
+    Rectangle defender = new Rectangle(grid.x + grid.width / 16 * 13, bottom,
+        grid.width / 8, remaining / 2);
+    paintTimers(graph, attacker, defender);
 
     // Bottom -> Buttons.
     int statusBot = (int) status.getMaxY();
@@ -189,8 +218,9 @@ public class HnefataflPanel extends JPanel {
       drawSquare(graph, bounds, position[0], position[1], 0, true);
     }
 
-    // If a piece is selected, highlight it.
-    if (board.hasSelection()) {
+
+    // If a piece is selected (and the game is not paused), highlight it.
+    if (!board.isPaused() && board.hasSelection()) {
       graph.setColor(Color.YELLOW);
       drawSquare(graph, bounds, board.getSelectedRow(), board.getSelectedColumn(), 0, true);
     }
@@ -201,6 +231,11 @@ public class HnefataflPanel extends JPanel {
         // Draw grid borders.
         graph.setColor(new Color(0, 64, 0));
         drawSquare(graph, bounds, r, c, 0, false);
+
+        // If the game is paused, just paint grid.
+        if (board.isPaused()) {
+          continue;
+        }
 
         // Retrieve the state of the square. If it is empty, move on.
         BoardLayout.GridSquareState state = board.safeSquare(r, c);
@@ -235,6 +270,8 @@ public class HnefataflPanel extends JPanel {
     String turn;
     if (board.isDraw()) {
       turn = "Draw";
+    } else if (board.isPaused()) {
+      turn = "Paused";
     } else {
       turn = board.isAttackerTurn() ? "Attacker's " : "Defender's ";
       turn += board.isGameOver() ? "Won" : "Turn";
@@ -243,6 +280,25 @@ public class HnefataflPanel extends JPanel {
     // Draw the text.
     graph.setColor(Color.WHITE);
     drawText(graph, turn, bounds, true);
+  }
+
+  /**
+    Paint the timers.
+
+    @param graph The graphics handle.
+    @param attacker The bounds of the timer for the attacker's side.
+    @param defender The bounds of the timer for the defender's side.
+   */
+  private void paintTimers(Graphics graph, Rectangle attacker, Rectangle defender) {
+    // Paint attacker's timer.
+    String attackTime = board.getAttackerTimer().getTimeRemainingAsText();
+    graph.setColor(board.isAttackerTurn() ? Color.WHITE : Color.GRAY);
+    drawText(graph, attackTime, attacker, true);
+
+    // Paint defender's timer.
+    String defendTime = board.getDefenderTimer().getTimeRemainingAsText();
+    graph.setColor(board.isAttackerTurn() ? Color.GRAY : Color.WHITE);
+    drawText(graph, defendTime, defender, true);
   }
 
   /**

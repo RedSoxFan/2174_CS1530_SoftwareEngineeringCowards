@@ -1,6 +1,9 @@
 import static org.junit.Assert.*;
 
 import cowards.Board;
+import cowards.BoardLayout;
+import cowards.BoardLoader;
+import cowards.BoardWriter;
 import java.io.*;
 import java.util.*;
 import org.junit.Test;
@@ -18,10 +21,12 @@ public class SaveLoadTest {
       board.move(3, 4);
       board.select(5, 3);
       board.move(5, 2);
+      board.getAttackerTimer().reconfigure(100, 7);
+      board.getDefenderTimer().reconfigure(200, 7);
       String fileName = "SAVETEST";
       String saveTestPath = "saved_games/SAVETEST.txt";
       String testPath = "saved_games/TEST.txt";
-      assertTrue(board.saveBoard(fileName));
+      assertTrue(BoardWriter.saveBoard(fileName, board));
       Scanner saveReader = new Scanner(new File(saveTestPath));
       Scanner testReader = new Scanner(new File(testPath));
       
@@ -43,11 +48,46 @@ public class SaveLoadTest {
   @Test
   public void loadTest() {
     try {
-      Board board = new Board();
       String fileName = "TEST";
-      assertTrue(board.loadBoardFromSave(fileName));
+      Board board = BoardLoader.loadBoardFromSave(fileName);
+      assertNotNull(board);
     } catch (Exception ex) {
       fail();
     }
+  }
+
+  /**
+    Test that loading a bad file gives us null.
+   */
+  @Test
+  public void badLoadTest() {
+    String fileName = "DOESNTEXIST";
+    Board board = BoardLoader.loadBoardFromSave(fileName);
+    assertNull(board);
+  }
+
+
+  // For shortening lines using this class.
+  private BoardLayout.GridSquareState gss;
+
+  /**
+    Test the conversion of expected chars to GridSquareState.
+   */
+  @Test
+  public void charToStateConversionTest() {
+    assertEquals(gss.ATTACKER, BoardLoader.charToState('A'));
+    assertEquals(gss.DEFENDER, BoardLoader.charToState('D'));
+    assertEquals(gss.KING, BoardLoader.charToState('K'));
+    assertEquals(gss.EMPTY, BoardLoader.charToState(' '));
+  }
+
+  /**
+    Test the conversion of unexpected chars to GridSquareState.
+   */
+  @Test
+  public void unusualCharToStateConversionTest() {
+    assertEquals(gss.EMPTY, BoardLoader.charToState('F'));
+    assertEquals(gss.EMPTY, BoardLoader.charToState('Q'));
+    assertEquals(gss.EMPTY, BoardLoader.charToState('`'));
   }
 }

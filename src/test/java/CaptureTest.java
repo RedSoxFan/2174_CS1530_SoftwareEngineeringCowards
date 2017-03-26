@@ -27,7 +27,9 @@ public class CaptureTest {
       board.move(3, 6);
 
       assertEquals(Board.GridSquareState.EMPTY, board.square(3, 5));
-    } catch (GridOutOfBoundsException exception) {
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    } catch (GridOutOfBoundsException gx) {
       fail();
     }
   }
@@ -50,7 +52,9 @@ public class CaptureTest {
       board.move(6, 3);
 
       assertEquals(Board.GridSquareState.EMPTY, board.square(5, 3));
-    } catch (GridOutOfBoundsException exception) {
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    } catch (GridOutOfBoundsException gx) {
       fail();
     }
   }
@@ -70,7 +74,9 @@ public class CaptureTest {
       board.move(3, 3);
 
       assertEquals(Board.GridSquareState.EMPTY, board.square(3, 4));
-    } catch (GridOutOfBoundsException exception) {
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    } catch (GridOutOfBoundsException gx) {
       fail();
     }
   }
@@ -90,6 +96,8 @@ public class CaptureTest {
       board.move(3, 3);
 
       assertEquals(Board.GridSquareState.EMPTY, board.square(4, 3));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
     } catch (GridOutOfBoundsException exception) {
       fail();
     }
@@ -101,8 +109,7 @@ public class CaptureTest {
   @Test
   public void captureHorizontalDefenderAndKingTest() {
     try {
-      Board board = new Board();
-      board.loadBoardFromChar(new char[][]{
+      Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -134,8 +141,7 @@ public class CaptureTest {
   @Test
   public void captureVerticalDefenderAndKingTest() {
     try {
-      Board board = new Board();
-      board.loadBoardFromChar(new char[][]{
+      Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -185,6 +191,8 @@ public class CaptureTest {
       board.move(10, 8);
 
       assertEquals(Board.GridSquareState.EMPTY, board.square(10, 9));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
     } catch (GridOutOfBoundsException exception) {
       fail();
     }
@@ -214,6 +222,8 @@ public class CaptureTest {
       board.move(8, 10);
 
       assertEquals(Board.GridSquareState.EMPTY, board.square(9, 10));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
     } catch (GridOutOfBoundsException exception) {
       fail();
     }
@@ -240,6 +250,8 @@ public class CaptureTest {
       board.move(10, 8);
 
       assertEquals(Board.GridSquareState.EMPTY, board.square(10, 9));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
     } catch (GridOutOfBoundsException exception) {
       fail();
     }
@@ -266,6 +278,8 @@ public class CaptureTest {
       board.move(8, 10);
 
       assertEquals(Board.GridSquareState.EMPTY, board.square(9, 10));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
     } catch (GridOutOfBoundsException exception) {
       fail();
     }
@@ -277,8 +291,7 @@ public class CaptureTest {
   @Test
   public void captureHorizontalKingAndSpecialTest() {
     try {
-      Board board = new Board();
-      board.loadBoardFromChar(new char[][]{
+      Board board = new Board(new char[][]{
         {' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', 'K', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -310,8 +323,7 @@ public class CaptureTest {
   @Test
   public void captureVerticalKingAndSpecialTest() {
     try {
-      Board board = new Board();
-      board.loadBoardFromChar(new char[][]{
+      Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {'A', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', 'K', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -344,8 +356,7 @@ public class CaptureTest {
   @Test
   public void noCaptureKingHorizontalTwoAttackersTest() {
     try {
-      Board board = new Board();
-      board.loadBoardFromChar(new char[][]{
+      Board board = new Board(new char[][]{
         {' ', 'A', 'K', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -377,8 +388,7 @@ public class CaptureTest {
   @Test
   public void noCaptureKingVerticalTwoAttackersTest() {
     try {
-      Board board = new Board();
-      board.loadBoardFromChar(new char[][]{
+      Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {'A', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {'K', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -410,8 +420,7 @@ public class CaptureTest {
   @Test
   public void noCaptureKingHorizontalAttackerAndSpecialTest() {
     try {
-      Board board = new Board();
-      board.loadBoardFromChar(new char[][]{
+      Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {'K', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -443,8 +452,7 @@ public class CaptureTest {
   @Test
   public void noCaptureKingVerticalAttackerAndSpecialTest() {
     try {
-      Board board = new Board();
-      board.loadBoardFromChar(new char[][]{
+      Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {'K', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -475,8 +483,7 @@ public class CaptureTest {
   @Test
   public void noCaptureAttackerPassthroughTest() {
     try {
-      Board board = new Board();
-      board.loadBoardFromChar(new char[][]{
+      Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -507,8 +514,7 @@ public class CaptureTest {
   @Test
   public void noCaptureDefenderPassthroughTest() {
     try {
-      Board board = new Board();
-      board.loadBoardFromChar(new char[][]{
+      Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {'A', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -540,8 +546,7 @@ public class CaptureTest {
   @Test
   public void captureKingBasic() {
     try {
-      Board board = new Board();
-      board.loadBoardFromChar(new char[][]{
+      Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {'A', 'K', ' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -573,8 +578,7 @@ public class CaptureTest {
   @Test
   public void captureKingAtThrone() {
     try {
-      Board board = new Board();
-      board.loadBoardFromChar(new char[][]{
+      Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},

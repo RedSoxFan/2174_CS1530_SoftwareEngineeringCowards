@@ -36,6 +36,37 @@ public class TimerTest {
   }
 
   /**
+    Verify that the game timer's can be paused.
+   */
+  @Test
+  public void timerPauseTest() {
+    try {
+      Board board = new Board();
+      assertFalse(board.isPaused());
+      board.pauseTimers();
+      assertTrue(board.isPaused());
+    } catch (BadAsciiBoardFormatException ax) {
+      fail();
+    }
+  }
+
+  /**
+    Verify that the game timer's can be resumed.
+   */
+  @Test
+  public void timerResumeTest() {
+    try {
+      Board board = new Board();
+      board.pauseTimers();
+      assertTrue(board.isPaused());
+      board.resumeTimers();
+      assertFalse(board.isPaused());
+    } catch (BadAsciiBoardFormatException ax) {
+      fail();
+    }
+  }
+
+  /**
     Verify that the timer's converting seconds to text correctly.
    */
   @Test

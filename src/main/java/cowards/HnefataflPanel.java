@@ -72,6 +72,7 @@ public class HnefataflPanel extends JPanel {
           System.out.println("WARNING: The board geometry is not synced");
         }
       } else if (newGame != null && newGame.contains(event.getPoint())) {
+        board.pauseTimers();
         int selected = JOptionPane.showConfirmDialog(null, "Do you really want to start new game?", 
             "New Game", JOptionPane.YES_NO_OPTION);
         if (selected == JOptionPane.YES_OPTION) {
@@ -82,41 +83,48 @@ public class HnefataflPanel extends JPanel {
             System.exit(1);
           }
         }
+        board.resumeTimers();
       } else if (saveGame != null && saveGame.contains(event.getPoint())) {
         if (board.isGameOver()) {
           JOptionPane.showMessageDialog(null, "You cannot save a board in a game over state.");
         } else {
+          board.pauseTimers();
           String fileName = JOptionPane.showInputDialog(null, 
               "Enter the name of your save game file");
-          if (fileName.equals("")) {
-            JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
-          } else if (fileName != null) {
-            if (BoardWriter.saveBoard(fileName, board)) {
+          if (fileName != null) {
+            if (fileName.equals("")) {
+              JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
+            } else if (BoardWriter.saveBoard(fileName, board)) {
               JOptionPane.showMessageDialog(null, "Successfully saved game file.");
             } else {
               JOptionPane.showMessageDialog(null, "Error saving game file.");
             }
           }
+          board.resumeTimers();
         }
       } else if (loadGame != null && loadGame.contains(event.getPoint())) {
+        board.pauseTimers();
         String fileName = JOptionPane.showInputDialog(null, 
             "Enter the name of the game you want to load");
-        if (fileName.equals("")) {
-          JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
-        } else if (fileName != null) {
-          if (null != (board = BoardLoader.loadBoardFromSave(fileName))) {
+        if (fileName != null) {
+          if (fileName.equals("")) {
+            JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
+          } else if (null != (board = BoardLoader.loadBoardFromSave(fileName))) {
             JOptionPane.showMessageDialog(null, "Successfully loaded game file.");
             repaint();
           } else {
             JOptionPane.showMessageDialog(null, "Error loading game file.");
           }
         }
+        board.resumeTimers();
       } else if (exitGame != null && exitGame.contains(event.getPoint())) {
+        board.pauseTimers();
         int selected = JOptionPane.showConfirmDialog(null, "Do you really want to exit the game?", 
             "Exit Game", JOptionPane.YES_NO_OPTION);
         if (selected == JOptionPane.YES_OPTION) {
           System.exit(0);
         }
+        board.resumeTimers();
       }
     }
   }
@@ -207,8 +215,9 @@ public class HnefataflPanel extends JPanel {
       drawSquare(graph, bounds, position[0], position[1], 0, true);
     }
 
-    // If a piece is selected, highlight it.
-    if (board.hasSelection()) {
+
+    // If a piece is selected (and the game is not paused), highlight it.
+    if (!board.isPaused() && board.hasSelection()) {
       graph.setColor(Color.YELLOW);
       drawSquare(graph, bounds, board.getSelectedRow(), board.getSelectedColumn(), 0, true);
     }
@@ -219,6 +228,11 @@ public class HnefataflPanel extends JPanel {
         // Draw grid borders.
         graph.setColor(new Color(0, 64, 0));
         drawSquare(graph, bounds, r, c, 0, false);
+
+        // If the game is paused, just paint grid.
+        if (board.isPaused()) {
+          continue;
+        }
 
         // Retrieve the state of the square. If it is empty, move on.
         BoardLayout.GridSquareState state = board.safeSquare(r, c);
@@ -253,6 +267,8 @@ public class HnefataflPanel extends JPanel {
     String turn;
     if (board.isDraw()) {
       turn = "Draw";
+    } else if (board.isPaused()) {
+      turn = "Paused";
     } else {
       turn = board.isAttackerTurn() ? "Attacker's " : "Defender's ";
       turn += board.isGameOver() ? "Won" : "Turn";

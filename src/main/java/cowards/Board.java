@@ -245,6 +245,34 @@ public class Board extends BoardLayout {
   }
 
   /**
+    Pause the timers. This is useful for save and load game operations where a
+    dialog has focus.
+    */
+  public void pauseTimers() {
+    attackerTimer.stop(true);
+    defenderTimer.stop(true);
+  }
+
+  /**
+    Resume the timers. This is useful for save and load game operations where a
+    dialog has focus.
+   */
+  public void resumeTimers() {
+    if (!gameOver) {
+      BoardTimer timer = attackerTurn ? attackerTimer : defenderTimer;
+      timer.start();
+    }
+  }
+
+  /**
+    Check whether the timers are paused.
+   */
+  public boolean isPaused() {
+    return (!isGameOver() && !attackerTimer.isCountingDown()
+        && !defenderTimer.isCountingDown());
+  }
+
+  /**
     Returns a copy of the LinkedList describing the recent attacker move
     history.
    */

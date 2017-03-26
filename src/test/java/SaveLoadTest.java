@@ -21,6 +21,8 @@ public class SaveLoadTest {
       board.move(3, 4);
       board.select(5, 3);
       board.move(5, 2);
+      board.getAttackerTimer().reconfigure(100, 7);
+      board.getDefenderTimer().reconfigure(200, 7);
       String fileName = "SAVETEST";
       String saveTestPath = "saved_games/SAVETEST.txt";
       String testPath = "saved_games/TEST.txt";

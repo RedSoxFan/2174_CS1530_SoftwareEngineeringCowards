@@ -7,30 +7,117 @@ import java.util.*;
 import javax.swing.*;
 
 public class Board extends BoardLayout {
+  /**
+    The amount of seconds to initialize the timers to. By default, this
+    is 300 seconds or 5 minutes.
+   */
+  private static int TIMER_INITIAL = 300;
+
+  /**
+    The amount of seconds to append to the timers after a turn has been
+    ended. By default, this is 3 seconds.
+   */
+  private static int TIMER_APPEND = 3;
+
+  /**
+    Set the amount of seconds to initialize timers to. Any value less than
+    or equal to zero will be set as the default of 300 seconds.
+
+    @param initial The new amount of seconds to initialize timers to.
+   */
+  public static void setTimerInitial(int initial) {
+    TIMER_INITIAL = initial > 0 ? initial : 300;
+  }  
+  
+  /**
+    Set the amount of seconds to append to the timers after each turn. Any
+    negative value will be treated as the default of 3 seconds.
+
+    NOTE: Unlike setTimerInitial, zero is not treated as the default value
+    since zero is a valid amount of seconds to append.
+
+    @param append The new amount of seconds to initialize timers to.
+   */
+  public static void setTimerAppend(int append) {
+    TIMER_APPEND = append >= 0 ? append : 3;
+  }
+
+  /**
+    The internal game board states.
+   */
   private GridSquareState[][] board;
+
+  /**
+    Whether or not it is the attacker's turn.
+   */
   private boolean attackerTurn = true;
+
+  /**
+    Whether or not the game is over.
+   */
   private boolean gameOver = false;
 
-  // No more than 3 back-and-forth motions (6 moves total).
+  /**
+    There can be no more than 3 back-and-forth motions (6 moves total).
+   */
   private final int maxRepeatMoves = 6;
+
+  /**
+    The list of attacker's moves.
+   */
   private LinkedList<int []> attackerMoves;
+
+  /**
+    The list of defender's moves.
+   */
   private LinkedList<int []> defenderMoves;
 
+  /**
+    The maximum number of moves allowed without a capture.
+   */
   private final int maxMovesWoCapture = 50;
+
+  /**
+    The current number of moves without a capture.
+   */
   private int movesWoCapture = 0;
 
+  /**
+    The currently selected row.
+   */
   private int selRow = -1;
+
+  /**
+    The currently selected column.
+   */
   private int selCol = -1;
 
-  // Keep track of king to make checking for king captures easier.
+  /**
+    The current row containing the king.
+   */
   private int kingRow = 5;
+
+  /**
+    The current column containing the king.
+   */
   private int kingCol = 5;
+
+  /**
+    The timer for the attacking side.
+   */
+  private BoardTimer attackerTimer;
+
+  /**
+    The timer for the defending side.
+   */
+  private BoardTimer defenderTimer;
 
   /**
     Constructor.
   */
   public Board() throws BadAsciiBoardFormatException {
     this(INITIAL_BOARD);
+    initializeTimers(TIMER_INITIAL, TIMER_INITIAL, TIMER_APPEND, attackerTurn);
   }
 
   /**
@@ -47,14 +134,19 @@ public class Board extends BoardLayout {
     kingCol        = orig.getKingCol();
     attackerTurn   = orig.isAttackerTurn();
     gameOver       = orig.isGameOver();
+
+    initializeTimers(orig.getAttackerTimer().getTimeRemaining(),
+        orig.getDefenderTimer().getTimeRemaining(),
+        orig.getAttackerTimer().getTimeAppended(),
+        attackerTurn);
   }
 
   /**
     Constructor.
    */
-  public Board(
-      GridSquareState[][] innerBoard, LinkedList<int []> am,
-      LinkedList<int []> dm, int mwoCap, int kr, int kc, boolean at) {
+  public Board(GridSquareState[][] innerBoard, LinkedList<int []> am,
+      LinkedList<int []> dm, int mwoCap, int kr, int kc, boolean at,
+      int atc, int dtc, int append) {
     board = innerBoard;
 
     attackerMoves = am;
@@ -65,6 +157,8 @@ public class Board extends BoardLayout {
     kingCol        = kc;
     attackerTurn   = at;
     gameOver       = false;
+
+    initializeTimers(atc, dtc, append, attackerTurn);
   }
 
   /**
@@ -102,6 +196,85 @@ public class Board extends BoardLayout {
         }
       }
     }
+
+    initializeTimers(TIMER_INITIAL, TIMER_INITIAL, TIMER_APPEND, attackerTurn);
+  }
+
+  /**
+    Initialize the timers.
+
+    @param curAtt The time to start the attacker's timer at.
+    @param curDef The time to start the defender's timer at.
+    @param append The amount of time to append after each turn.
+    @param stAtt Whether to start the attacker's (true) or defender's (false) timer.
+   */
+  private void initializeTimers(int curAtt, int curDef, int append, boolean stAtt) {
+    // Initialize timers.
+    attackerTimer = new BoardTimer(curAtt, append);
+    defenderTimer = new BoardTimer(curDef, append);
+
+    // Start the appropriate timer.
+    if (stAtt) {
+      attackerTimer.start();
+    } else if (!stAtt) {
+      defenderTimer.start();
+    }
+
+    // Check to make sure neither timer hits zero.
+    final java.util.Timer timer = new java.util.Timer();
+    timer.scheduleAtFixedRate(new java.util.TimerTask() {
+      public void run() {
+        // If paused, return.
+        if (isPaused()) {
+          return;
+        }
+
+        // If the game is over, kill the timers, kill this timer, and return.
+        if (isGameOver()) {
+          attackerTimer.kill();
+          defenderTimer.kill();
+          timer.cancel();
+          return;
+        }
+
+        // If either timer hits zero, end the game.
+        if (isAttackerTurn() && attackerTimer.getTimeRemaining() <= 0) {
+          gameOver = true;
+          attackerTurn = false;
+        } else if (!isAttackerTurn() && defenderTimer.getTimeRemaining() <= 0) {
+          gameOver = true;
+          attackerTurn = true;
+        }
+      }
+    }, 1, 500);
+  }
+
+  /**
+    Pause the timers. This is useful for save and load game operations where a
+    dialog has focus.
+    */
+  public void pauseTimers() {
+    attackerTimer.stop(true);
+    defenderTimer.stop(true);
+  }
+
+  /**
+    Resume the timers. This is useful for save and load game operations where a
+    dialog has focus.
+   */
+  public void resumeTimers() {
+    if (!gameOver) {
+      BoardTimer timer = attackerTurn ? attackerTimer : defenderTimer;
+      timer.start();
+    }
+  }
+
+  /**
+    Check whether the timers are paused.
+   */
+  public boolean isPaused() {
+    return (!isGameOver() && !attackerTimer.isCountingDown()
+        && !defenderTimer.isCountingDown());
   }
 
   /**
@@ -178,7 +351,40 @@ public class Board extends BoardLayout {
     @param turn Boolean of whether it is the attacker's turn or not.
    */
   public void setAttackerTurn(boolean turn) {
+    // Set the turn.
     attackerTurn = turn;
+
+    if (attackerTurn) {
+      // If the defender's timer is running, stop it.
+      if (defenderTimer.isCountingDown()) {
+        defenderTimer.stop(false);
+      }
+
+      // Start the attacker's timer.
+      attackerTimer.start();
+    } else {
+      // If the attacker's timer is running, stop it.
+      if (attackerTimer.isCountingDown()) {
+        attackerTimer.stop(false);
+      }
+
+      // Start the defender's timer.
+      defenderTimer.start();
+    }
+  }
+
+  /**
+    Retrieve the timer for the attacker's side.
+   */
+  public BoardTimer getAttackerTimer() {
+    return attackerTimer;
+  }
+
+  /**
+    Retrieve the timer for the defender's side.
+   */
+  public BoardTimer getDefenderTimer() {
+    return defenderTimer;
   }
 
   /**
@@ -426,7 +632,7 @@ public class Board extends BoardLayout {
   private void handleEndMove(int row, int col) throws GridOutOfBoundsException {
     // Check to see if move was winning move.
     if (isGameOver()) {
-      // King was captured.
+      // King was captured or timer ran out.
     } else if (square(row, col).isKing() && inCornerLocation(row, col)) {
       // If the king escaped we won.
       setGameOver(true);

@@ -544,7 +544,7 @@ public class CaptureTest {
     Test to make sure the king can be captured.
    */
   @Test
-  public void captureKingBasic() {
+  public void captureKingBasicTest() {
     try {
       Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -576,7 +576,7 @@ public class CaptureTest {
     Test to make sure the king can be captured at the throne.
    */
   @Test
-  public void captureKingAtThrone() {
+  public void captureKingAtThroneTest() {
     try {
       Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -604,8 +604,11 @@ public class CaptureTest {
     }
   }  
 
+  /**
+    Test to make sure attackers are captured by shield wall.
+  */
   @Test
-  public void shieldWallCaptureAttackers() {
+  public void shieldWallCaptureAttackersTest() {
     try {
       Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -638,8 +641,11 @@ public class CaptureTest {
     }
   }
 
+  /**
+    Test to make sure attackers are captured by shield wall and corner.
+  */
   @Test
-  public void shieldWallCornerCaptureAttackers() {
+  public void shieldWallCornerCaptureAttackersTest() {
     try {
       Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -672,8 +678,11 @@ public class CaptureTest {
     }
   }
 
+  /**
+    Test to make sure defenders are captured by shield wall.
+  */
   @Test
-  public void shieldWallCaptureDefenders() {
+  public void shieldWallCaptureDefendersTest() {
     try {
       Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -706,8 +715,11 @@ public class CaptureTest {
     }
   }
 
+  /**
+    Test to make sure defenders are captured by shield wall and corner.
+  */
   @Test
-  public void shieldWallCornerCaptureDefenders() {
+  public void shieldWallCornerCaptureDefendersTest() {
     try {
       Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -740,8 +752,11 @@ public class CaptureTest {
     }
   }
 
+  /**
+    Test to make sure king is not captured by shield wall.
+  */
   @Test
-  public void shieldWallCaptureDefendersExceptKing() {
+  public void shieldWallCaptureDefendersExceptKingTest() {
     try {
       Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},

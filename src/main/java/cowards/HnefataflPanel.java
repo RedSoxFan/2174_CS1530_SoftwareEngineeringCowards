@@ -77,6 +77,7 @@ public class HnefataflPanel extends JPanel {
             "New Game", JOptionPane.YES_NO_OPTION);
         if (selected == JOptionPane.YES_OPTION) {
           try {
+            board.setGameOver(true);
             board = new Board();
           } catch (BadAsciiBoardFormatException bx) {
             JOptionPane.showMessageDialog(null, "Critical: Cannot load initial board.");
@@ -107,6 +108,7 @@ public class HnefataflPanel extends JPanel {
         String fileName = JOptionPane.showInputDialog(null, 
             "Enter the name of the game you want to load");
         if (fileName != null) {
+          board.setGameOver(true);
           if (fileName.equals("")) {
             JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
           } else if (null != (board = BoardLoader.loadBoardFromSave(fileName))) {
@@ -115,6 +117,7 @@ public class HnefataflPanel extends JPanel {
           } else {
             JOptionPane.showMessageDialog(null, "Error loading game file.");
           }
+          board.setGameOver(false);
         }
         board.resumeTimers();
       } else if (exitGame != null && exitGame.contains(event.getPoint())) {

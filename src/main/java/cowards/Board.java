@@ -224,6 +224,11 @@ public class Board extends BoardLayout {
     final java.util.Timer timer = new java.util.Timer();
     timer.scheduleAtFixedRate(new java.util.TimerTask() {
       public void run() {
+        // If paused, return.
+        if (isPaused()) {
+          return;
+        }
+
         // If the game is over, kill the timers, kill this timer, and return.
         if (isGameOver()) {
           attackerTimer.kill();

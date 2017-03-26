@@ -82,11 +82,21 @@ public class BoardTimer {
   }
 
   /**
+    Retrieve whether or not the timer is killed.
+   */
+  public boolean isKilled() {
+    return timer == null;
+  }
+
+  /**
     Prevent all future use of this timer.
    */
   public void kill() {
     countdown.set(false);
-    timer.cancel();
+    if (timer != null) {
+      timer.cancel();
+      timer = null;
+    }
   }
 
   /**
@@ -106,7 +116,7 @@ public class BoardTimer {
     Start counting down the timer.
    */
   public void start() {
-    countdown.set(true);
+    countdown.set(!isKilled());
   }
 
   /**

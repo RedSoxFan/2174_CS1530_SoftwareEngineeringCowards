@@ -238,4 +238,18 @@ public class TimerTest {
       fail();
     }
   }
+
+  /**
+    Test to make sure timers can be killed.
+   */
+  @Test
+  public void timerKillTest() {
+    BoardTimer timer = new BoardTimer(300, 3);
+    timer.start();
+    assertFalse(timer.isKilled());
+    timer.kill();
+    assertTrue(timer.isKilled());
+    timer.start();
+    assertFalse(timer.isCountingDown());
+  }
 }

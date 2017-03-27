@@ -604,435 +604,257 @@ public class Board extends BoardLayout {
   */
   private boolean isShieldWall(String edge, String direction, int row, int col) {
     GridSquareState lastMovedPiece = safeSquare(row, col);
-    GridSquareState curPiece;
-    GridSquareState wallPiece;
     boolean shieldWall = false;
 
-    if (direction.equals("Up")) {
-      // Check if shieldwall formed from bottom up.
-      if (lastMovedPiece.isDefending()) {
-        int attackerCount = 0;
-        int curRow = row - 1;
-        curPiece = safeSquare(curRow, col);
-
-        // Determine which side wall might be on.
-        if (edge.equals("Left")) {
-          wallPiece = safeSquare(curRow, col + 1);
-        } else {
-          wallPiece = safeSquare(curRow, col - 1);
-        }
-
-        // Move up one square at a time checking for shield wall.
-        while (!curPiece.isEmpty()) {
-          // Check for multiple attackers.
-          if (curPiece.isAttacking()) {
-            // Check if defender wall continues.
-            if (wallPiece.isDefending()) {
-              attackerCount++;
-            } else {
-              // Break if shield wall not present.
-              break;
-            }
-          } else if ((curPiece.isDefending() && attackerCount >= 2)) {
-            // Shield wall exists.
-            shieldWall = true;
-            break;
-          }
-          curPiece = safeSquare(--curRow, col);
-
-          // Determine which side wall might be on.
-          if (edge.equals("Left")) {
-            wallPiece = safeSquare(curRow, col + 1);
-          } else {
-            wallPiece = safeSquare(curRow, col - 1);
-          }
-        }
-
-        // Check for corner shield wall capture
-        if (inCornerLocation(curRow, col) && attackerCount >= 2) {
-          shieldWall = true;
-        }
-
-        // Change captured pieces to empty.
-        if (shieldWall) {
-          for (int i = row - 1; i > curRow; --i) {
-            if (board[i][col] != GridSquareState.KING) {
-              board[i][col] = GridSquareState.EMPTY;
-            }
-          }
-        }
-      } else {
-        int defenderCount = 0;
-        int curRow = row - 1;
-        curPiece = safeSquare(curRow, col);
-
-        // Determine which side wall might be on.
-        if (edge.equals("Left")) {
-          wallPiece = safeSquare(curRow, col + 1);
-        } else {
-          wallPiece = safeSquare(curRow, col - 1);
-        }
-
-        // Move up one square at a time checking for shield wall.
-        while (!curPiece.isEmpty()) {
-          // Check for multiple defenders.
-          if (curPiece.isDefending()) {
-            // Check if attacker wall continues.
-            if (wallPiece.isAttacking()) {
-              defenderCount++;
-            } else {
-              // Break if shield wall not present.
-              break;
-            }
-          } else if ((curPiece.isAttacking() && defenderCount >= 2)) {
-            // Shield wall exists.
-            shieldWall = true;
-            break;
-          }
-          curPiece = safeSquare(--curRow, col);
-
-          // Determine which side wall might be on.
-          if (edge.equals("Left")) {
-            wallPiece = safeSquare(curRow, col + 1);
-          } else {
-            wallPiece = safeSquare(curRow, col - 1);
-          }
-        }
-
-        // Check for corner shield wall capture
-        if (inCornerLocation(curRow, col) && defenderCount >= 2) {
-          shieldWall = true;
-        }
-
-        // Change captured pieces to empty.
-        if (shieldWall) {
-          for (int i = row - 1; i > curRow; --i) {
-            if (board[i][col] != GridSquareState.KING) {
-              board[i][col] = GridSquareState.EMPTY;
-            }
-          }
-        }
-      }
-    } else if (direction.equals("Down")) {
-      // Check if shieldwall formed from top down.
-      if (lastMovedPiece.isDefending()) {
-        int attackerCount = 0;
-        int curRow = row + 1;
-        curPiece = safeSquare(curRow, col);
-
-        // Determine which side wall might be on.
-        if (edge.equals("Left")) {
-          wallPiece = safeSquare(curRow, col + 1);
-        } else {
-          wallPiece = safeSquare(curRow, col - 1);
-        }
-
-        // Move up one square at a time checking for shield wall.
-        while (!curPiece.isEmpty()) {
-          // Check for multiple attackers.
-          if (curPiece.isAttacking()) {
-            // Check if defender wall continues.
-            if (wallPiece.isDefending()) {
-              attackerCount++;
-            } else {
-              // Break if shield wall not present.
-              break;
-            }
-          } else if ((curPiece.isDefending() && attackerCount >= 2)) {
-            // Shield wall exists.
-            shieldWall = true;
-            break;
-          }
-          curPiece = safeSquare(++curRow, col);
-
-          // Determine which side wall might be on.
-          if (edge.equals("Left")) {
-            wallPiece = safeSquare(curRow, col + 1);
-          } else {
-            wallPiece = safeSquare(curRow, col - 1);
-          }
-        }
-
-        // Check for corner shield wall capture
-        if (inCornerLocation(curRow, col) && attackerCount >= 2) {
-          shieldWall = true;
-        }
-
-        // Change captured pieces to empty.
-        if (shieldWall) {
-          for (int i = row + 1; i < curRow; ++i) {
-            if (board[i][col] != GridSquareState.KING) {
-              board[i][col] = GridSquareState.EMPTY;
-            }
-          }
-        }
-      } else {
-        int defenderCount = 0;
-        int curRow = row + 1;
-        curPiece = safeSquare(curRow, col);
-
-        // Determine which side wall might be on.
-        if (edge.equals("Left")) {
-          wallPiece = safeSquare(curRow, col + 1);
-        } else {
-          wallPiece = safeSquare(curRow, col - 1);
-        }
-
-        // Move up one square at a time checking for shield wall.
-        while (!curPiece.isEmpty()) {
-          // Check for multiple defenders.
-          if (curPiece.isDefending()) {
-            // Check if attacker wall continues.
-            if (wallPiece.isAttacking()) {
-              defenderCount++;
-            } else {
-              // Break if shield wall not present.
-              break;
-            }
-          } else if ((curPiece.isAttacking() && defenderCount >= 2)) {
-            // Shield wall exists.
-            shieldWall = true;
-            break;
-          }
-          curPiece = safeSquare(++curRow, col);
-
-          // Determine which side wall might be on.
-          if (edge.equals("Left")) {
-            wallPiece = safeSquare(curRow, col + 1);
-          } else {
-            wallPiece = safeSquare(curRow, col - 1);
-          }
-        }
-
-        // Check for corner shield wall capture
-        if (inCornerLocation(curRow, col) && defenderCount >= 2) {
-          shieldWall = true;
-        }
-
-        // Change captured pieces to empty.
-        if (shieldWall) {
-          for (int i = row + 1; i < curRow; ++i) {
-            if (board[i][col] != GridSquareState.KING) {
-              board[i][col] = GridSquareState.EMPTY;
-            }
-          }
-        }
-      }
-    } else if (direction.equals("Left")) {
-      // Check if shieldwall formed from left to right.
-      if (lastMovedPiece.isDefending()) {
-        int attackerCount = 0;
-        int curCol = col + 1;
-        curPiece = safeSquare(row, curCol);
-
-        // Determine which side wall might be on.
-        if (edge.equals("Top")) {
-          wallPiece = safeSquare(row + 1, curCol);
-        } else {
-          wallPiece = safeSquare(row - 1, curCol);
-        }
-
-        // Move up one square at a time checking for shield wall.
-        while (!curPiece.isEmpty()) {
-          // Check for multiple attackers.
-          if (curPiece.isAttacking()) {
-            // Check if defender wall continues.
-            if (wallPiece.isDefending()) {
-              attackerCount++;
-            } else {
-              // Break if shield wall not present.
-              break;
-            }
-          } else if ((curPiece.isDefending() && attackerCount >= 2)) {
-            // Shield wall exists.
-            shieldWall = true;
-            break;
-          }
-          curPiece = safeSquare(row, ++curCol);
-
-          // Determine which side wall might be on.
-          if (edge.equals("Top")) {
-            wallPiece = safeSquare(row + 1, curCol);
-          } else {
-            wallPiece = safeSquare(row - 1, curCol);
-          }
-        }
-
-        // Check for corner shield wall capture
-        if (inCornerLocation(row, curCol) && attackerCount >= 2) {
-          shieldWall = true;
-        }
-
-        // Change captured pieces to empty.
-        if (shieldWall) {
-          for (int i = col + 1; i < curCol; ++i) {
-            if (board[row][i] != GridSquareState.KING) {
-              board[row][i] = GridSquareState.EMPTY;
-            }
-          }
-        }
-      } else {
-        int defenderCount = 0;
-        int curCol = col + 1;
-        curPiece = safeSquare(row, curCol);
-
-        // Determine which side wall might be on.
-        if (edge.equals("Top")) {
-          wallPiece = safeSquare(row + 1, curCol);
-        } else {
-          wallPiece = safeSquare(row - 1, curCol);
-        }
-
-        // Move up one square at a time checking for shield wall.
-        while (!curPiece.isEmpty()) {
-          // Check for multiple attackers.
-          if (curPiece.isDefending()) {
-            // Check if defender wall continues.
-            if (wallPiece.isAttacking()) {
-              defenderCount++;
-            } else {
-              // Break if shield wall not present.
-              break;
-            }
-          } else if ((curPiece.isAttacking() && defenderCount >= 2)) {
-            // Shield wall exists.
-            shieldWall = true;
-            break;
-          }
-          curPiece = safeSquare(row, ++curCol);
-
-          // Determine which side wall might be on.
-          if (edge.equals("Top")) {
-            wallPiece = safeSquare(row + 1, curCol);
-          } else {
-            wallPiece = safeSquare(row - 1, curCol);
-          }
-        }
-
-        // Check for corner shield wall capture
-        if (inCornerLocation(row, curCol) && defenderCount >= 2) {
-          shieldWall = true;
-        }
-
-        // Change captured pieces to empty.
-        if (shieldWall) {
-          for (int i = col + 1; i < curCol; ++i) {
-            if (board[row][i] != GridSquareState.KING) {
-              board[row][i] = GridSquareState.EMPTY;
-            }
-          }
-        }
-      }
+    if (lastMovedPiece.isDefending()) {
+      shieldWall = defenderWall(edge, direction, row, col);
     } else {
-      // Check if shieldwall formed from right to left.
-      if (lastMovedPiece.isDefending()) {
-        int attackerCount = 0;
-        int curCol = col - 1;
-        curPiece = safeSquare(row, curCol);
-
-        // Determine which side wall might be on.
-        if (edge.equals("Top")) {
-          wallPiece = safeSquare(row + 1, curCol);
-        } else {
-          wallPiece = safeSquare(row - 1, curCol);
-        }
-
-        // Move up one square at a time checking for shield wall.
-        while (!curPiece.isEmpty()) {
-          // Check for multiple attackers.
-          if (curPiece.isAttacking()) {
-            // Check if defender wall continues.
-            if (wallPiece.isDefending()) {
-              attackerCount++;
-            } else {
-              // Break if shield wall not present.
-              break;
-            }
-          } else if ((curPiece.isDefending() && attackerCount >= 2)) {
-            // Shield wall exists.
-            shieldWall = true;
-            break;
-          }
-          curPiece = safeSquare(row, --curCol);
-
-          // Determine which side wall might be on.
-          if (edge.equals("Top")) {
-            wallPiece = safeSquare(row + 1, curCol);
-          } else {
-            wallPiece = safeSquare(row - 1, curCol);
-          }
-        }
-
-        // Check for corner shield wall capture
-        if (inCornerLocation(row, curCol) && attackerCount >= 2) {
-          shieldWall = true;
-        }
-
-        // Change captured pieces to empty.
-        if (shieldWall) {
-          for (int i = col - 1; i > curCol; --i) {
-            if (board[row][i] != GridSquareState.KING) {
-              board[row][i] = GridSquareState.EMPTY;
-            }
-          }
-        }
-      } else {
-        int defenderCount = 0;
-        int curCol = col - 1;
-        curPiece = safeSquare(row, curCol);
-
-        // Determine which side wall might be on.
-        if (edge.equals("Top")) {
-          wallPiece = safeSquare(row + 1, curCol);
-        } else {
-          wallPiece = safeSquare(row - 1, curCol);
-        }
-
-        // Move up one square at a time checking for shield wall.
-        while (!curPiece.isEmpty()) {
-          // Check for multiple attackers.
-          if (curPiece.isDefending()) {
-            // Check if defender wall continues.
-            if (wallPiece.isAttacking()) {
-              defenderCount++;
-            } else {
-              // Break if shield wall not present.
-              break;
-            }
-          } else if ((curPiece.isAttacking() && defenderCount >= 2)) {
-            // Shield wall exists.
-            shieldWall = true;
-            break;
-          }
-          curPiece = safeSquare(row, --curCol);
-
-          // Determine which side wall might be on.
-          if (edge.equals("Top")) {
-            wallPiece = safeSquare(row + 1, curCol);
-          } else {
-            wallPiece = safeSquare(row - 1, curCol);
-          }
-        }
-
-        // Check for corner shield wall capture
-        if (inCornerLocation(row, curCol) && defenderCount >= 2) {
-          shieldWall = true;
-        }
-
-        // Change captured pieces to empty.
-        if (shieldWall) {
-          for (int i = col - 1; i > curCol; --i) {
-            if (board[row][i] != GridSquareState.KING) {
-              board[row][i] = GridSquareState.EMPTY;
-            }
-          }
-        }
-      }
+      shieldWall = attackerWall(edge, direction, row, col);
     }
 
     return shieldWall;
   }
 
+  /**
+    Check in specified direction if a defender shieldwall formed.
+
+    @param edge The edge to check on.
+    @param direction The direction to look for a shieldwall in.
+    @param row The row of the move.
+    @param col The column of the move.
+
+    @return Whether or not a defender shieldwall was formed.
+  */
+  private boolean defenderWall(String edge, String direction, int row, int col) {
+    GridSquareState lastMovedPiece = safeSquare(row, col);
+    GridSquareState curPiece;
+    GridSquareState wallPiece;
+    boolean shieldWall = false;
+    int attackerCount = 0;
+    int curRow = 0;
+    int curCol = 0;
+
+    // Determine direction to traverse.
+    if (direction.equals("Up")) {
+      curRow = row - 1;
+      curPiece = safeSquare(curRow, col);
+    } else if (direction.equals("Down")) {
+      curRow = row + 1;
+      curPiece = safeSquare(curRow, col);
+    } else if (direction.equals("Left")) {
+      curCol = col + 1;
+      curPiece = safeSquare(row, curCol);
+    } else {
+      curCol = col - 1;
+      curPiece = safeSquare(row, curCol);
+    } 
+
+    // Move one square at a time checking for shield wall.
+    while (!curPiece.isEmpty()) {
+      // Determine which side wall might be on.
+      if (edge.equals("Left")) {
+        wallPiece = safeSquare(curRow, col + 1);
+      } else if (edge.equals("Right")) {
+        wallPiece = safeSquare(curRow, col - 1);
+      } else if (edge.equals("Top")) {
+        wallPiece = safeSquare(row + 1, curCol);
+      } else {
+        wallPiece = safeSquare(row - 1, curCol);
+      }
+      
+      // Check for multiple attackers.
+      if (curPiece.isAttacking()) {
+        // Check if defender wall continues.
+        if (wallPiece.isDefending()) {
+          attackerCount++;
+        } else {
+          // Break if shield wall not present.
+          break;
+        }
+      } else if ((curPiece.isDefending() && attackerCount >= 2)) {
+        // Shield wall exists.
+        shieldWall = true;
+        break;
+      }
+
+      // Determine direction to traverse.
+      if (direction.equals("Up")) {
+        curRow = curRow - 1;
+        curPiece = safeSquare(curRow, col);
+      } else if (direction.equals("Down")) {
+        curRow = curRow + 1;
+        curPiece = safeSquare(curRow, col);
+      } else if (direction.equals("Left")) {
+        curCol = curCol + 1;
+        curPiece = safeSquare(row, curCol);
+      } else {
+        curCol = curCol - 1;
+        curPiece = safeSquare(row, curCol);
+      }  
+    }
+
+    // Check for corner shield wall capture
+    if (direction.equals("Up") || direction.equals("Down")) {
+      if (inCornerLocation(curRow, col) && attackerCount >= 2) {
+        shieldWall = true;
+      }
+    } else {
+      if (inCornerLocation(row, curCol) && attackerCount >= 2) {
+        shieldWall = true;
+      }
+    }   
+
+    // Change captured pieces to empty.
+    if (shieldWall) {
+      if (direction.equals("Up")) {
+        for (int i = row - 1; i > curRow; --i) {
+          if (board[i][col] != GridSquareState.KING) {
+            board[i][col] = GridSquareState.EMPTY;
+          }
+        }
+      } else if (direction.equals("Down")) {
+        for (int i = row + 1; i < curRow; ++i) {
+          if (board[i][col] != GridSquareState.KING) {
+            board[i][col] = GridSquareState.EMPTY;
+          }
+        }
+      } else if (direction.equals("Left")) {
+        for (int i = col + 1; i < curCol; ++i) {
+          if (board[row][i] != GridSquareState.KING) {
+            board[row][i] = GridSquareState.EMPTY;
+          }
+        }
+      } else {
+        for (int i = col - 1; i > curCol; --i) {
+          if (board[row][i] != GridSquareState.KING) {
+            board[row][i] = GridSquareState.EMPTY;
+          }
+        }
+      } 
+    }
+
+    return shieldWall;
+  }  
+
+  /**
+    Check in specified direction if an attacker shieldwall formed.
+
+    @param edge The edge to check on.
+    @param direction The direction to look for a shieldwall in.
+    @param row The row of the move.
+    @param col The column of the move.
+
+    @return Whether or not an attacker shieldwall was formed.
+  */
+  private boolean attackerWall(String edge, String direction, int row, int col) {
+    GridSquareState curPiece;
+    GridSquareState wallPiece;
+    boolean shieldWall = false;
+    int defenderCount = 0;
+    int curRow = 0;
+    int curCol = 0;
+
+    // Determine direction to traverse.
+    if (direction.equals("Up")) {
+      curRow = row - 1;
+      curPiece = safeSquare(curRow, col);
+    } else if (direction.equals("Down")) {
+      curRow = row + 1;
+      curPiece = safeSquare(curRow, col);
+    } else if (direction.equals("Left")) {
+      curCol = col + 1;
+      curPiece = safeSquare(row, curCol);
+    } else {
+      curCol = col - 1;
+      curPiece = safeSquare(row, curCol);
+    }
+
+    // Move one square at a time checking for shield wall.
+    while (!curPiece.isEmpty()) {
+      // Determine which side wall might be on.
+      if (edge.equals("Left")) {
+        wallPiece = safeSquare(curRow, col + 1);
+      } else if (edge.equals("Right")) {
+        wallPiece = safeSquare(curRow, col - 1);
+      } else if (edge.equals("Top")) {
+        wallPiece = safeSquare(row + 1, curCol);
+      } else {
+        wallPiece = safeSquare(row - 1, curCol);
+      }
+
+      // Check for multiple defenders.
+      if (curPiece.isDefending()) {
+        // Check if attacker wall continues.
+        if (wallPiece.isAttacking()) {
+          defenderCount++;
+        } else {
+          // Break if shield wall not present.
+          break;
+        }
+      } else if ((curPiece.isAttacking() && defenderCount >= 2)) {
+        // Shield wall exists.
+        shieldWall = true;
+        break;
+      }
+      
+      // Determine direction to traverse.
+      if (direction.equals("Up")) {
+        curRow = curRow - 1;
+        curPiece = safeSquare(curRow, col);
+      } else if (direction.equals("Down")) {
+        curRow = curRow + 1;
+        curPiece = safeSquare(curRow, col);
+      } else if (direction.equals("Left")) {
+        curCol = curCol + 1;
+        curPiece = safeSquare(row, curCol);
+      } else {
+        curCol = curCol - 1;
+        curPiece = safeSquare(row, curCol);
+      } 
+    }
+
+    // Check for corner shield wall capture
+    if (direction.equals("Up") || direction.equals("Down")) {
+      if (inCornerLocation(curRow, col) && defenderCount >= 2) {
+        shieldWall = true;
+      }
+    } else {
+      if (inCornerLocation(row, curCol) && defenderCount >= 2) {
+        shieldWall = true;
+      }
+    } 
+
+    // Change captured pieces to empty.
+    if (shieldWall) {
+      if (direction.equals("Up")) {
+        for (int i = row - 1; i > curRow; --i) {
+          if (board[i][col] != GridSquareState.KING) {
+            board[i][col] = GridSquareState.EMPTY;
+          }
+        }
+      } else if (direction.equals("Down")) {
+        for (int i = row + 1; i < curRow; ++i) {
+          if (board[i][col] != GridSquareState.KING) {
+            board[i][col] = GridSquareState.EMPTY;
+          }
+        }
+      } else if (direction.equals("Left")) {
+        for (int i = col + 1; i < curCol; ++i) {
+          if (board[row][i] != GridSquareState.KING) {
+            board[row][i] = GridSquareState.EMPTY;
+          }
+        }
+      } else {
+        for (int i = col - 1; i > curCol; --i) {
+          if (board[row][i] != GridSquareState.KING) {
+            board[row][i] = GridSquareState.EMPTY;
+          }
+        }
+      } 
+    }
+
+    return shieldWall;
+  }
 
   /**
     Check to see if there is a basic capture between two pieces.

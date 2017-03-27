@@ -572,24 +572,15 @@ public class Board extends BoardLayout {
 
     boolean shieldWall = false;
     // Must be a flanking move that brackets the group of pieces at both ends.
-    if (edge.equals("Left")) {
+    if (edge.equals("Left") || edge.equals("Right")) {
       // Check vertically for a shieldwall.
-      shieldWall |= isShieldWall("Left", "Up", row, column);
-      shieldWall |= isShieldWall("Left", "Down", row, column);
-    } else if (edge.equals("Right")) {
-      // Check vertically for a shieldwall.
-      shieldWall |= isShieldWall("Right", "Up", row, column);
-      shieldWall |= isShieldWall("Right", "Down", row, column);
-    } else if (edge.equals("Top")) {
-      // Check horizontally for a shieldwall.
-      shieldWall |= isShieldWall("Top", "Left", row, column);
-      shieldWall |= isShieldWall("Top", "Right", row, column);
+      shieldWall |= isShieldWall(edge, "Up", row, column);
+      shieldWall |= isShieldWall(edge, "Down", row, column);
     } else {
       // Check horizontally for a shieldwall.
-      shieldWall |= isShieldWall("Bottom", "Left", row, column);
-      shieldWall |= isShieldWall("Bottom", "Right", row, column);
+      shieldWall |= isShieldWall(edge, "Left", row, column);
+      shieldWall |= isShieldWall(edge, "Right", row, column);
     }
-
     return shieldWall;
   }
 

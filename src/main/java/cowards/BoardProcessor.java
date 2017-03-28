@@ -51,8 +51,11 @@ public class BoardProcessor extends BoardLayout {
   /**
     Check if the path is clear to the specified square.
 
+    @param board The board being checked.
     @param row The row of the square.
     @param col The column of the square.
+    @param selRow The row of the selected square.
+    @param selCol The column of the selected square.
 
     @return Whether or not the path is clear.
     */
@@ -85,6 +88,8 @@ public class BoardProcessor extends BoardLayout {
   /**
     Check to see if the king was captured.
 
+    @param board The board being checked.
+
     @return Whether or not king was captured.
    */
   public static boolean kingCapture(Board board) throws GridOutOfBoundsException {
@@ -108,6 +113,12 @@ public class BoardProcessor extends BoardLayout {
 
   /**
     Return if the proposed move is valid.
+
+    @param board The board being checked.
+    @param row The row of the square.
+    @param col The column of the square.
+    @param selRow The row of the selected square.
+    @param selCol The column of the selected square.
 
     @return If the move is valid.
   */

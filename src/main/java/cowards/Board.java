@@ -490,6 +490,14 @@ public class Board extends BoardLayout {
     return false;
   }
 
+  /**
+    Check if the path is clear to the specified square.
+
+    @param row The row of the square.
+    @param col The column of the square.
+
+    @return Whether or not the path is clear.
+    */
   public boolean isPathClear(int row, int col) throws GridOutOfBoundsException {
     return BoardProcessor.isPathClear(this, row, col, selRow, selCol);
   }

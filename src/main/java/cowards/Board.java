@@ -58,11 +58,6 @@ public class Board extends BoardLayout {
   private boolean gameOver = false;
 
   /**
-    There can be no more than 3 back-and-forth motions (6 moves total).
-   */
-  private final int maxRepeatMoves = 6;
-
-  /**
     The list of attacker's moves.
    */
   private LinkedList<int []> attackerMoves;
@@ -495,36 +490,8 @@ public class Board extends BoardLayout {
     return false;
   }
 
-  /**
-    Check if the path is clear to the specified square.
-
-    @param row The row of the square.
-    @param col The column of the square.
-
-    @return Whether or not the path is clear.
-    */
   public boolean isPathClear(int row, int col) throws GridOutOfBoundsException {
-    // Determine the top, bottom, left, and right.
-    // Either top and bottom or left and right will be the same.
-    int top    = (row < selRow) ? row    : selRow;
-    int bottom = (row < selRow) ? selRow : row;
-    int left   = (col < selCol) ? col    : selCol;
-    int right  = (col < selCol) ? selCol : col;
-
-    // Walk the path to make sure it is clear.
-    for (int r = top; r <= bottom; r++) {
-      for (int c = left; c <= right; c++) {
-        // Ignore the selected square.
-        if (r != selRow || c != selCol) {
-          // If the square is not empty, stop walking.
-          if (!square(r, c).isEmpty()) {
-            return false;
-          }
-        }
-      }
-    }
-
-    return true;
+    return BoardProcessor.isPathClear(this, row, col, selRow, selCol);
   }
 
   /**
@@ -536,36 +503,8 @@ public class Board extends BoardLayout {
     // Check if the last six moves are back and fourth.
     ListIterator<int []> moves = !isAttackerTurn()
         ? attackerMoves.listIterator(0) : defenderMoves.listIterator(0);
-    int [] first = new int [2];
-    int [] second = new int [2];
 
-    // Look through the list of previous moves and see if there were more than
-    // the max allowable back-and-forth motions.
-    // Note: max motions = maxRepeatedMoves / 2
-    //
-    // To avoid losing the player must avoid cycling between two squares over
-    // the course of maxRepeatedMoves moves.
-    for (int i = 0; i < maxRepeatMoves && moves.hasNext(); ++i) {
-      int [] nxt = moves.next();
-      if (i == 0) {
-        // First move in sequence.
-        first[0] = nxt[0];
-        first[1] = nxt[1];
-      } else if (i == 1) {
-        // Second move in sequence.
-        second[0] = nxt[0];
-        second[1] = nxt[1];
-      } else if (i % 2 == 0 && (first[0] != nxt[0] || first[1] != nxt[1])) {
-        // Deviation from the first move in the sequence.
-        return false;
-      } else if (i % 2 == 1 && (second[0] != nxt[0] || second[1] != nxt[1])) {
-        // Deviation from the second move in the sequence.
-        return false;
-      } else if (i == maxRepeatMoves - 1) {
-        return true;
-      }
-    }
-    return false;
+    return BoardProcessor.tooManyRepeats(moves);
   }
 
   /**
@@ -575,25 +514,6 @@ public class Board extends BoardLayout {
     */
   public boolean isDraw() {
     return movesWoCapture >= maxMovesWoCapture;
-  }
-
-  /**
-    Return if the proposed move is valid.
-
-    @return If the move is valid.
-  */
-  private boolean isValidMove(int row, int col) throws GridOutOfBoundsException {
-    // Make sure piece other than king isn't moving to throne or four corners.
-    if (!square(selRow, selCol).isKing() && inSpecialLocation(row, col)) {
-      return false;
-    }
-
-    // Check for a clear path.
-    if (!isPathClear(row, col)) {
-      return false;
-    }
-
-    return true;
   }
 
   /**
@@ -665,7 +585,7 @@ public class Board extends BoardLayout {
       return false;
     }
 
-    if (!isValidMove(row, col)) {
+    if (!BoardProcessor.isValidMove(this, row, col, selRow, selCol)) {
       return false;
     }
 
@@ -713,19 +633,7 @@ public class Board extends BoardLayout {
     @return Whether or not king was captured.
    */
   private boolean kingCapture() throws GridOutOfBoundsException {
-    boolean captured = false;
-
-    //Check if king is not near edge of board.
-    if (kingRow != 0 && kingRow != 10 && kingCol != 0 && kingCol != 10) {
-      // Check if king is surrounded by attackers.
-      if (square(kingRow - 1, kingCol).isAttacking()
-            && square(kingRow + 1, kingCol).isAttacking()
-            && square(kingRow, kingCol - 1).isAttacking() 
-            && square(kingRow, kingCol + 1).isAttacking()) {
-        captured = true;
-      }
-    }  
-
+    boolean captured = BoardProcessor.kingCapture(this);
     if (captured) {
       board[kingRow][kingCol] = GridSquareState.EMPTY;
       kingRow = -1;

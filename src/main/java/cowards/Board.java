@@ -601,23 +601,22 @@ public class Board extends BoardLayout {
     GridSquareState wallPiece;
     boolean shieldWall = false;
     int opponentCount = 0;
-    int curRow = 0;
-    int curCol = 0;
 
-    // Determine direction to traverse.
+    int rowDelta = 0;
+    int colDelta = 0;
     if (direction.equals("Up")) {
-      curRow = row - 1;
-      curPiece = safeSquare(curRow, col);
+      rowDelta = -1;
     } else if (direction.equals("Down")) {
-      curRow = row + 1;
-      curPiece = safeSquare(curRow, col);
+      rowDelta = 1;
     } else if (direction.equals("Left")) {
-      curCol = col + 1;
-      curPiece = safeSquare(row, curCol);
+      colDelta = 1;
     } else {
-      curCol = col - 1;
-      curPiece = safeSquare(row, curCol);
-    } 
+      colDelta = -1;
+    }
+
+    int curRow = row + rowDelta;
+    int curCol = col + colDelta;
+    curPiece = safeSquare(curRow, curCol); 
 
     // Move one square at a time checking for shield wall.
     while (!curPiece.isEmpty()) {
@@ -652,61 +651,25 @@ public class Board extends BoardLayout {
       }
 
       // Determine direction to traverse.
-      if (direction.equals("Up")) {
-        curRow = curRow - 1;
-        curPiece = safeSquare(curRow, col);
-      } else if (direction.equals("Down")) {
-        curRow = curRow + 1;
-        curPiece = safeSquare(curRow, col);
-      } else if (direction.equals("Left")) {
-        curCol = curCol + 1;
-        curPiece = safeSquare(row, curCol);
-      } else {
-        curCol = curCol - 1;
-        curPiece = safeSquare(row, curCol);
-      }  
+      curRow += rowDelta;
+      curCol += colDelta;
+      curPiece = safeSquare(curRow, curCol); 
     }
 
     // Check for corner shield wall capture
-    if (direction.equals("Up") || direction.equals("Down")) {
-      if (inCornerLocation(curRow, col) && opponentCount >= 2) {
-        shieldWall = true;
-      }
-    } else {
-      if (inCornerLocation(row, curCol) && opponentCount >= 2) {
-        shieldWall = true;
-      }
-    }   
+    shieldWall |= (inCornerLocation(curRow, curCol) && opponentCount >= 2);
 
     // Change captured pieces to empty.
     if (shieldWall) {
-      if (direction.equals("Up")) {
-        for (int i = row - 1; i > curRow; --i) {
-          if (board[i][col] != GridSquareState.KING) {
-            board[i][col] = GridSquareState.EMPTY;
-          }
-        }
-      } else if (direction.equals("Down")) {
-        for (int i = row + 1; i < curRow; ++i) {
-          if (board[i][col] != GridSquareState.KING) {
-            board[i][col] = GridSquareState.EMPTY;
-          }
-        }
-      } else if (direction.equals("Left")) {
-        for (int i = col + 1; i < curCol; ++i) {
-          if (board[row][i] != GridSquareState.KING) {
-            board[row][i] = GridSquareState.EMPTY;
-          }
-        }
-      } else {
-        for (int i = col - 1; i > curCol; --i) {
-          if (board[row][i] != GridSquareState.KING) {
-            board[row][i] = GridSquareState.EMPTY;
-          }
-        }
-      } 
+      curRow -= rowDelta;
+      curCol -= colDelta;
+      while (row != curRow || col != curCol) {
+        board[curRow][curCol] = board[curRow][curCol].isKing() 
+          ? GridSquareState.KING : GridSquareState.EMPTY;
+        curRow -= rowDelta;
+        curCol -= colDelta;
+      }
     }
-
     return shieldWall;
   }  
 

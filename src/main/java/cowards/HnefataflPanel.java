@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import javax.swing.*;
+import javax.swing.filechooser.FileView;
 
 public class HnefataflPanel extends JPanel {
 
@@ -90,12 +91,38 @@ public class HnefataflPanel extends JPanel {
           JOptionPane.showMessageDialog(null, "You cannot save a board in a game over state.");
         } else {
           board.pauseTimers();
-          String fileName = JOptionPane.showInputDialog(null, 
-              "Enter the name of your save game file");
+          File directorylock = new File("saved_games");
+          JFileChooser fc = new JFileChooser(directorylock);
+          
+          // Create the saved_games directory if it doesn't exist.
+          if (!directorylock.exists()) {
+            boolean success = directorylock.mkdir();
+            if (!success) {
+              return;
+            }
+          }
+          fc.setFileView(new FileView() {
+            public Boolean isTraversable(File fileName) {
+              return directorylock.equals(fileName);
+            }
+          });
+          
+          String fileName = "";
+          try {
+            if (fc.showSaveDialog(HnefataflPanel.this) == JFileChooser.APPROVE_OPTION) {
+              fileName = fc.getSelectedFile().getName();
+            } else {
+              board.resumeTimers();
+              return;
+            }
+          } catch (NullPointerException npe) {
+            JOptionPane.showMessageDialog(null, "You cannot move out of saved_games.");
+            board.resumeTimers();
+            return;
+          }
+          
           if (fileName != null) {
-            if (fileName.equals("")) {
-              JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
-            } else if (BoardWriter.saveBoard(fileName, board)) {
+            if (BoardWriter.saveBoard(fileName, board)) {
               JOptionPane.showMessageDialog(null, "Successfully saved game file.");
             } else {
               JOptionPane.showMessageDialog(null, "Error saving game file.");
@@ -105,13 +132,33 @@ public class HnefataflPanel extends JPanel {
         }
       } else if (loadGame != null && loadGame.contains(event.getPoint())) {
         board.pauseTimers();
-        String fileName = JOptionPane.showInputDialog(null, 
-            "Enter the name of the game you want to load");
+        File directorylock = new File("saved_games");
+        JFileChooser fc = new JFileChooser(directorylock);
+          
+        fc.setFileView(new FileView() {
+          public Boolean isTraversable(File fileName) {
+            return directorylock.equals(fileName);
+          }
+        });
+          
+        String fileName = "";
+        try {
+          if (fc.showOpenDialog(HnefataflPanel.this) == JFileChooser.APPROVE_OPTION) {
+            fileName = fc.getSelectedFile().getName();
+          } else {
+            board.resumeTimers();
+            return;
+          }
+        } catch (NullPointerException npe) {
+          JOptionPane.showMessageDialog(null, "You cannot move out of saved_games.");
+          board.resumeTimers();
+          return;
+        }
+          
         if (fileName != null) {
           board.setGameOver(true);
-          if (fileName.equals("")) {
-            JOptionPane.showMessageDialog(null, "You cannot enter a blank file name.");
-          } else if (null != (board = BoardLoader.loadBoardFromSave(fileName))) {
+          String[] splitFile = fileName.split("\\.");
+          if (null != (board = BoardLoader.loadBoardFromSave(splitFile[0]))) {
             JOptionPane.showMessageDialog(null, "Successfully loaded game file.");
             repaint();
           } else {

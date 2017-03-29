@@ -97,16 +97,7 @@ public class BoardWriter extends BoardLayout {
     @param board The Board who's information we are writing.
   */
   public static boolean saveBoard(String fileName, Board board) {
-    File dir = new File("saved_games");
     String pathName = "saved_games/" + fileName + ".txt";
-    
-    // Create the saved_games directory if it doesn't exist.
-    if (!dir.exists()) {
-      boolean success = dir.mkdir();
-      if (!success) {
-        return false;
-      }
-    }
     
     try {
       PrintWriter pw = new PrintWriter(pathName);

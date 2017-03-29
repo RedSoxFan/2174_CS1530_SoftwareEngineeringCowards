@@ -595,7 +595,7 @@ public class Board extends BoardLayout {
   */
   private boolean isShieldWall(String edge, String direction, int row, int col) {
     // Last moved piece is attacker?
-    boolean shieldAttack = safeSquare(row, col).isDefending() ? false : true;
+    boolean shieldAttack = safeSquare(row, col).isAttacking();
 
     GridSquareState curPiece;
     GridSquareState wallPiece;

@@ -111,6 +111,9 @@ public class HnefataflPanel extends JPanel {
           try {
             if (fc.showSaveDialog(HnefataflPanel.this) == JFileChooser.APPROVE_OPTION) {
               fileName = fc.getSelectedFile().getName();
+            } else {
+              board.resumeTimers();
+              return;
             }
           } catch (NullPointerException npe) {
             JOptionPane.showMessageDialog(null, "You cannot move out of saved_games.");
@@ -119,9 +122,7 @@ public class HnefataflPanel extends JPanel {
           }
           
           if (fileName != null) {
-            if (fileName.equals("")) {
-              JOptionPane.showMessageDialog(null, "Save operation cancelled.");
-            } else if (BoardWriter.saveBoard(fileName, board)) {
+            if (BoardWriter.saveBoard(fileName, board)) {
               JOptionPane.showMessageDialog(null, "Successfully saved game file.");
             } else {
               JOptionPane.showMessageDialog(null, "Error saving game file.");
@@ -144,6 +145,9 @@ public class HnefataflPanel extends JPanel {
         try {
           if (fc.showOpenDialog(HnefataflPanel.this) == JFileChooser.APPROVE_OPTION) {
             fileName = fc.getSelectedFile().getName();
+          } else {
+            board.resumeTimers();
+            return;
           }
         } catch (NullPointerException npe) {
           JOptionPane.showMessageDialog(null, "You cannot move out of saved_games.");
@@ -152,11 +156,9 @@ public class HnefataflPanel extends JPanel {
         }
           
         if (fileName != null) {
-          //TODO why is setgame over here?? 
           board.setGameOver(true);
-          if (fileName.equals("")) {
-            JOptionPane.showMessageDialog(null, "Load operation cancelled.");
-          } else if (null != (board = BoardLoader.loadBoardFromSave(fileName))) {
+          String[] splitFile = fileName.split("\\.");
+          if (null != (board = BoardLoader.loadBoardFromSave(splitFile[0]))) {
             JOptionPane.showMessageDialog(null, "Successfully loaded game file.");
             repaint();
           } else {

@@ -544,7 +544,7 @@ public class CaptureTest {
     Test to make sure the king can be captured.
    */
   @Test
-  public void captureKingBasic() {
+  public void captureKingBasicTest() {
     try {
       Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -576,7 +576,7 @@ public class CaptureTest {
     Test to make sure the king can be captured at the throne.
    */
   @Test
-  public void captureKingAtThrone() {
+  public void captureKingAtThroneTest() {
     try {
       Board board = new Board(new char[][]{
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -603,4 +603,189 @@ public class CaptureTest {
       fail();
     }
   }  
+
+  /**
+    Test to make sure attackers are captured by shield wall.
+  */
+  @Test
+  public void shieldWallCaptureAttackersTest() {
+    try {
+      Board board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'A', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'A', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'A', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      board.setAttackerTurn(false);
+
+      board.select(9, 1);
+      board.move(9, 0);
+
+      // Check all 3 attackers were captured by shield wall.
+      assertEquals(Board.GridSquareState.EMPTY, board.square(6, 0));
+      assertEquals(Board.GridSquareState.EMPTY, board.square(7, 0));
+      assertEquals(Board.GridSquareState.EMPTY, board.square(8, 0));
+
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException exception) {
+      fail();
+    }
+  }
+
+  /**
+    Test to make sure attackers are captured by shield wall and corner.
+  */
+  @Test
+  public void shieldWallCornerCaptureAttackersTest() {
+    try {
+      Board board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'A', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'A', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'A', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      board.setAttackerTurn(false);
+
+      board.select(6, 1);
+      board.move(6, 0);
+
+      // Check all 3 attackers were captured by shield wall.
+      assertEquals(Board.GridSquareState.EMPTY, board.square(7, 0));
+      assertEquals(Board.GridSquareState.EMPTY, board.square(8, 0));
+      assertEquals(Board.GridSquareState.EMPTY, board.square(9, 0));
+
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException exception) {
+      fail();
+    }
+  }
+
+  /**
+    Test to make sure defenders are captured by shield wall.
+  */
+  @Test
+  public void shieldWallCaptureDefendersTest() {
+    try {
+      Board board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'A', 'A', 'A', 'A', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'A', 'D', 'D', 'D', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      board.setAttackerTurn(true);
+
+      board.select(9, 5);
+      board.move(10, 5);
+
+      // Check all 3 defenders were captured by shield wall.
+      assertEquals(Board.GridSquareState.EMPTY, board.square(10, 2));
+      assertEquals(Board.GridSquareState.EMPTY, board.square(10, 3));
+      assertEquals(Board.GridSquareState.EMPTY, board.square(10, 4));
+
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException exception) {
+      fail();
+    }
+  }
+
+  /**
+    Test to make sure defenders are captured by shield wall and corner.
+  */
+  @Test
+  public void shieldWallCornerCaptureDefendersTest() {
+    try {
+      Board board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'A', 'A', 'A', 'A', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'D', 'D', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      board.setAttackerTurn(true);
+
+      board.select(9, 4);
+      board.move(10, 4);
+
+      // Check all 3 defenders were captured by shield wall.
+      assertEquals(Board.GridSquareState.EMPTY, board.square(10, 1));
+      assertEquals(Board.GridSquareState.EMPTY, board.square(10, 2));
+      assertEquals(Board.GridSquareState.EMPTY, board.square(10, 3));
+
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException exception) {
+      fail();
+    }
+  }
+
+  /**
+    Test to make sure king is not captured by shield wall.
+  */
+  @Test
+  public void shieldWallCaptureDefendersExceptKingTest() {
+    try {
+      Board board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'A', 'A', 'A', 'A', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'A', 'D', 'K', 'D', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      board.setAttackerTurn(true);
+
+      board.select(9, 5);
+      board.move(10, 5);
+
+      // Check king was not captured by shield wall.
+      assertEquals(Board.GridSquareState.EMPTY, board.square(10, 2));
+      assertEquals(Board.GridSquareState.KING, board.square(10, 3));
+      assertEquals(Board.GridSquareState.EMPTY, board.square(10, 4));
+
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    } catch (GridOutOfBoundsException exception) {
+      fail();
+    }
+  }
 }

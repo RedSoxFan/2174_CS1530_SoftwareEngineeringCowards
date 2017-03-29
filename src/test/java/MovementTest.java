@@ -1944,4 +1944,22 @@ public class MovementTest {
       fail();
     }
   }
+
+  /**
+    Test to see if square is along the edge.
+  */
+  @Test
+  public void identifyEdgesTest() {
+    Board board = null;
+    try {
+      board = new Board();
+    } catch (BadAsciiBoardFormatException exception) {
+      fail();
+    }
+    assertEquals("Left", board.inEdgeLocation(5, 0));
+    assertEquals("Bottom", board.inEdgeLocation(10, 5));
+    assertEquals("Right", board.inEdgeLocation(5, 10));
+    assertEquals("Top", board.inEdgeLocation(0, 5));
+    assertEquals("NE", board.inEdgeLocation(5, 5));
+  }
 }

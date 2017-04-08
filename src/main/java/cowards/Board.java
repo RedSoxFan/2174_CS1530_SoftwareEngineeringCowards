@@ -588,6 +588,9 @@ public class Board extends BoardLayout {
     } else if (square(row, col).isKing() && inCornerLocation(row, col)) {
       // If the king escaped we won.
       setGameOver(true);
+    } else if (isAttackerTurn() && BoardProcessor.isSurrounded(this)) {
+      // The defending side is surrounded by the attackers.
+      setGameOver(true);
     } else {
       setAttackerTurn(!isAttackerTurn());
 

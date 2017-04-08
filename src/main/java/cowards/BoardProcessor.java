@@ -138,4 +138,82 @@ public class BoardProcessor extends BoardLayout {
     return true;
   }
 
+
+  /**
+    Return whether or not the defending side is surrounded by the attackers.
+
+    @param board The board being checked.
+
+    @return Whether or not the defending side is surrounded.
+   */
+  public static boolean isSurrounded(Board board) {
+    // Perform a flood fill. If exited the board, return false.
+    boolean[][] fill = new boolean[GRID_ROW_MAX + 1][GRID_COL_MAX + 1];
+    if (!surroundFloodFill(board, fill, board.getKingRow(), board.getKingCol())) {
+      return false;
+    }
+
+    // Make sure all defenders (including the king) are in a filled square.
+    for (int r = 0; r < fill.length; r++) {
+      for (int c = 0; c < fill[r].length; c++) {
+        if (!fill[r][c] && board.safeSquare(r, c).isDefending()) {
+          return false;
+        }
+      }
+    }
+
+    // Surrounded.
+    return true;
+  }
+
+  /**
+    Perform a flood fill. Attackers will be treated as barriers. If the fill attempts
+    to leave the board, this method will exit without completing the fill.
+
+    @param board The board being processed.
+    @param fill The fill state of each square.
+    @param row The current row.
+    @param col The current column.
+
+    @return Whether or not the flood fill completed without exiting the board.
+   */
+  private static boolean surroundFloodFill(Board board, boolean[][] fill, int row, int col) {
+    // Test the current square.
+    try {
+      // If the square is already filled, nothing to do.
+      if (fill[row][col]) {
+        return true;
+      }
+
+      // Treat attacking pieces as barriers.
+      if (!board.square(row, col).isAttacking()) {
+        // Fill the square.
+        fill[row][col] = true;
+
+        // Check the four adjancent squares clockwise, starting at the top.
+        // If any of them exit the board, propigate the failure.
+        if (!surroundFloodFill(board, fill, row - 1, col)) {
+          return false;
+        }
+        if (!surroundFloodFill(board, fill, row, col + 1)) {
+          return false;
+        }
+        if (!surroundFloodFill(board, fill, row + 1, col)) {
+          return false;
+        }
+        if (!surroundFloodFill(board, fill, row, col - 1)) {
+          return false;
+        }
+      }
+    } catch (ArrayIndexOutOfBoundsException aoobex) {
+      // Exited the board.
+      return false;
+    } catch (GridOutOfBoundsException goobex) {
+      // Exited the board.
+      return false;
+    }
+
+    // So far, the fill has stayed within the board.
+    return true;
+  }
 }

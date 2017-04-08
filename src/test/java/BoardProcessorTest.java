@@ -188,4 +188,95 @@ public class BoardProcessorTest {
       return;
     }
   }
+
+  /**
+    Create a diamond board to use for testing if the defenders are surrounded
+    with the exception of one piece. To complete, move (8,4) to (8,3).
+
+    @return A diamond board.
+   */
+  private Board diamondBoard() throws BadAsciiBoardFormatException {
+    return new Board(new char[][] {
+      {' ', ' ', ' ', ' ', ' ', 'A', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', 'A', 'A', 'A', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', 'A', ' ', ' ', ' ', 'A', ' ', ' ', ' '},
+      {' ', ' ', 'A', ' ', ' ', 'D', ' ', ' ', 'A', ' ', ' '},
+      {' ', 'A', ' ', ' ', 'D', 'D', 'D', ' ', ' ', 'A', ' '},
+      {'A', 'A', ' ', 'D', 'D', 'K', 'D', 'D', ' ', 'A', 'A'},
+      {' ', 'A', ' ', ' ', 'D', 'D', 'D', ' ', ' ', 'A', ' '},
+      {' ', ' ', 'A', ' ', ' ', 'D', ' ', ' ', 'A', ' ', ' '},
+      {' ', ' ', ' ', ' ', 'A', ' ', ' ', 'A', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', 'A', 'A', 'A', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', 'A', ' ', ' ', ' ', ' ', ' '},
+    });
+  }
+
+  /**
+    Check to see if isSurrounded() returned false on the starting board.
+   */
+  @Test
+  public void surroundedStartingTest() {
+    try {
+      Board board = new Board();
+      assertFalse(BoardProcessor.isSurrounded(board));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
+  }
+
+  /**
+    Check to see if isSurrounded() returns true when surrounded in a diamond.
+   */
+  @Test
+  public void surroundedDiamondTest() {
+    try {
+      Board board = diamondBoard();
+      board.select(8, 4);
+      board.move(8, 3);
+      assertTrue(BoardProcessor.isSurrounded(board));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    } catch (GridOutOfBoundsException gx) {
+      fail();
+    }
+  }
+
+  /**
+    Check to see if isSurrounded() returns false when one defender is outside
+    a diamond.
+   */
+  @Test
+  public void surroundedDiamondWithOutlierTest() {
+    try {
+      Board board = diamondBoard();
+      board.setAttackerTurn(false);
+      board.select(5, 3);
+      board.move(10, 3);
+      board.select(8, 4);
+      board.move(8, 3);
+      assertFalse(BoardProcessor.isSurrounded(board));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    } catch (GridOutOfBoundsException gx) {
+      fail();
+    }
+  }
+
+  /**
+    Check to see if isSurrounded() results in a game over when surrounded by a
+    diamond.
+   */
+  @Test
+  public void surroundedDiamondGameOverTest() {
+    try {
+      Board board = diamondBoard();
+      board.select(8, 4);
+      board.move(8, 3);
+      assertTrue(board.isGameOver());
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    } catch (GridOutOfBoundsException gx) {
+      fail();
+    }
+  }
 }

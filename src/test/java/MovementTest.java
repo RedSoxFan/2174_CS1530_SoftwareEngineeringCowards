@@ -1041,7 +1041,9 @@ public class MovementTest {
   }
 
   /**
-   * Retrieve a board with only one king.
+   * Retrieve a board with one king and one attacker. The attacker is
+   * at (8, 8) and is only needed to allow for one move to be available
+   * for the attacking side to prevent a game over state.
    */
   private Board getBoardWithOneKing() throws BadAsciiBoardFormatException {
     return new Board(new char[][]{
@@ -1053,7 +1055,7 @@ public class MovementTest {
       {'K', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
       {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
       {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+      {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'A', ' ', ' '},
       {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
       {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
     });

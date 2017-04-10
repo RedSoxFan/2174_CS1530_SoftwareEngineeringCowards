@@ -603,6 +603,12 @@ public class Board extends BoardLayout {
       if (isDraw()) {
         setGameOver(true);
       }
+
+      // If there are no possible moves, end the game and opponent wins.
+      if (!BoardProcessor.areMovesAvailable(this)) {
+        setAttackerTurn(!isAttackerTurn());
+        setGameOver(true);
+      }
     }
   }
 

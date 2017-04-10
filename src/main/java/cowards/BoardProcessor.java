@@ -229,25 +229,23 @@ public class BoardProcessor extends BoardLayout {
     boolean attacking = board.isAttackerTurn();
 
     // Iterate over each square.
-    for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
-      for (int c = 0; c < GRID_COL_MAX + 1; c++) {
-        // If the piece is the same side, check for moves.
-        if ((attacking && board.safeSquare(r, c).isAttacking())
-            || (!attacking && board.safeSquare(r, c).isDefending())) {
-          // Check to see if any of the four adjacent squares are empty.
-          // If any of the squares are empty, a move exists.
-          if (isEmpty(board, r - 1, c)) {
-            return true;
-          }
-          if (isEmpty(board, r, c - 1)) {
-            return true;
-          }
-          if (isEmpty(board, r + 1, c)) {
-            return true;
-          }
-          if (isEmpty(board, r, c + 1)) {
-            return true;
-          }
+    for (int [] p : attacking ? board.getAttackers() : board.getDefenders()) {
+      // If the piece is the same side, check for moves.
+      if ((attacking && board.safeSquare(p[0], p[1]).isAttacking())
+          || (!attacking && board.safeSquare(p[0], p[1]).isDefending())) {
+        // Check to see if any of the four adjacent squares are empty.
+        // If any of the squares are empty, a move exists.
+        if (isEmpty(board, p[0] - 1, p[1])) {
+          return true;
+        }
+        if (isEmpty(board, p[0], p[1] - 1)) {
+          return true;
+        }
+        if (isEmpty(board, p[0] + 1, p[1])) {
+          return true;
+        }
+        if (isEmpty(board, p[0], p[1] + 1)) {
+          return true;
         }
       }
     }

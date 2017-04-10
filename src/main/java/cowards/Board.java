@@ -129,6 +129,7 @@ public class Board extends BoardLayout {
     Copy constructor.
 
     @param orig The board from which we are copying.
+    @param createTimer If the board should be equipped with a timer.
    */
   public Board(Board orig, boolean createTimer) {
     board          = orig.getBoard();

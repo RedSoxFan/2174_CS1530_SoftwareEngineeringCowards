@@ -3,12 +3,13 @@ package cowards;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileView;
 
 public class HnefataflPanel extends JPanel {
 
-  private Board board;
+  private static Board board;
   private Rectangle grid;
   private Rectangle newGame;
   private Rectangle saveGame;
@@ -40,6 +41,26 @@ public class HnefataflPanel extends JPanel {
         repaint();
       }
     }, 50, 1000 / 30);
+
+    doAiMove();
+  }
+
+  /**
+    Does an AI move.
+   */
+  public static void doAiMove() {
+    // TODO: Make AI optional
+    try {
+
+      int [] choice = Hnefalump.getNextMove(board, 2);
+      if (choice == null) {
+        return;
+      }
+      board.select(choice[2], choice[3]);
+      board.move(choice[0], choice[1]);
+    } catch (GridOutOfBoundsException gx) {
+      JOptionPane.showMessageDialog(null, "Critical: AI out of bounds.");
+    }
   }
 
   /**
@@ -63,6 +84,9 @@ public class HnefataflPanel extends JPanel {
             // Attempt to move. If it fails, try changing the selection.
             if (!board.move(row, col)) {
               board.select(row, col);
+            } else {
+              // TODO: Make AI optional
+              doAiMove();
             }
           } else {
             board.select(row, col);
@@ -80,6 +104,9 @@ public class HnefataflPanel extends JPanel {
           try {
             board.setGameOver(true);
             board = new Board();
+
+            // TODO: Make AI optional
+            doAiMove();
           } catch (BadAsciiBoardFormatException bx) {
             JOptionPane.showMessageDialog(null, "Critical: Cannot load initial board.");
             System.exit(1);

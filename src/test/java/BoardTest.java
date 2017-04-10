@@ -254,7 +254,7 @@ public class BoardTest {
       /* Move just enough to properly test the copy constructor. */
       doCopyTestMoves(board);
 
-      Board copy = new Board(board);
+      Board copy = new Board(board, false);
 
       /* Check all state that should be copied. */
 
@@ -294,7 +294,7 @@ public class BoardTest {
   public void deepCopyTest() {
     try {
       Board board = new Board();
-      Board copy  = new Board(board);
+      Board copy  = new Board(board, false);
       doCopyTestMoves(board);
 
       assertFalse(copy.square(5, 6).isKing());

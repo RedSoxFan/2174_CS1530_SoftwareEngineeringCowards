@@ -251,7 +251,6 @@ public class BoardProcessor extends BoardLayout {
         }
       }
     }
-
     // No moves.
     return false;
   }
@@ -273,5 +272,41 @@ public class BoardProcessor extends BoardLayout {
     } catch (GridOutOfBoundsException oobex) {
       return false;
     }
+  }
+
+  /** Returns a linked list containing the positions of every attacker. */
+  public static LinkedList<int []> findAllAttackers(GridSquareState[][] board) {
+    if (board == null) {
+      return new LinkedList<int []>();
+    }
+
+    LinkedList<int []> ret = new LinkedList<int []>();
+    for (int r = 0; r < 11; ++r) {
+      for (int c = 0; c < 11; ++c) {
+        if (board[r][c].isAttacking()) {
+          ret.add(new int[] {r, c});
+        }
+      }
+    }
+
+    return ret;
+  }
+
+  /** Returns a linked list containing the positions of every defender. */
+  public static LinkedList<int []> findAllDefenders(GridSquareState[][] board) {
+    if (board == null) {
+      return new LinkedList<int []>();
+    }
+
+    LinkedList<int []> ret = new LinkedList<int []>();
+    for (int r = 0; r < 11; ++r) {
+      for (int c = 0; c < 11; ++c) {
+        if (board[r][c].isDefending()) {
+          ret.add(new int[] {r, c});
+        }
+      }
+    }
+
+    return ret;
   }
 }

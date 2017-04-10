@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileView;
 
@@ -15,6 +16,9 @@ public class HnefataflPanel extends JPanel {
   private Rectangle saveGame;
   private Rectangle loadGame;
   private Rectangle exitGame;
+
+  // Keeps the AI and player from stepping on one another's toes.
+  private static Semaphore aiSem = new Semaphore(1);
 
   /**
     Constructor.
@@ -42,22 +46,32 @@ public class HnefataflPanel extends JPanel {
       }
     }, 50, 1000 / 30);
 
-    doAiMove();
+    Thread thread = new Thread(HnefataflPanel::doAiMove);
+    thread.start();
   }
 
   /**
-    Does an AI move.
+    Does an AI move. This method should only be launched as a separate thread.
+    This method is not represented in the tests because in this format it is
+    untestable.
    */
   public static void doAiMove() {
-    // TODO: Make AI optional
     try {
+      // To keep the frames updating smoothly.
+      if (!aiSem.tryAcquire()) {
+        return;
+      }
 
+      // We can only afford to look ahead 2 moves due to the timers.
+      // Note the thinking time will differ depending on CPU speed.
       int [] choice = Hnefalump.getNextMove(board, 2);
       if (choice == null) {
+        aiSem.release();
         return;
       }
       board.select(choice[2], choice[3]);
       board.move(choice[0], choice[1]);
+      aiSem.release();
     } catch (GridOutOfBoundsException gx) {
       JOptionPane.showMessageDialog(null, "Critical: AI out of bounds.");
     }
@@ -80,21 +94,26 @@ public class HnefataflPanel extends JPanel {
         }
 
         try {
+          aiSem.acquire();
           if (board.hasSelection()) {
             // Attempt to move. If it fails, try changing the selection.
             if (!board.move(row, col)) {
               board.select(row, col);
             } else {
               // TODO: Make AI optional
-              doAiMove();
+              Thread thread = new Thread(HnefataflPanel::doAiMove);
+              thread.start();
             }
           } else {
             board.select(row, col);
           }
+          aiSem.release();
         } catch (GridOutOfBoundsException ex) {
           // Something went wrong with the geometry of the board painted.
           // Since this should not happen, just log a warning.
           System.out.println("WARNING: The board geometry is not synced");
+        } catch (InterruptedException ix) {
+          // Not much we can do here.
         }
       } else if (newGame != null && newGame.contains(event.getPoint())) {
         board.pauseTimers();
@@ -106,7 +125,8 @@ public class HnefataflPanel extends JPanel {
             board = new Board();
 
             // TODO: Make AI optional
-            doAiMove();
+            Thread thread = new Thread(HnefataflPanel::doAiMove);
+            thread.start();
           } catch (BadAsciiBoardFormatException bx) {
             JOptionPane.showMessageDialog(null, "Critical: Cannot load initial board.");
             System.exit(1);

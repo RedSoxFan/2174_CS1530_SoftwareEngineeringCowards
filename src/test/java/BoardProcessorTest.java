@@ -279,4 +279,96 @@ public class BoardProcessorTest {
       fail();
     }
   }
+
+  /**
+    Check to see if areMovesAvailable() results in true for the starting board for
+    the attacking side.
+   */
+  @Test
+  public void movesStartingAttackerTest() {
+    try {
+      Board board = new Board();
+      assertTrue(BoardProcessor.areMovesAvailable(board));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
+  }
+
+  /**
+    Check to see if areMovesAvailable() results in true for the starting board for
+    the defending side.
+   */
+  @Test
+  public void movesStartingDefenderTest() {
+    try {
+      Board board = new Board();
+      board.setAttackerTurn(false);
+      assertTrue(BoardProcessor.areMovesAvailable(board));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
+  }
+
+  /**
+    Check to see if areMovesAvailable() results in false and if the defenders cannot move.
+   */
+  @Test
+  public void movesDefenderNoneTest() {
+    try {
+      Board board = new Board(new char[][] {
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', 'A', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'A', 'K', 'A', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+      board.select(9, 4);
+      board.move(9, 3);
+      assertTrue(board.isGameOver());
+      board.setAttackerTurn(false);
+      assertFalse(BoardProcessor.areMovesAvailable(board));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    } catch (GridOutOfBoundsException gx) {
+      fail();
+    }
+  }
+
+  /**
+    Check to see if areMovesAvailable() results in false and if the attackers cannot move.
+   */
+  @Test
+  public void movesAttackerNoneTest() {
+    try {
+      Board board = new Board(new char[][] {
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', 'K', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', 'A', 'D', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+      board.setAttackerTurn(false);
+      board.select(9, 4);
+      board.move(9, 3);
+      assertTrue(board.isGameOver());
+      board.setAttackerTurn(true);
+      assertFalse(BoardProcessor.areMovesAvailable(board));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    } catch (GridOutOfBoundsException gx) {
+      fail();
+    }
+  }
 }

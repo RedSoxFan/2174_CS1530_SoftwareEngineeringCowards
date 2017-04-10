@@ -102,11 +102,11 @@ public class BoardProcessor extends BoardLayout {
       // Check if king is surrounded by attackers.
       if (board.square(kingRow - 1, kingCol).isAttacking()
             && board.square(kingRow + 1, kingCol).isAttacking()
-            && board.square(kingRow, kingCol - 1).isAttacking() 
+            && board.square(kingRow, kingCol - 1).isAttacking()
             && board.square(kingRow, kingCol + 1).isAttacking()) {
         captured = true;
       }
-    }  
+    }
 
     return captured;
   }
@@ -215,5 +215,63 @@ public class BoardProcessor extends BoardLayout {
 
     // So far, the fill has stayed within the board.
     return true;
+  }
+
+  /**
+    Returns whether or not there are there are moves available.
+
+    @param board The board being processed.
+
+    @return Whether or not the there are moves available.
+   */
+  public static boolean areMovesAvailable(Board board) {
+    // Determine whose turn it is.
+    boolean attacking = board.isAttackerTurn();
+
+    // Iterate over each square.
+    for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
+      for (int c = 0; c < GRID_COL_MAX + 1; c++) {
+        // If the piece is the same side, check for moves.
+        if ((attacking && board.safeSquare(r, c).isAttacking())
+            || (!attacking && board.safeSquare(r, c).isDefending())) {
+          // Check to see if any of the four adjacent squares are empty.
+          // If any of the squares are empty, a move exists.
+          if (isEmpty(board, r - 1, c)) {
+            return true;
+          }
+          if (isEmpty(board, r, c - 1)) {
+            return true;
+          }
+          if (isEmpty(board, r + 1, c)) {
+            return true;
+          }
+          if (isEmpty(board, r, c + 1)) {
+            return true;
+          }
+        }
+      }
+    }
+
+    // No moves.
+    return false;
+  }
+
+  /**
+    Returns whether or not a square is empty. This is a convience method so that
+    GridOutOfBoundsException does not need to be interwined with the actual method
+    logic. Unlike safeSquare, this method will NOT treat out of bounds as empty.
+
+    @param board The board being processed.
+    @param row The row of the square to check.
+    @param col The column of the square to check.
+
+    @return Whether or not the square is empty.
+   */
+  private static boolean isEmpty(Board board, int row, int col) {
+    try {
+      return board.square(row, col).isEmpty();
+    } catch (GridOutOfBoundsException oobex) {
+      return false;
+    }
   }
 }

@@ -117,7 +117,7 @@ public class Minimax {
   }
 
   /** Prunes the children of the current frame. */
-  public static void handlePrune(Frame cur) {
+  private static void handlePrune(Frame cur) {
     if (cur.isMax) {
       if (cur.vee.utility() >= cur.beta.utility()) {
         // Prune the nodes below to save time.

@@ -13,6 +13,11 @@ public class Hnefalump {
     @param depth The max depth of the tree to search.
    */
   public static int[] getNextMove(Board board, int depth) {
-    return Minimax.minimaxDecision(new Node(board, null, 0), depth).getMove();
+    Node decision = Minimax.minimaxDecision(new Node(board, null, 0), depth);
+    if (decision == null) {
+      return null;
+    }
+
+    return decision.getMove();
   }
 }

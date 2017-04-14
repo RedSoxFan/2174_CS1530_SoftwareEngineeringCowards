@@ -20,6 +20,12 @@ public class HnefataflPanel extends JPanel {
   // Keeps the AI and player from stepping on one another's toes.
   private static Semaphore aiSem = new Semaphore(1);
 
+  // For determining the game mode.
+  private enum Mode { TWO_HUMAN, HUMAN_AI, AI_HUMAN }
+
+  // The mode the user decided on.
+  private Mode aiMode;
+
   /**
     Constructor.
   */
@@ -46,8 +52,28 @@ public class HnefataflPanel extends JPanel {
       }
     }, 50, 1000 / 30);
 
-    Thread thread = new Thread(HnefataflPanel::doAiMove);
-    thread.start();
+    String [] options = {"Human/Human", "Human/AI", "AI/Human"};
+
+    Object selected = JOptionPane.showInputDialog(
+        null, "Select game mode:", "Selection",
+        JOptionPane.DEFAULT_OPTION, null, options, "Human/Human"
+    );
+
+    // Get the user's mode choice.
+    if (selected == null || "Human/Human".equals(selected.toString())) {
+      // Default
+      aiMode = Mode.TWO_HUMAN;
+    } else if ("Human/AI".equals(selected.toString())) {
+      aiMode = Mode.HUMAN_AI;
+    } else if ("AI/Human".equals(selected.toString())) {
+      aiMode = Mode.AI_HUMAN;
+    }
+
+    // Only move first if the AI has the first move.
+    if (aiMode == Mode.AI_HUMAN) {
+      Thread thread = new Thread(HnefataflPanel::doAiMove);
+      thread.start();
+    }
   }
 
   /**
@@ -99,8 +125,8 @@ public class HnefataflPanel extends JPanel {
             // Attempt to move. If it fails, try changing the selection.
             if (!board.move(row, col)) {
               board.select(row, col);
-            } else {
-              // TODO: Make AI optional
+            } else if (aiMode != Mode.TWO_HUMAN) {
+              // AI response if needed
               Thread thread = new Thread(HnefataflPanel::doAiMove);
               thread.start();
             }
@@ -124,9 +150,11 @@ public class HnefataflPanel extends JPanel {
             board.setGameOver(true);
             board = new Board();
 
-            // TODO: Make AI optional
-            Thread thread = new Thread(HnefataflPanel::doAiMove);
-            thread.start();
+            // Make sure the AI goes first in new game situations when the mode is right.
+            if (aiMode == Mode.AI_HUMAN) {
+              Thread thread = new Thread(HnefataflPanel::doAiMove);
+              thread.start();
+            }
           } catch (BadAsciiBoardFormatException bx) {
             JOptionPane.showMessageDialog(null, "Critical: Cannot load initial board.");
             System.exit(1);

@@ -371,4 +371,173 @@ public class BoardProcessorTest {
       fail();
     }
   }
+
+  /**
+    Return the defensive position of the bottom most defender moved down one from
+    the starting board.
+   */
+  private String getDefendingKey() {
+    return ("00000000000"
+          + "00000000000"
+          + "00000000000"
+          + "00000100000"
+          + "00001110000"
+          + "00011111000"
+          + "00001110000"
+          + "00000000000"
+          + "00000100000"
+          + "00000000000"
+          + "00000000000");
+  }
+
+  /**
+    Check to see if the defensive board position is being not stored after an attacker
+    move.
+   */
+  @Test
+  public void defensiveStoreAttackingTest() {
+    try {
+      Board board = new Board();
+      assertEquals(0, board.getDefensiveBoardPositions().size());
+      board.select(9, 5);
+      board.move(8, 5);
+      assertEquals(0, board.getDefensiveBoardPositions().size());
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    } catch (GridOutOfBoundsException gx) {
+      fail();
+    }
+  }
+
+  /**
+    Check to see if the defensive board position is being stored after a defender
+    move.
+   */
+  @Test
+  public void defensiveStoreDefendingTest() {
+    try {
+      Board board = new Board();
+      assertEquals(0, board.getDefensiveBoardPositions().size());
+      board.setAttackerTurn(false);
+      board.select(7, 5);
+      board.move(8, 5);
+      assertEquals(1, board.getDefensiveBoardPositions().size());
+      String key = getDefendingKey();
+      assertTrue(board.getDefensiveBoardPositions().containsKey(key));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    } catch (GridOutOfBoundsException gx) {
+      fail();
+    }
+  }
+
+  /**
+    Check to see if the defensive board position is being updated to reflect the
+    correct count.
+   */
+  @Test
+  public void defensiveStoreUpdateTest() {
+    try {
+      Board board = new Board();
+      final String key = getDefendingKey();
+
+      // First move.
+      board.setAttackerTurn(false);
+      board.select(7, 5);
+      board.move(8, 5);
+      assertEquals(1, board.getDefensiveBoardPositions().size());
+      assertEquals(new Integer(1), board.getDefensiveBoardPositions().get(key));
+
+      // Second move.
+      board.setAttackerTurn(false);
+      board.select(8, 5);
+      board.move(7, 5);
+      assertEquals(2, board.getDefensiveBoardPositions().size());
+
+      // Third move.
+      board.setAttackerTurn(false);
+      board.select(7, 5);
+      board.move(8, 5);
+      assertEquals(2, board.getDefensiveBoardPositions().size());
+      assertEquals(new Integer(2), board.getDefensiveBoardPositions().get(key));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    } catch (GridOutOfBoundsException gx) {
+      fail();
+    }
+  }
+
+  /**
+    Check to see if the defensive board positions get cleared if there is a capture.
+   */
+  @Test
+  public void defensiveStoreRemovalTest() {
+    try {
+      Board board = new Board();
+
+      // Defending move 1.
+      board.setAttackerTurn(false);
+      board.select(7, 5);
+      board.move(8, 5);
+      assertEquals(1, board.getDefensiveBoardPositions().size());
+
+      // Attacking move 1.
+      board.select(10, 6);
+      board.move(8, 6);
+      assertEquals(1, board.getDefensiveBoardPositions().size());
+
+      // Defending move 2.
+      board.select(5, 7);
+      board.move(8, 7);
+      assertEquals(0, board.getDefensiveBoardPositions().size());
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    } catch (GridOutOfBoundsException gx) {
+      fail();
+    }
+  }
+
+  /**
+    Check to see if the game ends if the same defensive board position is
+    repeated three times without a capture.
+   */
+  @Test
+  public void defensiveStoreGameOverTest() {
+    try {
+      Board board = new Board();
+
+      // Move. The count is now one.
+      board.setAttackerTurn(false);
+      board.select(7, 5);
+      board.move(8, 5);
+
+      // Move up.
+      board.setAttackerTurn(false);
+      board.select(8, 5);
+      board.move(7, 5);
+
+      // Move back. The count is now two.
+      board.setAttackerTurn(false);
+      board.select(7, 5);
+      board.move(8, 5);
+
+      // Move right.
+      board.setAttackerTurn(false);
+      board.select(8, 5);
+      board.move(8, 6);
+
+      // Move back. The count is now three.
+      board.setAttackerTurn(false);
+      board.select(8, 6);
+      board.move(8, 5);
+
+      // Verify that the game is over and attacker's win.
+      assertTrue(board.isGameOver());
+      assertTrue(board.isAttackerTurn());
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    } catch (GridOutOfBoundsException gx) {
+      fail();
+    }
+  }
 }

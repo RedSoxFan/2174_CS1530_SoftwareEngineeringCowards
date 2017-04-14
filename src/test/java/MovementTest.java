@@ -1751,8 +1751,17 @@ public class MovementTest {
       assertTrue(b.move(cur + 1, ri));
     }
 
+    // Move on other side to prevent repeating defensive positions.
+    b.select(5, 3);
+    assertTrue(b.move(5, 2));
+
+    // Reset values.    
+    le = 1;
+    ri = 2;
     tar = 1;
-    // Another 16 moves. Total = 41
+    cur = 5;
+
+    // Another 8 moves. Total = 34
     for (; tar < cur; --cur) {
       b.select(cur, le);
       assertTrue(b.move(cur - 1, le));
@@ -1760,18 +1769,14 @@ public class MovementTest {
       assertTrue(b.move(cur - 1, ri));
     }
 
-    tar = 5;
-    // Another 8 moves. Total = 49
+    tar = 9;
+    // Another 16 moves. Total = 50
     for (; tar > cur; ++cur) {
       b.select(cur, le);
       assertTrue(b.move(cur + 1, le));
       b.select(cur, ri);
       assertTrue(b.move(cur + 1, ri));
     }
-
-    // Last move, should draw here.
-    b.select(cur, le);
-    assertTrue(b.move(cur + 1, le));
   }
 
   /**

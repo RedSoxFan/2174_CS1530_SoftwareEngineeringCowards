@@ -274,4 +274,74 @@ public class BoardProcessor extends BoardLayout {
       return false;
     }
   }
+
+  /**
+    Stores the defensive board position. If a piece has been captured, the
+    count for the position is reset to zero. Otherwise, it is incremented by
+    one. If the count reaches three, then the defending side loses.
+
+    @param board The board to process.
+
+    @return Whether or not the game is over due to a draw fort.
+   */
+  public static boolean storeDefensiveBoard(Board board) {
+    // Get the current defensive board position and number of defenders.
+    Map.Entry<String, Integer> posAndCount = defensivePosition(board);
+    String position = posAndCount.getKey();
+
+    // If there are less than 5 pieces (king + defenders), then the rule is void.
+    if (posAndCount.getValue() < 5) {
+      return false;
+    }
+    
+    // Retrieve the defensive board positions and whether or not there was a capture.
+    HashMap<String, Integer> defensive = board.getDefensiveBoardPositions();
+    boolean capture = board.getMovesWoCapture() == 0;
+
+    // If a piece has been captured, reset the defensive boards and return that
+    // no game over state has been reached.
+    if (capture) {
+      defensive.clear();
+      return false;
+    }
+    
+    // Find the number of times without a capture that the position has been used.
+    int times = 0;
+    if (defensive.containsKey(position)) {
+      times = defensive.get(position).intValue();
+
+      // If this is the third time, there is a game over state.
+      if (times == 2) {
+        return true;
+      }
+    }
+
+    // Increment the number of times the position has been used. 
+    defensive.put(position, new Integer(times + 1));
+
+    // No game over state has been reached.
+    return false;
+  }
+
+  /**
+    Retrieves the defensive board position. This is a 121 character bit string
+    where 1 is a defender and 0 is not.
+
+    @param board The board being processed.
+
+    @return The bit string containing the defensive board position along with the
+      number of defending pieces.
+   */
+  private static Map.Entry<String, Integer> defensivePosition(Board board) {
+    StringBuffer buff = new StringBuffer();
+    int count = 0;
+    for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
+      for (int c = 0; c < GRID_COL_MAX + 1; c++) {
+        int bit = board.safeSquare(r, c).isDefending() ? 1 : 0;
+        count += bit;
+        buff.append(bit);
+      }
+    }
+    return new AbstractMap.SimpleEntry<String, Integer>(buff.toString(), count);
+  }
 }

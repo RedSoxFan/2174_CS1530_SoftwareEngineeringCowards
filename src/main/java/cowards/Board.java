@@ -108,6 +108,11 @@ public class Board extends BoardLayout {
   private BoardTimer defenderTimer;
 
   /**
+    The defensive board positions and their usage counts.
+   */
+  private HashMap<String, Integer> defensive;
+
+  /**
     Constructor.
   */
   public Board() throws BadAsciiBoardFormatException {
@@ -129,6 +134,7 @@ public class Board extends BoardLayout {
     kingCol        = orig.getKingCol();
     attackerTurn   = orig.isAttackerTurn();
     gameOver       = orig.isGameOver();
+    defensive      = orig.getDefensiveBoardPositions();
 
     initializeTimers(orig.getAttackerTimer().getTimeRemaining(),
         orig.getDefenderTimer().getTimeRemaining(),
@@ -141,7 +147,7 @@ public class Board extends BoardLayout {
    */
   public Board(GridSquareState[][] innerBoard, LinkedList<int []> am,
       LinkedList<int []> dm, int mwoCap, int kr, int kc, boolean at,
-      int atc, int dtc, int append) {
+      int atc, int dtc, int append, HashMap<String, Integer> dbp) {
     board = innerBoard;
 
     attackerMoves = am;
@@ -152,6 +158,8 @@ public class Board extends BoardLayout {
     kingCol        = kc;
     attackerTurn   = at;
     gameOver       = false;
+
+    defensive      = dbp;
 
     initializeTimers(atc, dtc, append, attackerTurn);
   }
@@ -180,6 +188,7 @@ public class Board extends BoardLayout {
     movesWoCapture = 0;
     kingRow = 5;
     kingCol = 5;
+    defensive = new HashMap<String, Integer>();
 
     for (int r = 0; r < 11; ++r) {
       for (int c = 0; c < 11; ++c) {
@@ -317,6 +326,13 @@ public class Board extends BoardLayout {
    */
   public int getMovesWoCapture() {
     return movesWoCapture;
+  }
+
+  /**
+    Retrieve the defensive board positions and their usage counts.
+   */
+  public HashMap<String, Integer> getDefensiveBoardPositions() {
+    return defensive;
   }
 
   /**
@@ -591,6 +607,11 @@ public class Board extends BoardLayout {
     } else if (isAttackerTurn() && BoardProcessor.isSurrounded(this)) {
       // The defending side is surrounded by the attackers.
       setGameOver(true);
+    } else if (!isAttackerTurn() && BoardProcessor.storeDefensiveBoard(this)) {
+      // The defensive board position has been used three times without a capture.
+      // The defending side loses.
+      setAttackerTurn(true);
+      setGameOver(true);
     } else {
       setAttackerTurn(!isAttackerTurn());
 
@@ -636,6 +657,8 @@ public class Board extends BoardLayout {
     // for moves without a capture.
     if (!capture(row, col)) {
       ++movesWoCapture;
+    } else {
+      movesWoCapture = 0;
     }
 
     handleEndMove(row, col);
@@ -663,7 +686,6 @@ public class Board extends BoardLayout {
     captured |= basicCapture(row, column, row, column + 2);
 
     captured |= kingCapture();
-    // TODO: Fort captures.
     captured |= shieldWallCapture(row, column);
 
     return captured;

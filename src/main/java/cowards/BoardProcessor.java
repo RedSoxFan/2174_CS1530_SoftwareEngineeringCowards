@@ -229,29 +229,26 @@ public class BoardProcessor extends BoardLayout {
     boolean attacking = board.isAttackerTurn();
 
     // Iterate over each square.
-    for (int r = 0; r < GRID_ROW_MAX + 1; r++) {
-      for (int c = 0; c < GRID_COL_MAX + 1; c++) {
-        // If the piece is the same side, check for moves.
-        if ((attacking && board.safeSquare(r, c).isAttacking())
-            || (!attacking && board.safeSquare(r, c).isDefending())) {
-          // Check to see if any of the four adjacent squares are empty.
-          // If any of the squares are empty, a move exists.
-          if (isEmpty(board, r - 1, c)) {
-            return true;
-          }
-          if (isEmpty(board, r, c - 1)) {
-            return true;
-          }
-          if (isEmpty(board, r + 1, c)) {
-            return true;
-          }
-          if (isEmpty(board, r, c + 1)) {
-            return true;
-          }
+    for (int [] p : attacking ? board.getAttackers() : board.getDefenders()) {
+      // If the piece is the same side, check for moves.
+      if ((attacking && board.safeSquare(p[0], p[1]).isAttacking())
+          || (!attacking && board.safeSquare(p[0], p[1]).isDefending())) {
+        // Check to see if any of the four adjacent squares are empty.
+        // If any of the squares are empty, a move exists.
+        if (isEmpty(board, p[0] - 1, p[1])) {
+          return true;
+        }
+        if (isEmpty(board, p[0], p[1] - 1)) {
+          return true;
+        }
+        if (isEmpty(board, p[0] + 1, p[1])) {
+          return true;
+        }
+        if (isEmpty(board, p[0], p[1] + 1)) {
+          return true;
         }
       }
     }
-
     // No moves.
     return false;
   }
@@ -273,5 +270,41 @@ public class BoardProcessor extends BoardLayout {
     } catch (GridOutOfBoundsException oobex) {
       return false;
     }
+  }
+
+  /** Returns a linked list containing the positions of every attacker. */
+  public static LinkedList<int []> findAllAttackers(GridSquareState[][] board) {
+    if (board == null) {
+      return new LinkedList<int []>();
+    }
+
+    LinkedList<int []> ret = new LinkedList<int []>();
+    for (int r = 0; r < 11; ++r) {
+      for (int c = 0; c < 11; ++c) {
+        if (board[r][c].isAttacking()) {
+          ret.add(new int[] {r, c});
+        }
+      }
+    }
+
+    return ret;
+  }
+
+  /** Returns a linked list containing the positions of every defender. */
+  public static LinkedList<int []> findAllDefenders(GridSquareState[][] board) {
+    if (board == null) {
+      return new LinkedList<int []>();
+    }
+
+    LinkedList<int []> ret = new LinkedList<int []>();
+    for (int r = 0; r < 11; ++r) {
+      for (int c = 0; c < 11; ++c) {
+        if (board[r][c].isDefending()) {
+          ret.add(new int[] {r, c});
+        }
+      }
+    }
+
+    return ret;
   }
 }

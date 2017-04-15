@@ -68,6 +68,16 @@ public class Board extends BoardLayout {
   private LinkedList<int []> defenderMoves;
 
   /**
+    The list of attackers.
+   */
+  private LinkedList<int []> attackers;
+
+  /**
+    The list of defenders.
+   */
+  private LinkedList<int []> defenders;
+
+  /**
     The maximum number of moves allowed without a capture.
    */
   private final int maxMovesWoCapture = 50;
@@ -119,21 +129,27 @@ public class Board extends BoardLayout {
     Copy constructor.
 
     @param orig The board from which we are copying.
+    @param createTimer If the board should be equipped with a timer.
    */
-  public Board(Board orig) {
+  public Board(Board orig, boolean createTimer) {
     board          = orig.getBoard();
     attackerMoves  = orig.getAttMoves();
     defenderMoves  = orig.getDefMoves();
+    attackers      = orig.getAttackers();
+    defenders      = orig.getDefenders();
     movesWoCapture = orig.getMovesWoCapture();
     kingRow        = orig.getKingRow();
     kingCol        = orig.getKingCol();
     attackerTurn   = orig.isAttackerTurn();
     gameOver       = orig.isGameOver();
 
-    initializeTimers(orig.getAttackerTimer().getTimeRemaining(),
-        orig.getDefenderTimer().getTimeRemaining(),
-        orig.getAttackerTimer().getTimeAppended(),
-        attackerTurn);
+    // The AI does not need to track every child board's timer.
+    if (createTimer) {
+      initializeTimers(orig.getAttackerTimer().getTimeRemaining(),
+          orig.getDefenderTimer().getTimeRemaining(),
+          orig.getAttackerTimer().getTimeAppended(),
+          attackerTurn);
+    }
   }
 
   /**
@@ -146,6 +162,9 @@ public class Board extends BoardLayout {
 
     attackerMoves = am;
     defenderMoves = dm;
+
+    attackers = BoardProcessor.findAllAttackers(board);
+    defenders = BoardProcessor.findAllDefenders(board);
 
     movesWoCapture = mwoCap;
     kingRow        = kr;
@@ -177,6 +196,7 @@ public class Board extends BoardLayout {
     gameOver = false;
     attackerMoves.clear();
     defenderMoves.clear();
+
     movesWoCapture = 0;
     kingRow = 5;
     kingCol = 5;
@@ -191,6 +211,9 @@ public class Board extends BoardLayout {
         }
       }
     }
+
+    attackers = BoardProcessor.findAllAttackers(board);
+    defenders = BoardProcessor.findAllDefenders(board);
 
     initializeTimers(TIMER_INITIAL, TIMER_INITIAL, TIMER_APPEND, attackerTurn);
   }
@@ -249,8 +272,12 @@ public class Board extends BoardLayout {
     dialog has focus.
     */
   public void pauseTimers() {
-    attackerTimer.stop(true);
-    defenderTimer.stop(true);
+    if (attackerTimer != null) {
+      attackerTimer.stop(true);
+    }
+    if (defenderTimer != null) {
+      defenderTimer.stop(true);
+    }
   }
 
   /**
@@ -260,7 +287,9 @@ public class Board extends BoardLayout {
   public void resumeTimers() {
     if (!gameOver) {
       BoardTimer timer = attackerTurn ? attackerTimer : defenderTimer;
-      timer.start();
+      if (timer != null) {
+        timer.start();
+      }
     }
   }
 
@@ -268,8 +297,8 @@ public class Board extends BoardLayout {
     Check whether the timers are paused.
    */
   public boolean isPaused() {
-    return (!isGameOver() && !attackerTimer.isCountingDown()
-        && !defenderTimer.isCountingDown());
+    return (!isGameOver() && attackerTimer != null && !attackerTimer.isCountingDown()
+        && defenderTimer != null && !defenderTimer.isCountingDown());
   }
 
   /**
@@ -295,6 +324,28 @@ public class Board extends BoardLayout {
       ret.add(defenderMoves.get(i).clone());
     }
 
+    return ret;
+  }
+
+  /**
+    Returns a the LinkedList describing the attacker positions.
+   */
+  public LinkedList<int []> getAttackers() {
+    LinkedList<int []> ret = new LinkedList<int []>();
+    for (int i = 0; i < attackers.size(); ++i) {
+      ret.add(attackers.get(i).clone());
+    }
+    return ret;
+  }
+
+  /**
+    Returns a the LinkedList describing the defenders positions.
+   */
+  public LinkedList<int []> getDefenders() {
+    LinkedList<int []> ret = new LinkedList<int []>();
+    for (int i = 0; i < defenders.size(); ++i) {
+      ret.add(defenders.get(i).clone());
+    }
     return ret;
   }
 
@@ -351,20 +402,24 @@ public class Board extends BoardLayout {
 
     if (attackerTurn) {
       // If the defender's timer is running, stop it.
-      if (defenderTimer.isCountingDown()) {
+      if (defenderTimer != null && defenderTimer.isCountingDown()) {
         defenderTimer.stop(false);
       }
 
       // Start the attacker's timer.
-      attackerTimer.start();
+      if (attackerTimer != null) {
+        attackerTimer.start();
+      }
     } else {
       // If the attacker's timer is running, stop it.
-      if (attackerTimer.isCountingDown()) {
+      if (attackerTimer != null && attackerTimer.isCountingDown()) {
         attackerTimer.stop(false);
       }
 
       // Start the defender's timer.
-      defenderTimer.start();
+      if (defenderTimer != null) {
+        defenderTimer.start();
+      }
     }
   }
 
@@ -425,15 +480,16 @@ public class Board extends BoardLayout {
     @param row The row of the piece to select.
     @param col The column of the piece to select.
    */
-  public void select(int row, int col) throws GridOutOfBoundsException {
+  public boolean select(int row, int col) throws GridOutOfBoundsException {
     switch (square(row, col)) {
       // The attacking side can only select attacker pieces.
       case ATTACKER:
         if (isAttackerTurn()) {
           selRow = row;
           selCol = col;
+          return true;
         }
-        break;
+        return false;
 
       // The defending side can only select defender pieces and the king.
       case DEFENDER:
@@ -441,12 +497,14 @@ public class Board extends BoardLayout {
         if (!isAttackerTurn()) {
           selRow = row;
           selCol = col;
+          return true;
         }
-        break;
+
+        return false;
 
       // For clarity sake, include the default no-op case.
       default:
-        break;
+        return false;
     }
   }
 
@@ -549,6 +607,21 @@ public class Board extends BoardLayout {
   }
 
   /**
+    Remove the piece that was selected from the list of pieces being tracked.
+    */
+  private void removeSelFromPieceList(
+      LinkedList<int []> pieceList, int remRow, int remCol) {
+    Iterator<int []> lit = pieceList.iterator();
+    while (lit.hasNext()) {
+      int [] pt = lit.next();
+      if (pt[0] == remRow && pt[1] == remCol) {
+        lit.remove();
+        break;
+      }
+    }
+  }
+
+  /**
     Executes the move and tracks state related to the move.
 
     @param row The row of the square.
@@ -558,6 +631,10 @@ public class Board extends BoardLayout {
     // If there is no conflict, move the piece, deselect, and end turn.
     board[row][col] = square(selRow, selCol);
     board[selRow][selCol] = GridSquareState.EMPTY;
+
+    LinkedList<int []> pieceList = isAttackerTurn() ? attackers : defenders;
+    removeSelFromPieceList(pieceList, selRow, selCol);
+    pieceList.add(new int [] {row, col});
 
     // If piece is king and no conflict, update king location.
     if (square(row, col).isKing()) {
@@ -678,6 +755,7 @@ public class Board extends BoardLayout {
     boolean captured = BoardProcessor.kingCapture(this);
     if (captured) {
       board[kingRow][kingCol] = GridSquareState.EMPTY;
+      removeSelFromPieceList(defenders, kingRow, kingCol);
       kingRow = -1;
       kingCol = -1;
       setGameOver(true);
@@ -795,8 +873,10 @@ public class Board extends BoardLayout {
       curRow -= rowDelta;
       curCol -= colDelta;
       while (row != curRow || col != curCol) {
-        board[curRow][curCol] = board[curRow][curCol].isKing() 
-          ? GridSquareState.KING : GridSquareState.EMPTY;
+        if (!board[curRow][curCol].isKing()) {
+          board[curRow][curCol] = GridSquareState.EMPTY;
+          removeSelFromPieceList(defenders, curRow, curCol);
+        }
         curRow -= rowDelta;
         curCol -= colDelta;
       }
@@ -846,6 +926,8 @@ public class Board extends BoardLayout {
     // If captured is greater than zero, capture the square.
     if (captured) {
       board[rowC][colC] = GridSquareState.EMPTY;
+      LinkedList<int []> pieceList = isAttackerTurn() ? defenders : attackers;
+      removeSelFromPieceList(pieceList, rowC, colC);
     }
     
     return captured;

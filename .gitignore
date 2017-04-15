@@ -17,3 +17,6 @@ gradle-app.setting
 *.class
 .project
 .classpath
+
+# Vim swap files.
+*.swp

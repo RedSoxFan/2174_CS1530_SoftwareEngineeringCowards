@@ -169,6 +169,12 @@ public class HnefataflPanel extends JPanel {
         if (board.isGameOver()) {
           JOptionPane.showMessageDialog(null, "You cannot save a board in a game over state.");
         } else {
+          // Don't allow a save if the AI is doing work, this could cause an invalid save state.
+          // Note this allows a timer countdown for both AI and the player.
+          if (!aiSem.tryAcquire()) {
+            JOptionPane.showMessageDialog(null, "You cannot save during the AI turn.");
+            return;
+          }
           board.pauseTimers();
           File directorylock = new File("saved_games");
           JFileChooser fc = new JFileChooser(directorylock);
@@ -177,6 +183,7 @@ public class HnefataflPanel extends JPanel {
           if (!directorylock.exists()) {
             boolean success = directorylock.mkdir();
             if (!success) {
+              aiSem.release();
               return;
             }
           }
@@ -186,20 +193,24 @@ public class HnefataflPanel extends JPanel {
             }
           });
           
+          // Prompt the user and check if they tried to save elsewhere.
           String fileName = "";
           try {
             if (fc.showSaveDialog(HnefataflPanel.this) == JFileChooser.APPROVE_OPTION) {
               fileName = fc.getSelectedFile().getName();
             } else {
+              aiSem.release();
               board.resumeTimers();
               return;
             }
           } catch (NullPointerException npe) {
             JOptionPane.showMessageDialog(null, "You cannot move out of saved_games.");
+            aiSem.release();
             board.resumeTimers();
             return;
           }
           
+          // Try to save.
           if (fileName != null) {
             if (BoardWriter.saveBoard(fileName, board)) {
               JOptionPane.showMessageDialog(null, "Successfully saved game file.");
@@ -207,9 +218,18 @@ public class HnefataflPanel extends JPanel {
               JOptionPane.showMessageDialog(null, "Error saving game file.");
             }
           }
+          aiSem.release();
           board.resumeTimers();
         }
       } else if (loadGame != null && loadGame.contains(event.getPoint())) {
+
+        // Don't allow a load if the AI is doing work, this could cause an invalid save state.
+        // Note this allows a timer countdown for both AI and the player.
+        if (!aiSem.tryAcquire()) {
+          JOptionPane.showMessageDialog(null, "You cannot load during the AI turn.");
+          return;
+        }
+
         board.pauseTimers();
         File directorylock = new File("saved_games");
         JFileChooser fc = new JFileChooser(directorylock);
@@ -220,20 +240,24 @@ public class HnefataflPanel extends JPanel {
           }
         });
           
+        // Prompt the user and check if they moved outside of the save directory.
         String fileName = "";
         try {
           if (fc.showOpenDialog(HnefataflPanel.this) == JFileChooser.APPROVE_OPTION) {
             fileName = fc.getSelectedFile().getName();
           } else {
+            aiSem.release();
             board.resumeTimers();
             return;
           }
         } catch (NullPointerException npe) {
           JOptionPane.showMessageDialog(null, "You cannot move out of saved_games.");
+          aiSem.release();
           board.resumeTimers();
           return;
         }
           
+        // Try to save.
         if (fileName != null) {
           board.setGameOver(true);
           String[] splitFile = fileName.split("\\.");
@@ -244,9 +268,30 @@ public class HnefataflPanel extends JPanel {
             JOptionPane.showMessageDialog(null, "Error loading game file.");
           }
           board.setGameOver(false);
+
+          // Do an AI move if that was our expectation.
+          // Note that this behavior means AI selection of the prior game is
+          // not accounted for, and we are effectively choosing the AI mode
+          // before we load the board.
+          if (board.isAttackerTurn() && aiMode == Mode.AI_HUMAN) {
+            Thread thread = new Thread(HnefataflPanel::doAiMove);
+            thread.start();
+          }
         }
+        aiSem.release();
         board.resumeTimers();
       } else if (exitGame != null && exitGame.contains(event.getPoint())) {
+        // If the AI is taking it's turn, don't pause the game for the exit
+        // dialog.
+        if (!aiSem.tryAcquire()) {
+          int selected = JOptionPane.showConfirmDialog(
+              null, "Do you really want to exit the game?",
+              "Exit Game", JOptionPane.YES_NO_OPTION);
+          if (selected == JOptionPane.YES_OPTION) {
+            System.exit(0);
+          }
+          return;
+        }
         board.pauseTimers();
         int selected = JOptionPane.showConfirmDialog(null, "Do you really want to exit the game?", 
             "Exit Game", JOptionPane.YES_NO_OPTION);

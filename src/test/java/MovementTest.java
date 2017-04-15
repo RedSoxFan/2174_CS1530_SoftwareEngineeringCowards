@@ -1969,4 +1969,112 @@ public class MovementTest {
     assertEquals("Top", board.inEdgeLocation(0, 5));
     assertEquals("NE", board.inEdgeLocation(5, 5));
   }
+
+  /**
+    Test to see if exit fort is detected.    
+  */
+  @Test
+  public void exitFortBottomEdgeTest() {
+    Board board = null;
+    try {
+      board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', 'K', 'D', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      assertTrue(board.isExitFort());
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
+  } 
+
+  /**
+    Another test for detecting a valid exit fort.
+  */ 
+  @Test
+  public void exitFortLeftEdgeTest() {
+    Board board = null;
+    try {
+      board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'K', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      assertTrue(board.isExitFort());
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
+  } 
+
+  /**
+    Test to see edge fort is not falsely detected.
+  */ 
+  @Test
+  public void falseExitFortTopEdgeTest() {
+    Board board = null;
+    try {
+      board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', 'D', 'K', 'D', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'D', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      assertFalse(board.isExitFort());
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
+  }
+
+  /**
+    Another test to see edge fort is not falsely detected.
+  */ 
+  @Test
+  public void falseExitFortRightEdgeTest() {
+    Board board = null;
+    try {
+      board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'D', 'D'},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'D', 'K'},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'D', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      assertFalse(board.isExitFort());
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
+  }
 }

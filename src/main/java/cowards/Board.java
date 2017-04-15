@@ -707,6 +707,12 @@ public class Board extends BoardLayout {
         setAttackerTurn(!isAttackerTurn());
         setGameOver(true);
       }
+
+      // If an exit fort occurs, end the game and the defenders win.
+      if (isExitFort()) {
+        setAttackerTurn(false);
+        setGameOver(true);
+      }
     }
   }
 
@@ -905,6 +911,83 @@ public class Board extends BoardLayout {
     }
     return shieldWall;
   }  
+
+  /**
+    Check to see if exit fort occurred.
+
+    @return Whether or not exit fort was formed.
+  */
+  public boolean isExitFort() {
+    boolean exitFort = false;
+    int row = getKingRow();
+    int col = getKingCol();
+
+    // Exit fort can only occur if king is on the edge of the board.
+    String edge = inEdgeLocation(row, col);
+    if (!edge.equals("NE")) {
+      // See if king has space to move.
+      if (checkKingMove(row, col, edge)) {
+        // TODO: Fix AI code below.
+        // Use AI code to see if king can't be captured.
+        int [] choice = Hnefalump.getNextMove(this, 1);
+        if (choice == null) {
+          exitFort = true;
+        } else if (choice[0] == -100) {
+          exitFort = true;
+        }
+      }
+    }
+
+    return exitFort;
+  }
+
+  /**
+    Check if king has room to move. 
+
+    @param row The row of the king location.
+    @param col The column of the king location.
+    @param edge Which edge the king is on.
+
+    @return Whether or not king has room to move.
+  */
+  private boolean checkKingMove(int row, int col, String edge) {
+    if (edge.equals("Top")) {
+      // Check if king has room to move either left, right, or down.
+      if (safeSquare(row, col - 1).equals(GridSquareState.EMPTY) 
+            || safeSquare(row, col + 1).equals(GridSquareState.EMPTY) 
+            || safeSquare(row + 1, col).equals(GridSquareState.EMPTY)) {
+        // King has room to move.
+        return true;
+      }
+    } else if (edge.equals("Bottom")) {
+      // Check if king has room to move either left, right, or up.
+      if (safeSquare(row, col - 1).equals(GridSquareState.EMPTY)
+            || safeSquare(row, col + 1).equals(GridSquareState.EMPTY)
+            || safeSquare(row - 1, col).equals(GridSquareState.EMPTY)) {
+        // King has room to move.
+        return true;
+      }
+    } else if (edge.equals("Left")) {
+      // Check if king has room to move either up, down, or right.
+      if (safeSquare(row - 1, col).equals(GridSquareState.EMPTY)
+            || safeSquare(row + 1, col).equals(GridSquareState.EMPTY)
+            || safeSquare(row, col + 1).equals(GridSquareState.EMPTY)) {
+        // King has room to move.
+        return true;
+      }
+    } else {
+      // Check if king has room to move either up, down, or left.
+      if (safeSquare(row - 1, col).equals(GridSquareState.EMPTY)
+            || safeSquare(row + 1, col).equals(GridSquareState.EMPTY)
+            || safeSquare(row, col - 1).equals(GridSquareState.EMPTY)) {
+        // King has room to move.
+        return true;
+      }
+    }
+
+    // King does not have room to move.
+    return false;
+  }
 
   /**
     Check to see if there is a basic capture between two pieces.

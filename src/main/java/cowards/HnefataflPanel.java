@@ -146,6 +146,10 @@ public class HnefataflPanel extends JPanel {
           // Not much we can do here.
         }
       } else if (newGame != null && newGame.contains(event.getPoint())) {
+        if (!aiSem.tryAcquire()) {
+          JOptionPane.showMessageDialog(null, "You cannot start a new game during the AI turn.");
+          return;
+        }
         board.pauseTimers();
         int selected = JOptionPane.showConfirmDialog(null, "Do you really want to start new game?", 
             "New Game", JOptionPane.YES_NO_OPTION);
@@ -164,6 +168,7 @@ public class HnefataflPanel extends JPanel {
             System.exit(1);
           }
         }
+        aiSem.release();
         board.resumeTimers();
       } else if (saveGame != null && saveGame.contains(event.getPoint())) {
         if (board.isGameOver()) {

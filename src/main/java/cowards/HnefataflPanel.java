@@ -155,6 +155,7 @@ public class HnefataflPanel extends JPanel {
             "New Game", JOptionPane.YES_NO_OPTION);
         if (selected == JOptionPane.YES_OPTION) {
           try {
+            board.resumeTimers();
             board.setGameOver(true);
             board = new Board();
 
@@ -270,11 +271,13 @@ public class HnefataflPanel extends JPanel {
             Board temp;
             if (null != (temp = BoardLoader.loadBoardFromSave(splitFile[0]))) {
               JOptionPane.showMessageDialog(null, "Successfully loaded game file.");
+              board.resumeTimers();
               board = temp;
               repaint();
             } else {
               JOptionPane.showMessageDialog(null, "Error loading game file.");
               aiSem.release();
+              board.setGameOver(false);
               board.resumeTimers();
               return;
             }
@@ -283,6 +286,7 @@ public class HnefataflPanel extends JPanel {
         } catch (BoardLoadException ex) {
           JOptionPane.showMessageDialog(null, "Game file is corrupted, cannot load.");
           aiSem.release();
+          board.setGameOver(false);
           board.resumeTimers();
           return;
         }

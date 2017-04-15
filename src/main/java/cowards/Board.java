@@ -306,7 +306,7 @@ public class Board extends BoardLayout {
     Check whether the timers are paused.
    */
   public boolean isPaused() {
-    return (!isGameOver() && attackerTimer != null && !attackerTimer.isCountingDown()
+    return (attackerTimer != null && !attackerTimer.isCountingDown()
         && defenderTimer != null && !defenderTimer.isCountingDown());
   }
 

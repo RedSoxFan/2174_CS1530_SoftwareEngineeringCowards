@@ -64,6 +64,21 @@ public class BoardWriter extends BoardLayout {
   }
 
   /**
+    Write out the defensive board positions.
+
+    @param pw Where we are writing to.
+    @param board The Board who's information we are writing.
+   */
+  private static void writeDefensiveBoard(PrintWriter pw, Board board) {
+    HashMap<String, Integer> defensive = board.getDefensiveBoardPositions();
+    pw.println(defensive.size());
+    for (Map.Entry<String, Integer> entry : defensive.entrySet()) {
+      pw.println(entry.getKey());
+      pw.println(entry.getValue());
+    }
+  }
+
+  /**
     Writes out an ASCII representation of the current board layout.
 
     @param pw Where we are writing to.
@@ -104,6 +119,7 @@ public class BoardWriter extends BoardLayout {
       writeState(pw, board);
       writeStoredMoves(pw, board);
       writeTimers(pw, board);
+      writeDefensiveBoard(pw, board);
       writeAsciiBoard(pw, board);
       
       pw.close();

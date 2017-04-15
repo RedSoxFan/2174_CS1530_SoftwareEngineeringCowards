@@ -85,6 +85,15 @@ public class BoardLoader extends BoardLayout {
       int dtc = Integer.parseInt(fileReader.nextLine());
       int append = Integer.parseInt(fileReader.nextLine());
 
+      // Get the defensive board positions.
+      int dbpc = Integer.parseInt(fileReader.nextLine());
+      HashMap<String, Integer> dbp = new HashMap<String, Integer>();
+      for (int i = 0; i < dbpc; i++) {
+        String pos = fileReader.nextLine();
+        int count = Integer.parseInt(fileReader.nextLine());
+        dbp.put(pos, count);
+      }
+
       // Get the king's location.
       int kr = Integer.parseInt(fileReader.nextLine());
       int kc = Integer.parseInt(fileReader.nextLine());
@@ -93,7 +102,7 @@ public class BoardLoader extends BoardLayout {
       GridSquareState[][] innerBoard = loadInnerBoard(fileReader);
 
       fileReader.close();
-      return new Board(innerBoard, am, dm, mwoCap, kr, kc, at, atc, dtc, append);
+      return new Board(innerBoard, am, dm, mwoCap, kr, kc, at, atc, dtc, append, dbp);
     } catch (FileNotFoundException ex) {
       /* Fall through */
     }

@@ -147,7 +147,7 @@ public class Board extends BoardLayout {
     kingCol        = orig.getKingCol();
     attackerTurn   = orig.isAttackerTurn();
     gameOver       = orig.isGameOver();
-    defensive      = orig.getDefensiveBoardPositions();
+    defensive      = new HashMap<String, Integer>(orig.getDefensiveBoardPositions());
 
     // The AI does not need to track every child board's timer.
     if (createTimer) {
@@ -383,7 +383,7 @@ public class Board extends BoardLayout {
     Retrieve the defensive board positions and their usage counts.
    */
   public HashMap<String, Integer> getDefensiveBoardPositions() {
-    return new HashMap<String, Integer> (defensive);
+    return defensive;
   }
 
   /**

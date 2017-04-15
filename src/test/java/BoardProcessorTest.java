@@ -391,7 +391,7 @@ public class BoardProcessorTest {
   }
 
   /**
-    Check to see if the defensive board position is being not stored after an attacker
+    Check to see if the defensive board position is not being stored after an attacker
     move.
    */
   @Test

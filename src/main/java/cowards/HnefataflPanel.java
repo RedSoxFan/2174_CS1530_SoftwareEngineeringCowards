@@ -262,27 +262,39 @@ public class HnefataflPanel extends JPanel {
           return;
         }
           
-        // Try to save.
-        if (fileName != null) {
-          board.setGameOver(true);
-          String[] splitFile = fileName.split("\\.");
-          if (null != (board = BoardLoader.loadBoardFromSave(splitFile[0]))) {
-            JOptionPane.showMessageDialog(null, "Successfully loaded game file.");
-            repaint();
-          } else {
-            JOptionPane.showMessageDialog(null, "Error loading game file.");
+        // Try to load a game.
+        try {
+          if (fileName != null) {
+            board.setGameOver(true);
+            String[] splitFile = fileName.split("\\.");
+            Board temp;
+            if (null != (temp = BoardLoader.loadBoardFromSave(splitFile[0]))) {
+              JOptionPane.showMessageDialog(null, "Successfully loaded game file.");
+              board = temp;
+              repaint();
+            } else {
+              JOptionPane.showMessageDialog(null, "Error loading game file.");
+              aiSem.release();
+              board.resumeTimers();
+              return;
+            }
           }
           board.setGameOver(false);
-
-          // Do an AI move if that was our expectation.
-          // Note that this behavior means AI selection of the prior game is
-          // not accounted for, and we are effectively choosing the AI mode
-          // before we load the board.
-          if (board.isAttackerTurn() && aiMode == Mode.AI_HUMAN) {
-            Thread thread = new Thread(HnefataflPanel::doAiMove);
-            thread.start();
-          }
+        } catch (BoardLoadException ex) {
+          JOptionPane.showMessageDialog(null, "Game file is corrupted, cannot load.");
+          aiSem.release();
+          board.resumeTimers();
+          return;
         }
+        // Do an AI move if that was our expectation.
+        // Note that this behavior means AI selection of the prior game is
+        // not accounted for, and we are effectively choosing the AI mode
+        // before we load the board.
+        if (board.isAttackerTurn() && aiMode == Mode.AI_HUMAN) {
+          Thread thread = new Thread(HnefataflPanel::doAiMove);
+          thread.start();
+        }
+        
         aiSem.release();
         board.resumeTimers();
       } else if (exitGame != null && exitGame.contains(event.getPoint())) {

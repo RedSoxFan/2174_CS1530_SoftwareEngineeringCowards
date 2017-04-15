@@ -65,7 +65,7 @@ public class BoardLoader extends BoardLayout {
     
     @param fileName The string of the filename containing save data.
    */
-  public static Board loadBoardFromSave(String fileName) {
+  public static Board loadBoardFromSave(String fileName) throws BoardLoadException {
     String pathName = "saved_games/" + fileName + ".txt";
     
     try {
@@ -105,6 +105,12 @@ public class BoardLoader extends BoardLayout {
       return new Board(innerBoard, am, dm, mwoCap, kr, kc, at, atc, dtc, append, dbp);
     } catch (FileNotFoundException ex) {
       /* Fall through */
+    } catch (StringIndexOutOfBoundsException ex) {
+      throw new BoardLoadException();
+    } catch (NoSuchElementException ex) {
+      throw new BoardLoadException();
+    } catch (NumberFormatException ex) {
+      throw new BoardLoadException();
     }
     
     /* Return a uninitialized board state. */

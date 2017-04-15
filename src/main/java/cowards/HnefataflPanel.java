@@ -54,10 +54,14 @@ public class HnefataflPanel extends JPanel {
 
     String [] options = {"Human/Human", "Human/AI", "AI/Human"};
 
+    board.pauseTimers();
+
     Object selected = JOptionPane.showInputDialog(
         null, "Select game mode:", "Selection",
         JOptionPane.DEFAULT_OPTION, null, options, "Human/Human"
     );
+
+    board.resumeTimers();
 
     // Get the user's mode choice.
     if (selected == null || "Human/Human".equals(selected.toString())) {

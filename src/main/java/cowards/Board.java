@@ -383,7 +383,7 @@ public class Board extends BoardLayout {
     Retrieve the defensive board positions and their usage counts.
    */
   public HashMap<String, Integer> getDefensiveBoardPositions() {
-    return defensive;
+    return new HashMap<String, Integer> (defensive);
   }
 
   /**

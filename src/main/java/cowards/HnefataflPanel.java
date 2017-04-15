@@ -298,6 +298,7 @@ public class HnefataflPanel extends JPanel {
         if (selected == JOptionPane.YES_OPTION) {
           System.exit(0);
         }
+        aiSem.release();
         board.resumeTimers();
       }
     }

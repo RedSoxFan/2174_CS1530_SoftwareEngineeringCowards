@@ -997,7 +997,6 @@ public class Board extends BoardLayout {
   public boolean checkUncapturableWall(int row, int col, String edge) {
     boolean wallStarted = false;
     boolean search = true;
-    int wallSize = 0;
     int kingRow = row;
     int kingCol = col;
     int[] coordinates = new int[2];
@@ -1013,7 +1012,6 @@ public class Board extends BoardLayout {
               return false;
             } else if (safeSquare(row, col).equals(GridSquareState.DEFENDER)) {
               wallStarted = true;
-              wallSize++;
             } 
           } else {
             return false;
@@ -1027,7 +1025,6 @@ public class Board extends BoardLayout {
               return false;
             } else if (safeSquare(row, col).equals(GridSquareState.DEFENDER)) {
               wallStarted = true;
-              wallSize++;
             }
           } else {
             return false;
@@ -1042,27 +1039,15 @@ public class Board extends BoardLayout {
           return false;
         }
 
-        wallSize++;
-
         // Check if wall is complete.
         if (inEdgeLocation(row, col).equals(edge)) {
           if (edge.equals("Top") || edge.equals("Bottom")) {
             if (col > kingCol) {
-              // Check there aren't enough attackers for surround rule.
-              if (wallSize > attackers.size()) {
-                return true;
-              } else {
-                return false;
-              }
+              return true;
             }
           } else {
             if (row > kingRow) {
-              // Check there aren't enough attackers for surround rule.
-              if (wallSize > attackers.size()) {
-                return true;
-              } else {
-                return false;
-              }
+              return true;
             }
           }
         }

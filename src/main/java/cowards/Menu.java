@@ -71,7 +71,6 @@ public class Menu {
   public boolean handleMouse(int xloc, int yloc) {
     for (String item : items) {
       if (buttons.get(item) != null && buttons.get(item).contains(xloc, yloc)) {
-        System.out.println(item);
         Callable<Boolean> cb = listeners.get(item);
         if (cb != null) {
           try {

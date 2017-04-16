@@ -1112,6 +1112,8 @@ public class Board extends BoardLayout {
     int newCol = col;
     int[] coordinates = {-1, -1};
 
+    // Top and bottom wall checks from left to right.
+    // Try to move up as long as current piece left of king.
     if (col < kingCol) {
       newRow = row + rowDelta;
       if (safeSquare(newRow, newCol).equals(GridSquareState.DEFENDER)) {
@@ -1121,6 +1123,7 @@ public class Board extends BoardLayout {
       }   
     }
 
+    // If no defender above, try to move up and to the right.
     newRow = row + rowDelta;
     newCol = col + colDelta;
     if (safeSquare(newRow, newCol).equals(GridSquareState.DEFENDER)) {
@@ -1129,6 +1132,7 @@ public class Board extends BoardLayout {
       return coordinates;
     }
 
+    // If no defender above/right try to move right.
     newRow = row;
     newCol = col + colDelta;
     if (safeSquare(newRow, newCol).equals(GridSquareState.DEFENDER)) {
@@ -1141,7 +1145,7 @@ public class Board extends BoardLayout {
     int kingCol = getKingCol();
 
 
-    // edge.equals("Bottom") && row + 1 <= kingRow && 
+    // If wall right of king try to move down or right and down. 
     if (col + colDelta > kingCol) {
       newRow = row - rowDelta;
       newCol = col;
@@ -1178,6 +1182,8 @@ public class Board extends BoardLayout {
     int newCol = col;
     int[] coordinates = {-1, -1};
 
+    // Left and right walls start above the king.
+    // Try to move right or left as long as current piece above king.
     if (row < kingRow) {
       newRow = row;
       newCol = col + colDelta;
@@ -1188,6 +1194,7 @@ public class Board extends BoardLayout {
       }   
     }
 
+    // If no defender left or right, try to move sideways and down.
     newRow = row + rowDelta;
     newCol = col + colDelta;
     if (safeSquare(newRow, newCol).equals(GridSquareState.DEFENDER)) {
@@ -1196,6 +1203,7 @@ public class Board extends BoardLayout {
       return coordinates;
     }
 
+    // If no defender sideways/down try to move down.
     newRow = row + rowDelta;
     newCol = col;
     if (safeSquare(newRow, newCol).equals(GridSquareState.DEFENDER)) {
@@ -1207,7 +1215,7 @@ public class Board extends BoardLayout {
     int kingRow = getKingRow();
     int kingCol = getKingCol();
 
-    // edge.equals("Bottom") && row + 1 <= kingRow && 
+    // If wall below king, try to move towards the edge to finish wall.
     if (row + rowDelta > kingRow) {
       newRow = row;
       newCol = col - colDelta;

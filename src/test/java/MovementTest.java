@@ -1986,7 +1986,7 @@ public class MovementTest {
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', 'D', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', 'D', 'K', 'D', ' ', ' ', ' ', ' ', ' ', ' '}
       });
@@ -2077,4 +2077,116 @@ public class MovementTest {
       fail();
     }
   }
+
+  /**
+    Test to check if uncapturable wall is present.
+  */ 
+  @Test
+  public void uncapturableWallLeftEdgeTest() {
+    Board board = null;
+    try {
+      board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'K', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      assertTrue(board.checkUncapturableWall(board.getKingRow(), board.getKingCol(), "Left"));
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
+  }
+
+  /**
+    Another test to check if uncapturable wall is present.
+  */ 
+  @Test
+  public void uncapturableWallTopEdgeTest() {
+    Board board = null;
+    try {
+      board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', 'D', 'K', 'D', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', 'D', ' ', 'D', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', 'D', 'D', 'D', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      assertTrue(board.checkUncapturableWall(board.getKingRow(), board.getKingCol(), "Top"));
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
+  }
+
+  /**
+    Test to check if capturable wall fails.
+  */ 
+  @Test
+  public void uncapturableWallBottomEdgeTest() {
+    Board board = null;
+    try {
+      board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', 'D', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', 'D', ' ', 'D', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', 'D', 'K', 'D', ' ', ' ', ' '}
+      });
+
+      // Comment this assert out and uncomment the other assert when not trying to play.
+      //assertTrue(board.checkUncapturableWall(board.getKingRow(), board.getKingCol(), "Bottom"));
+
+      // TODO: Test fails due to Defender being capturable.
+      assertFalse(board.checkUncapturableWall(board.getKingRow(), board.getKingCol(), "Bottom"));
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
+  } 
+
+  /**
+    Test to check if capturable wall fails.
+  */ 
+  @Test
+  public void uncapturableWallRightEdgeTest() {
+    Board board = null;
+    try {
+      board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'A'},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'D', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'D', 'K'},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'D'},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      assertFalse(board.checkUncapturableWall(board.getKingRow(), board.getKingCol(), "Right"));
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
+  }     
 }

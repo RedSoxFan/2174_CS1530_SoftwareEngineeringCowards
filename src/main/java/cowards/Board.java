@@ -927,12 +927,8 @@ public class Board extends BoardLayout {
     if (!edge.equals("NE")) {
       // See if king has space to move.
       if (checkKingMove(row, col, edge)) {
-        // TODO: Fix AI code below.
-        // Use AI code to see if king can't be captured.
-        int [] choice = Hnefalump.getNextMove(this, 1);
-        if (choice == null) {
-          exitFort = true;
-        } else if (choice[0] == -100) {
+        // Determine if uncapturable wall is formed.
+        if (checkUncapturableWall(row, col, edge)) {
           exitFort = true;
         }
       }
@@ -990,6 +986,265 @@ public class Board extends BoardLayout {
   }
 
   /**
+    Check if an uncapturable wall formed around the king.
+
+    @param row The row of the king location.
+    @param col The column of the king location.
+    @param edge Which edge the king is on.
+
+    @return Whether or not uncapturable wall has formed.
+  */
+  public boolean checkUncapturableWall(int row, int col, String edge) {
+    boolean wallStarted = false;
+    boolean search = true;
+    int wallSize = 0;
+    int kingRow = row;
+    int kingCol = col;
+    int[] coordinates = new int[2];
+
+    while (search) {
+      if (!wallStarted) {
+        // Search for start of wall left of king.
+        if (edge.equals("Top") || edge.equals("Bottom")) {
+          if (col - 1 >= 0) {
+            col--;
+            // Check state of square.
+            if (safeSquare(row, col).equals(GridSquareState.ATTACKER)) {
+              return false;
+            } else if (safeSquare(row, col).equals(GridSquareState.DEFENDER)) {
+              wallStarted = true;
+              wallSize++;
+            } 
+          } else {
+            return false;
+          }
+        // Search for start of wall above king.
+        } else {
+          if (row - 1 >= 0) {
+            row--;
+            // Check state of square.
+            if (safeSquare(row, col).equals(GridSquareState.ATTACKER)) {
+              return false;
+            } else if (safeSquare(row, col).equals(GridSquareState.DEFENDER)) {
+              wallStarted = true;
+              wallSize++;
+            }
+          } else {
+            return false;
+          }
+        }
+      } else {
+        coordinates = determineWallDirection(row, col, edge);
+        row = coordinates[0];
+        col = coordinates[1];
+
+        if (row == -1 && col == -1) {
+          return false;
+        }
+
+        wallSize++;
+
+        // Check if wall is complete.
+        if (inEdgeLocation(row, col).equals(edge)) {
+          if (edge.equals("Top") || edge.equals("Bottom")) {
+            if (col > kingCol) {
+              // Check there aren't enough attackers for surround rule.
+              if (wallSize > attackers.size()) {
+                return true;
+              } else {
+                return false;
+              }
+            }
+          } else {
+            if (row > kingRow) {
+              // Check there aren't enough attackers for surround rule.
+              if (wallSize > attackers.size()) {
+                return true;
+              } else {
+                return false;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Should not be reached.
+    return false;
+  }
+
+  /**
+    Determine direction to continue searching for wall.
+
+    @param row The current row of the wall.
+    @param col The current column of the wall.
+    @param edge The edge the king is located on.
+
+    @return Coordinates to continue searching. (-1, -1) if no defenders in any direction.
+  */
+  private int[] determineWallDirection(int row, int col, String edge) {
+    int newRow = row;
+    int newCol = col;
+    int rowDelta = 0;
+    int colDelta = 0;
+    int[] coordinates = {-1, -1};
+
+    if (edge.equals("Bottom")) {
+      rowDelta = -1;
+      colDelta = 1;
+    } else if (edge.equals("Top")) {
+      rowDelta = 1;
+      colDelta = 1;
+    } else if (edge.equals("Left")) {
+      rowDelta = 1;
+      colDelta = 1;
+    } else {
+      rowDelta = 1;
+      colDelta = -1;
+    }
+
+    if (edge.equals("Bottom") || edge.equals("Top")) {
+      coordinates = checkTopOrBottomForWall(row, col, rowDelta, colDelta);
+      return coordinates;
+    } else {
+      coordinates = checkLeftOrRightForWall(row, col, rowDelta, colDelta);
+      return coordinates;
+    }
+  }
+
+  /**
+    Determine direction to continue searching on horizontal walls.
+
+    @param row The current row of the wall.
+    @param col The current column of the wall.
+    @param rowDelta Move up or down.
+    @param colDelta Move left or right.
+
+    @return Coordinates to continue searching. (-1, -1) if no defenders in any direction.
+  */
+  private int[] checkTopOrBottomForWall(int row, int col, int rowDelta, int colDelta) {
+    int newRow = row;
+    int newCol = col;
+    int[] coordinates = {-1, -1};
+
+    if (col < kingCol) {
+      newRow = row + rowDelta;
+      if (safeSquare(newRow, newCol).equals(GridSquareState.DEFENDER)) {
+        coordinates[0] = newRow;
+        coordinates[1] = newCol;
+        return coordinates;
+      }   
+    }
+
+    newRow = row + rowDelta;
+    newCol = col + colDelta;
+    if (safeSquare(newRow, newCol).equals(GridSquareState.DEFENDER)) {
+      coordinates[0] = newRow;
+      coordinates[1] = newCol;
+      return coordinates;
+    }
+
+    newRow = row;
+    newCol = col + colDelta;
+    if (safeSquare(newRow, newCol).equals(GridSquareState.DEFENDER)) {
+      coordinates[0] = newRow;
+      coordinates[1] = newCol;
+      return coordinates;
+    }
+
+    int kingRow = getKingRow();
+    int kingCol = getKingCol();
+
+
+    // edge.equals("Bottom") && row + 1 <= kingRow && 
+    if (col + colDelta > kingCol) {
+      newRow = row - rowDelta;
+      newCol = col;
+      if (safeSquare(newRow, newCol).equals(GridSquareState.DEFENDER)) {
+        coordinates[0] = newRow;
+        coordinates[1] = newCol;
+        return coordinates;
+      } else {
+        newRow = row - rowDelta;
+        newCol = col + colDelta;
+        if (safeSquare(newRow, newCol).equals(GridSquareState.DEFENDER)) {
+          coordinates[0] = newRow;
+          coordinates[1] = newCol;
+          return coordinates;
+        }
+      }
+    }
+
+    return coordinates;
+  } 
+
+  /**
+    Determine direction to continue searching on vertical walls.
+
+    @param row The current row of the wall.
+    @param col The current column of the wall.
+    @param rowDelta Move up or down.
+    @param colDelta Move left or right.
+
+    @return Coordinates to continue searching. (-1, -1) if no defenders in any direction.
+  */
+  private int[] checkLeftOrRightForWall(int row, int col, int rowDelta, int colDelta) {
+    int newRow = row;
+    int newCol = col;
+    int[] coordinates = {-1, -1};
+
+    if (row < kingRow) {
+      newRow = row;
+      newCol = col + colDelta;
+      if (safeSquare(newRow, newCol).equals(GridSquareState.DEFENDER)) {
+        coordinates[0] = newRow;
+        coordinates[1] = newCol;
+        return coordinates;
+      }   
+    }
+
+    newRow = row + rowDelta;
+    newCol = col + colDelta;
+    if (safeSquare(newRow, newCol).equals(GridSquareState.DEFENDER)) {
+      coordinates[0] = newRow;
+      coordinates[1] = newCol;
+      return coordinates;
+    }
+
+    newRow = row + rowDelta;
+    newCol = col;
+    if (safeSquare(newRow, newCol).equals(GridSquareState.DEFENDER)) {
+      coordinates[0] = newRow;
+      coordinates[1] = newCol;
+      return coordinates;
+    }
+
+    int kingRow = getKingRow();
+    int kingCol = getKingCol();
+
+    // edge.equals("Bottom") && row + 1 <= kingRow && 
+    if (row + rowDelta > kingRow) {
+      newRow = row;
+      newCol = col - colDelta;
+      if (safeSquare(newRow, newCol).equals(GridSquareState.DEFENDER)) {
+        coordinates[0] = newRow;
+        coordinates[1] = newCol;
+        return coordinates;
+      } else {
+        newRow = row + rowDelta;
+        newCol = col - colDelta;
+        if (safeSquare(newRow, newCol).equals(GridSquareState.DEFENDER)) {
+          coordinates[0] = newRow;
+          coordinates[1] = newCol;
+          return coordinates;
+        }
+      }
+    }
+
+    return coordinates;
+  } 
+
+  /**
     Check to see if there is a basic capture between two pieces.
 
     @param rowA The row of the first piece.
@@ -1036,7 +1291,7 @@ public class Board extends BoardLayout {
     }
     
     return captured;
-  }
+  }  
 
   /**
      Test to see if two pieces (or a piece and an empty special square) can capture

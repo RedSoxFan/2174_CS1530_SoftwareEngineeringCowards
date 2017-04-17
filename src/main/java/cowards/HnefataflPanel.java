@@ -304,19 +304,26 @@ public class HnefataflPanel extends JPanel {
           return;
         }
           
-        // Try to save.
-        if (fileName != null) {
-          board.setGameOver(true);
-          String[] splitFile = fileName.split("\\.");
-          if (null != (board = BoardLoader.loadBoardFromSave(splitFile[0]))) {
-            showMessageDialog("Successfully saved game file.", true);
-            repaint();
-          } else {
-            showMessageDialog("Error saving game file", true);
+        // Try to load a game.
+        try {
+          if (fileName != null) {
+            board.setGameOver(true);
+            String[] splitFile = fileName.split("\\.");
+            Board temp;
+            if (null != (temp = BoardLoader.loadBoardFromSave(splitFile[0]))) {
+              showMessageDialog("Successfully loaded game file.", true);
+              board = temp;
+              repaint();
+            } else {
+              showMessageDialog("Error loading game file.", true);
+            }
           }
           board.setGameOver(false);
-        } else {
-          board.resumeTimers();
+        } catch (BoardLoadException ex) {
+          showMessageDialog("Game file is corrupted, cannot load.", true);
+          aiSem.release();
+          board.setGameOver(false);
+          return;
         }
         aiSem.release();
       } else if (exitGame != null && exitGame.contains(event.getPoint())) {

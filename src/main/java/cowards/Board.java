@@ -306,7 +306,7 @@ public class Board extends BoardLayout {
     Check whether the timers are paused.
    */
   public boolean isPaused() {
-    return (!isGameOver() && attackerTimer != null && !attackerTimer.isCountingDown()
+    return (attackerTimer != null && !attackerTimer.isCountingDown()
         && defenderTimer != null && !defenderTimer.isCountingDown());
   }
 
@@ -759,7 +759,7 @@ public class Board extends BoardLayout {
      @param row The destination row of the move.
      @param column The destination column of the move.
    */
-  public boolean capture(int row, int column) throws GridOutOfBoundsException {
+  private boolean capture(int row, int column) throws GridOutOfBoundsException {
     boolean captured = false;
 
     // Try the basic captures.
@@ -1058,7 +1058,7 @@ public class Board extends BoardLayout {
     @param row Row of desired square.
     @param column Column of desired square.
   */
-  public GridSquareState safeSquare(int row, int column) {
+  protected GridSquareState safeSquare(int row, int column) {
     GridSquareState state = GridSquareState.EMPTY;
 
     try {

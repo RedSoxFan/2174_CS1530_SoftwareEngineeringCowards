@@ -540,4 +540,172 @@ public class BoardProcessorTest {
       fail();
     }
   }
+
+  /**
+    Test to see if inBounds() works with a square on the board.
+  */ 
+  @Test
+  public void inBoundsTest() {
+    int [] square = new int[] {1, 1};
+    assertTrue(BoardProcessor.inBounds(square));
+  } 
+
+  /**
+    Test to see if inBounds() works with a square off the board.
+  */ 
+  @Test
+  public void outBoundsTest() {
+    int [] square = new int[] {1, -1};
+    assertFalse(BoardProcessor.inBounds(square));
+  } 
+
+  /**
+    See if the unsurrounded king is detected properly.
+   */
+  @Test
+  public void unguardedKingEdgeTest() {
+    try {
+      Board board = new Board(new char[][] {
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', 'K', 'D', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+      assertFalse(BoardProcessor.isKingGuarded(board));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
+  }
+
+  /**
+    See if the unsurrounded king is detected properly.
+   */
+  @Test
+  public void falseGuardedKingEdgeTest() {
+    try {
+      Board board = new Board(new char[][] {
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', 'K', 'D', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+      assertFalse(BoardProcessor.isKingGuarded(board));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
+  }
+
+  /**
+    See if the king being surrounded is detected properly.
+   */
+  @Test
+  public void guardedKingEdgeTest() {
+    try {
+      Board board = new Board(new char[][] {
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', 'D', 'D', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', 'K', 'D', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+      assertTrue(BoardProcessor.isKingGuarded(board));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
+  }
+
+  /**
+    See if the king being surrounded is detected properly.
+   */
+  @Test
+  public void guardedKingBlockTest() {
+    try {
+      Board board = new Board(new char[][] {
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', 'D', 'D', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', 'K', 'D', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', 'D', 'D', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+      assertTrue(BoardProcessor.isKingGuarded(board));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
+  }
+
+  /**
+    See if the king being surrounded is detected properly.
+   */
+  @Test
+  public void guardedKingSpacedTest() {
+    try {
+      Board board = new Board(new char[][] {
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'D', 'D', 'D', 'D', 'D', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'D', ' ', ' ', ' ', 'D', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'D', ' ', 'K', ' ', 'D', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'D', ' ', ' ', ' ', 'D', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'D', 'D', 'D', 'D', 'D', ' ', ' ', ' ', ' ', ' '}
+      });
+      assertTrue(BoardProcessor.isKingGuarded(board));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
+  }
+
+  /**
+    See if the guard in danger is caught.
+   */
+  @Test
+  public void findThreatenedGuard() {
+    try {
+      Board board = new Board(new char[][] {
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', 'K', 'D', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+      assertTrue(BoardProcessor.capturableGuard(board, 8, 3));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
+  }
 }

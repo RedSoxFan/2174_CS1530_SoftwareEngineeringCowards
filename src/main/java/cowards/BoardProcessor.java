@@ -138,7 +138,6 @@ public class BoardProcessor extends BoardLayout {
     return true;
   }
 
-
   /**
     Return whether or not the defending side is surrounded by the attackers.
 
@@ -214,6 +213,107 @@ public class BoardProcessor extends BoardLayout {
     }
 
     // So far, the fill has stayed within the board.
+    return true;
+  }
+
+  /**
+    Returns if it is possible for an attacker to get on opposite adjacent sides
+    of this piece.
+
+    @param row Row of desired square.
+    @param col Column of desired square.
+  */
+  public static boolean capturableGuard(Board board, int row, int col) {
+    try {
+      return board.square(row, col).isDefending()
+          && board.square(row - 1, col).isEmpty()
+          && board.square(row + 1, col).isEmpty()
+          && board.square(row, col - 1).isEmpty()
+          && board.square(row, col + 1).isEmpty();
+    } catch (GridOutOfBoundsException gx) {
+      return false;
+    }
+  }
+
+  /**
+    Return whether or not the defending side is surrounded by the attackers.
+
+    @param board The board being checked.
+
+    @return Whether or not the defending side is surrounded.
+   */
+  public static boolean isKingGuarded(Board board) {
+    // Perform a flood fill.
+    boolean[][] fill = new boolean[GRID_ROW_MAX + 1][GRID_COL_MAX + 1];
+    
+    if (!guardFloodFill(board, fill, board.getKingRow(), board.getKingCol())) {
+      return false;
+    }
+
+    // It may be the case that we flooded the entire board (in the case no attackers remain).
+    int filledEmpty = 0;
+    for (int r = 0; r < fill.length; r++) {
+      for (int c = 0; c < fill[r].length; c++) {
+        if (fill[r][c]) {
+          ++filledEmpty;
+        }
+        if (fill[r][c] && board.safeSquare(r, c).isAttacking()) {
+          return false;
+        }
+      }
+    }
+
+    // If there are more flooded squares than reasonable, this isn't a fort.
+    if (filledEmpty > 66) {
+      return false;
+    }
+
+    // Surrounded.
+    return true;
+  }
+
+  /**
+    Perform a flood fill. Defenders and edges will be treated as barriers.
+
+    @param board The board being processed.
+    @param fill The fill state of each square.
+    @param row The current row.
+    @param col The current column.
+
+    @return Whether or not the flood fill completed without exiting the board.
+   */
+  private static boolean guardFloodFill(Board board, boolean[][] fill, int row, int col) {
+    // Test the current square.
+    if (!inBounds(new int[] {row, col})) {
+      return true;
+    }
+
+    // If the square is already filled, nothing to do.
+    if (fill[row][col]) {
+      return true;
+    }
+
+    // Treat uncapturable defending pieces as barriers.
+    if (!board.safeSquare(row, col).isDefending() || capturableGuard(board, row, col)) {
+      fill[row][col] = true;
+
+      // Check the four adjancent squares clockwise, starting at the top.
+      // If any of them exit the board, propagate the failure.
+      if (!guardFloodFill(board, fill, row - 1, col)) {
+        return false;
+      }
+      if (!guardFloodFill(board, fill, row, col + 1)) {
+        return false;
+      }
+      if (!guardFloodFill(board, fill, row + 1, col)) {
+        return false;
+      }
+      if (!guardFloodFill(board, fill, row, col - 1)) {
+        return false;
+      }
+    }
+
+    // No attackers encountered.
     return true;
   }
 
@@ -377,4 +477,16 @@ public class BoardProcessor extends BoardLayout {
     }
     return new AbstractMap.SimpleEntry<String, Integer>(buff.toString(), count);
   }
+
+  /**
+    Check if the given square is in bounds.
+
+    @param square The square to check.
+
+    @return Whether or not the piece is in bounds.
+  */
+  public static boolean inBounds(int [] square) {
+    return square[0] >= 0 && square[1] >= 0 && square[0] < 11 && square[1] < 11;
+  }
+
 }

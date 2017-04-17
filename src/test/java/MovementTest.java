@@ -2294,4 +2294,58 @@ public class MovementTest {
       fail();
     }
   } 
+
+  /**
+    Test to see if a safe king in a weird fort is secure.
+  */ 
+  @Test
+  public void weirdExitFortTest() {
+    Board board = null;
+    try {
+      board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'D', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'K', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'D', ' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', 'D', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      assertTrue(board.isExitFort());
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
+  } 
+
+  /**
+    Test to see if a safe king in a weird fort is secure.
+  */ 
+  @Test
+  public void weirdExitFortTest2() {
+    Board board = null;
+    try {
+      board = new Board(new char[][]{
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'D', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'D', 'D', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'K', 'D', 'D', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'D', 'D', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'D', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      assertTrue(board.isExitFort());
+    } catch (BadAsciiBoardFormatException bex) {
+      fail();
+    }
+  } 
 }

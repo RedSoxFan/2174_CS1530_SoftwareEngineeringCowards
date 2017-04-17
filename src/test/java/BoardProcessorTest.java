@@ -708,4 +708,43 @@ public class BoardProcessorTest {
       fail();
     }
   }
+
+  /**
+    See if the fort bust checker works.
+   */
+  @Test
+  public void fortBustTest() {
+    try {
+      Board board = new Board(new char[][] {
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', ' ', 'D', ' ', ' ', ' ', ' ', ' ', ' '},
+        {' ', ' ', 'D', 'K', 'D', ' ', ' ', ' ', ' ', ' ', ' '}
+      });
+
+      boolean[][] fill = new boolean[][] {
+        {true, true, true, true, true, true, true, true, true, true, true},
+        {true, true, true, true, true, true, true, true, true, true, true},
+        {true, true, true, true, true, true, true, true, true, true, true},
+        {true, true, true, true, true, true, true, true, true, true, true},
+        {true, true, true, true, true, true, true, true, true, true, true},
+        {true, true, true, true, true, true, true, true, true, true, true},
+        {true, true, true, true, true, true, true, true, true, true, true},
+        {true, true, true, true, true, true, true, true, true, true, true},
+        {true, true, true, true, true, true, true, true, true, true, true},
+        {true, true, true, true, true, true, true, true, true, true, true},
+        {true, true, false, true, false, true, true, true, true, true, true}
+      };
+      assertFalse(BoardProcessor.isFortSolid(board, fill));
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
+  }
 }

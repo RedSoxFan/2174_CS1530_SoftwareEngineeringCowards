@@ -994,7 +994,7 @@ public class Board extends BoardLayout {
     }
     
     return captured;
-  }  
+  }
 
   /**
      Test to see if two pieces (or a piece and an empty special square) can capture

@@ -220,6 +220,8 @@ public class BoardProcessor extends BoardLayout {
     Returns if it is possible for an attacker to get on opposite adjacent sides
     of this piece.
 
+    All sides must be open due to the nature of the fort.
+
     @param row Row of desired square.
     @param col Column of desired square.
   */
@@ -236,18 +238,18 @@ public class BoardProcessor extends BoardLayout {
   }
 
   /**
-    Helper for isKingGuarded().
+    Returns if a fort can be broken.
 
     @param board The board being checked.
     @param fill The fill array being checked against.
 
-    @return Whether or not the king is guarded.
+    @return Whether or not the fort holds.
    */
   public static boolean isFortSolid(Board board, boolean[][] fill) {
-    // It may be the case that we flooded the entire board (in the case no attackers remain).
     int filledEmpty = 0;
     for (int r = 0; r < fill.length; r++) {
       for (int c = 0; c < fill[r].length; c++) {
+        // It may be the case that we flooded the entire board (in the case no attackers remain).
         if (fill[r][c]) {
           ++filledEmpty;
         }
@@ -258,7 +260,9 @@ public class BoardProcessor extends BoardLayout {
     }
 
     // If there are more flooded squares than reasonable, this isn't a fort.
-    if (filledEmpty > 66) {
+    // There may be a corner case for this, but we don't have time to test it
+    // super closely.
+    if (filledEmpty > 40) {
       return false;
     }
 
@@ -280,7 +284,9 @@ public class BoardProcessor extends BoardLayout {
     guardFloodFill(board, fill, board.getKingRow(), board.getKingCol());
 
     // It may be the case that we flooded the entire board (in the case no attackers remain).
-    return isFortSolid(board, fill);
+    // If the fort isn't solid, but the king is uncaptureable it is guarded (ie
+    // attackers fewer than 2 pieces).
+    return isFortSolid(board, fill) || board.getAttackers().size() <= 2;
   }
 
   /**

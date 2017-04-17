@@ -26,6 +26,9 @@ public class HnefataflPanel extends JPanel {
   // The mode the user decided on.
   private Mode aiMode;
 
+  // The mode selector.
+  private Menu menu;
+
   /**
     Constructor.
   */
@@ -52,32 +55,69 @@ public class HnefataflPanel extends JPanel {
       }
     }, 50, 1000 / 30);
 
-    String [] options = {"Human/Human", "Human/AI", "AI/Human"};
-
     board.pauseTimers();
+    showAiSelection();
+  }
 
-    Object selected = JOptionPane.showInputDialog(
-        null, "Select game mode:", "Selection",
-        JOptionPane.DEFAULT_OPTION, null, options, "Human/Human"
-    );
-
-    board.resumeTimers();
-
-    // Get the user's mode choice.
-    if (selected == null || "Human/Human".equals(selected.toString())) {
-      // Default
+  /**
+    Show the AI Selection menu.
+   */
+  private void showAiSelection() {
+    board.pauseTimers();
+    menu = new Menu("AI Mode");
+    menu.addItem("Human/Human", () -> {
       aiMode = Mode.TWO_HUMAN;
-    } else if ("Human/AI".equals(selected.toString())) {
-      aiMode = Mode.HUMAN_AI;
-    } else if ("AI/Human".equals(selected.toString())) {
+      board.resumeTimers();
+      return true;
+    });
+    menu.addItem("AI/Human", () -> {
       aiMode = Mode.AI_HUMAN;
-    }
-
-    // Only move first if the AI has the first move.
-    if (aiMode == Mode.AI_HUMAN) {
+      board.resumeTimers();
       Thread thread = new Thread(HnefataflPanel::doAiMove);
       thread.start();
+      return true;
+    });
+    menu.addItem("Human/AI", () -> {
+      aiMode = Mode.HUMAN_AI;
+      board.resumeTimers();
+      return true;
+    });
+  }
+
+  /**
+    Show a confirmation dialog menu.
+
+    @param title The title text.
+    @param yes The yes text option.
+    @param no The no text option.
+    @param yesCb The yes callback.
+    @param noCb The no callback.
+   */
+  private void showConfirmDialog(String title, String yes, Callable<Boolean> yesCb,
+      String no, Callable<Boolean> noCb) {
+    board.pauseTimers();
+    menu = new Menu(title);
+    menu.addItem(yes, yesCb);
+    menu.addItem(no, noCb);
+  }
+
+  /**
+    Show a message dialog menu.
+
+    @param msg The message text.
+    @param pause Whether or not to pause the game.
+   */
+  private void showMessageDialog(String text, boolean pause) {
+    if (pause) {
+      board.pauseTimers();
     }
+    menu = new Menu(text);
+    menu.addItem("Ok", () -> {
+      if (pause) {
+        board.resumeTimers();
+      }
+      return true;
+    });
   }
 
   /**
@@ -114,7 +154,11 @@ public class HnefataflPanel extends JPanel {
    */
   public void mouseReleaseEvent(MouseEvent event) {
     if (event.getButton() == 1) {
-      if (grid != null && grid.contains(event.getPoint())) {
+      if (menu != null)  {
+        if (menu.handleMouse(event.getX(), event.getY())) {
+          menu = null;
+        }
+      } else if (grid != null && grid.contains(event.getPoint())) {
         int col = (event.getX() - grid.x) / (grid.width / 11);
         int row = (event.getY() - grid.y) / (grid.height / 11);
 
@@ -147,38 +191,37 @@ public class HnefataflPanel extends JPanel {
         }
       } else if (newGame != null && newGame.contains(event.getPoint())) {
         if (!aiSem.tryAcquire()) {
-          JOptionPane.showMessageDialog(null, "You cannot start a new game during the AI turn.");
+          showMessageDialog("You cannot start a new game during the AI turn", false);
           return;
         }
-        board.pauseTimers();
-        int selected = JOptionPane.showConfirmDialog(null, "Do you really want to start new game?", 
-            "New Game", JOptionPane.YES_NO_OPTION);
-        if (selected == JOptionPane.YES_OPTION) {
-          try {
-            board.resumeTimers();
-            board.setGameOver(true);
-            board = new Board();
-
-            // Make sure the AI goes first in new game situations when the mode is right.
-            if (aiMode == Mode.AI_HUMAN) {
-              Thread thread = new Thread(HnefataflPanel::doAiMove);
-              thread.start();
+        showConfirmDialog("Do you really want to start a new game?",
+            "Yes", () -> {
+              try {
+                board.setGameOver(true);
+                aiMode = Mode.TWO_HUMAN;
+                board = new Board();
+                showAiSelection();
+              } catch (BadAsciiBoardFormatException bx) {
+                JOptionPane.showMessageDialog(null, "Critical: Cannot load initial board.");
+                System.exit(1);
+              }
+              aiSem.release();
+              return false;
+            },
+            "No",  () -> {
+              board.resumeTimers();
+              aiSem.release();
+              return true;
             }
-          } catch (BadAsciiBoardFormatException bx) {
-            JOptionPane.showMessageDialog(null, "Critical: Cannot load initial board.");
-            System.exit(1);
-          }
-        }
-        aiSem.release();
-        board.resumeTimers();
+        );
       } else if (saveGame != null && saveGame.contains(event.getPoint())) {
         if (board.isGameOver()) {
-          JOptionPane.showMessageDialog(null, "You cannot save a board in a game over state.");
+          showMessageDialog("You cannot save a game that is over", false);
         } else {
           // Don't allow a save if the AI is doing work, this could cause an invalid save state.
           // Note this allows a timer countdown for both AI and the player.
           if (!aiSem.tryAcquire()) {
-            JOptionPane.showMessageDialog(null, "You cannot save during the AI turn.");
+            showMessageDialog("You cannot start a new game during the AI turn", false);
             return;
           }
           board.pauseTimers();
@@ -210,7 +253,7 @@ public class HnefataflPanel extends JPanel {
               return;
             }
           } catch (NullPointerException npe) {
-            JOptionPane.showMessageDialog(null, "You cannot move out of saved_games.");
+            showMessageDialog("You cannot move out of saved_games", true);
             aiSem.release();
             board.resumeTimers();
             return;
@@ -219,20 +262,19 @@ public class HnefataflPanel extends JPanel {
           // Try to save.
           if (fileName != null) {
             if (BoardWriter.saveBoard(fileName, board)) {
-              JOptionPane.showMessageDialog(null, "Successfully saved game file.");
+              showMessageDialog("Successfully saved game file.", true);
             } else {
-              JOptionPane.showMessageDialog(null, "Error saving game file.");
+              showMessageDialog("Error saving game file", true);
             }
           }
           aiSem.release();
-          board.resumeTimers();
         }
       } else if (loadGame != null && loadGame.contains(event.getPoint())) {
 
         // Don't allow a load if the AI is doing work, this could cause an invalid save state.
         // Note this allows a timer countdown for both AI and the player.
         if (!aiSem.tryAcquire()) {
-          JOptionPane.showMessageDialog(null, "You cannot load during the AI turn.");
+          showMessageDialog("You cannot start a new game during the AI turn", false);
           return;
         }
 
@@ -257,9 +299,8 @@ public class HnefataflPanel extends JPanel {
             return;
           }
         } catch (NullPointerException npe) {
-          JOptionPane.showMessageDialog(null, "You cannot move out of saved_games.");
+          showMessageDialog("You cannot move out of saved_games", true);
           aiSem.release();
-          board.resumeTimers();
           return;
         }
           
@@ -270,57 +311,38 @@ public class HnefataflPanel extends JPanel {
             String[] splitFile = fileName.split("\\.");
             Board temp;
             if (null != (temp = BoardLoader.loadBoardFromSave(splitFile[0]))) {
-              JOptionPane.showMessageDialog(null, "Successfully loaded game file.");
-              board.resumeTimers();
+              showMessageDialog("Successfully loaded game file.", true);
               board = temp;
               repaint();
             } else {
-              JOptionPane.showMessageDialog(null, "Error loading game file.");
-              aiSem.release();
-              board.setGameOver(false);
-              board.resumeTimers();
-              return;
+              showMessageDialog("Error loading game file.", true);
             }
           }
           board.setGameOver(false);
         } catch (BoardLoadException ex) {
-          JOptionPane.showMessageDialog(null, "Game file is corrupted, cannot load.");
+          showMessageDialog("Game file is corrupted, cannot load.", true);
           aiSem.release();
           board.setGameOver(false);
-          board.resumeTimers();
           return;
         }
-        // Do an AI move if that was our expectation.
-        // Note that this behavior means AI selection of the prior game is
-        // not accounted for, and we are effectively choosing the AI mode
-        // before we load the board.
-        if (board.isAttackerTurn() && aiMode == Mode.AI_HUMAN) {
-          Thread thread = new Thread(HnefataflPanel::doAiMove);
-          thread.start();
-        }
-        
         aiSem.release();
-        board.resumeTimers();
       } else if (exitGame != null && exitGame.contains(event.getPoint())) {
         // If the AI is taking it's turn, don't pause the game for the exit
         // dialog.
-        if (!aiSem.tryAcquire()) {
-          int selected = JOptionPane.showConfirmDialog(
-              null, "Do you really want to exit the game?",
-              "Exit Game", JOptionPane.YES_NO_OPTION);
-          if (selected == JOptionPane.YES_OPTION) {
-            System.exit(0);
-          }
-          return;
+        if (aiSem.tryAcquire()) {
+          board.pauseTimers();
         }
-        board.pauseTimers();
-        int selected = JOptionPane.showConfirmDialog(null, "Do you really want to exit the game?", 
-            "Exit Game", JOptionPane.YES_NO_OPTION);
-        if (selected == JOptionPane.YES_OPTION) {
-          System.exit(0);
-        }
-        aiSem.release();
-        board.resumeTimers();
+        showConfirmDialog("Do you really want to exit the game?",
+            "Yes", () -> {
+              System.exit(0);
+              return true;
+            },
+            "No", () -> {
+              aiSem.release();
+              board.resumeTimers();
+              return true;
+            }
+        );
       }
     }
   }
@@ -379,6 +401,17 @@ public class HnefataflPanel extends JPanel {
     int statusBot = (int) status.getMaxY();
     Rectangle buttons = new Rectangle(grid.x, statusBot, grid.width, remaining / 2);
     paintButtons(graph, buttons);
+
+    // Paint menu.
+    if (menu != null) {
+      Dimension menuDim = menu.getSize(graph);
+      Rectangle menuBounds = new Rectangle(
+          grid.x + grid.width / 2 - (int) (menuDim.getWidth() / 2),
+          grid.y + grid.height / 2 - (int) (menuDim.getHeight() / 2),
+          (int) menuDim.getWidth(),
+          (int) menuDim.getHeight());
+      menu.paint(graph, menuBounds, getMousePosition());
+    }
   }
 
   /**

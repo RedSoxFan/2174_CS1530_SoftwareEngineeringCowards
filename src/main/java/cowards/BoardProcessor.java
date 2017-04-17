@@ -138,7 +138,6 @@ public class BoardProcessor extends BoardLayout {
     return true;
   }
 
-
   /**
     Return whether or not the defending side is surrounded by the attackers.
 
@@ -215,6 +214,113 @@ public class BoardProcessor extends BoardLayout {
 
     // So far, the fill has stayed within the board.
     return true;
+  }
+
+  /**
+    Returns if it is possible for an attacker to get on opposite adjacent sides
+    of this piece.
+
+    All sides must be open due to the nature of the fort.
+
+    @param row Row of desired square.
+    @param col Column of desired square.
+  */
+  public static boolean capturableGuard(Board board, int row, int col) {
+    try {
+      return board.square(row, col).isDefending()
+          && board.square(row - 1, col).isEmpty()
+          && board.square(row + 1, col).isEmpty()
+          && board.square(row, col - 1).isEmpty()
+          && board.square(row, col + 1).isEmpty();
+    } catch (GridOutOfBoundsException gx) {
+      return false;
+    }
+  }
+
+  /**
+    Returns if a fort can be broken.
+
+    @param board The board being checked.
+    @param fill The fill array being checked against.
+
+    @return Whether or not the fort holds.
+   */
+  public static boolean isFortSolid(Board board, boolean[][] fill) {
+    int filledEmpty = 0;
+    for (int r = 0; r < fill.length; r++) {
+      for (int c = 0; c < fill[r].length; c++) {
+        // It may be the case that we flooded the entire board (in the case no attackers remain).
+        if (fill[r][c]) {
+          ++filledEmpty;
+        }
+        if (fill[r][c] && board.safeSquare(r, c).isAttacking()) {
+          return false;
+        }
+      }
+    }
+
+    // If there are more flooded squares than reasonable, this isn't a fort.
+    // There may be a corner case for this, but we don't have time to test it
+    // super closely.
+    if (filledEmpty > 40) {
+      return false;
+    }
+
+    // Surrounded.
+    return true;
+  }
+
+  /**
+    Return whether or not the king is surrounded by the defenders.
+
+    @param board The board being checked.
+
+    @return Whether or not the king is guarded.
+   */
+  public static boolean isKingGuarded(Board board) {
+    // Perform a flood fill.
+    boolean[][] fill = new boolean[GRID_ROW_MAX + 1][GRID_COL_MAX + 1];
+    
+    guardFloodFill(board, fill, board.getKingRow(), board.getKingCol());
+
+    // It may be the case that we flooded the entire board (in the case no attackers remain).
+    // If the fort isn't solid, but the king is uncaptureable it is guarded (ie
+    // attackers fewer than 2 pieces).
+    return isFortSolid(board, fill) || board.getAttackers().size() <= 2;
+  }
+
+  /**
+    Perform a flood fill. Defenders and edges will be treated as barriers.
+
+    @param board The board being processed.
+    @param fill The fill state of each square.
+    @param row The current row.
+    @param col The current column.
+
+    @return Whether or not the flood fill completed without exiting the board.
+   */
+  private static void guardFloodFill(Board board, boolean[][] fill, int row, int col) {
+    // Test the current square.
+    if (!inBounds(new int[] {row, col})) {
+      return;
+    }
+
+    // If the square is already filled, nothing to do.
+    if (fill[row][col]) {
+      return;
+    }
+
+    // Treat uncapturable defending pieces as barriers.
+    if (!board.safeSquare(row, col).isDefender() || capturableGuard(board, row, col)) {
+      fill[row][col] = true;
+
+      // Check the four adjancent squares clockwise, starting at the top.
+      // If any of them exit the board, propagate the failure.
+      guardFloodFill(board, fill, row - 1, col);
+      guardFloodFill(board, fill, row, col + 1);
+      guardFloodFill(board, fill, row + 1, col);
+      guardFloodFill(board, fill, row, col - 1);
+    }
   }
 
   /**
@@ -377,4 +483,16 @@ public class BoardProcessor extends BoardLayout {
     }
     return new AbstractMap.SimpleEntry<String, Integer>(buff.toString(), count);
   }
+
+  /**
+    Check if the given square is in bounds.
+
+    @param square The square to check.
+
+    @return Whether or not the piece is in bounds.
+  */
+  public static boolean inBounds(int [] square) {
+    return square[0] >= 0 && square[1] >= 0 && square[0] < 11 && square[1] < 11;
+  }
+
 }

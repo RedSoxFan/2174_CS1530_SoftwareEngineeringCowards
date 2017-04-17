@@ -742,7 +742,7 @@ public class BoardProcessorTest {
         {true, true, true, true, true, true, true, true, true, true, true},
         {true, true, false, true, false, true, true, true, true, true, true}
       };
-      assertFalse(BoardProcessor.isFortSolid(board, fill));
+      assertTrue(BoardProcessor.isFortSolid(board, fill));
     } catch (BadAsciiBoardFormatException bx) {
       fail();
     }

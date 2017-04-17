@@ -259,13 +259,6 @@ public class BoardProcessor extends BoardLayout {
       }
     }
 
-    // If there are more flooded squares than reasonable, this isn't a fort.
-    // There may be a corner case for this, but we don't have time to test it
-    // super closely.
-    if (filledEmpty > 40) {
-      return false;
-    }
-
     // Surrounded.
     return true;
   }

@@ -311,8 +311,8 @@ public class HnefataflPanel extends JPanel {
             String[] splitFile = fileName.split("\\.");
             Board temp;
             if (null != (temp = BoardLoader.loadBoardFromSave(splitFile[0]))) {
-              showMessageDialog("Successfully loaded game file.", true);
               board = temp;
+              showMessageDialog("Successfully loaded game file.", true);
               repaint();
             } else {
               showMessageDialog("Error loading game file.", true);

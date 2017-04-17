@@ -368,4 +368,71 @@ public class BoardTest {
       fail();
     }
   }
+
+  /**
+    Make sure the attacker moves are retrieved properly.
+   */
+  @Test
+  public void getMovesAttTest() {
+    try {
+      Board board = new Board();
+      board.select(5, 1);
+      board.move(5, 2);
+      int[] ans = board.getAttMoves().get(0);
+
+      assertEquals(5, ans[0]);
+      assertEquals(2, ans[1]);
+    } catch (GridOutOfBoundsException gx) {
+      fail();
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
+  }
+
+  /**
+    Make sure the attacker moves are retrieved properly.
+   */
+  @Test
+  public void getMovesDefTest() {
+    try {
+      Board board = new Board();
+      board.setAttackerTurn(false);
+      board.select(5, 3);
+      board.move(5, 2);
+      int[] ans = board.getDefMoves().get(0);
+
+      assertEquals(5, ans[0]);
+      assertEquals(2, ans[1]);
+    } catch (GridOutOfBoundsException gx) {
+      fail();
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
+  }
+
+  /**
+    Test the getAttackers() method.
+   */
+  @Test
+  public void getAttListTest() {
+    try {
+      Board board = new Board();
+      assertEquals(24, board.getAttackers().size());
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
+  }
+
+  /**
+    Test the getDefenders() method.
+   */
+  @Test
+  public void getDefListTest() {
+    try {
+      Board board = new Board();
+      assertEquals(13, board.getDefenders().size());
+    } catch (BadAsciiBoardFormatException bx) {
+      fail();
+    }
+  }
 }

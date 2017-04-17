@@ -919,14 +919,8 @@ public class Board extends BoardLayout {
   */
   public boolean isExitFort() {
     // Exit fort can only occur if king is on the edge of the board.
-    if (!inEdgeLocation(kingRow, kingCol).equals("NE")) {
-      // See if king has space to move.
-      if (checkKingMove() && BoardProcessor.isKingGuarded(this)) {
-        return true;
-      }
-    }
-
-    return false;
+    return !inEdgeLocation(kingRow, kingCol).equals("NE")
+        && checkKingMove() && BoardProcessor.isKingGuarded(this);
   }
 
   /**
@@ -1074,16 +1068,5 @@ public class Board extends BoardLayout {
     }
 
     return state;
-  }
-
-  /**
-    Returns if it is possible for an attacker to get on opposite adjacent sides
-    of this piece.
-
-    @param row Row of desired square.
-    @param col Column of desired square.
-  */
-  public boolean captureable(int row, int col) {
-    return false;
   }
 }

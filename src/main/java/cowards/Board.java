@@ -707,6 +707,12 @@ public class Board extends BoardLayout {
         setAttackerTurn(!isAttackerTurn());
         setGameOver(true);
       }
+
+      // If an exit fort occurs, end the game and the defenders win.
+      if (isExitFort()) {
+        setAttackerTurn(false);
+        setGameOver(true);
+      }
     }
   }
 
@@ -905,6 +911,35 @@ public class Board extends BoardLayout {
     }
     return shieldWall;
   }  
+
+  /**
+    Check to see if exit fort occurred.
+
+    @return Whether or not exit fort was formed.
+  */
+  public boolean isExitFort() {
+    // Exit fort can only occur if king is on the edge of the board.
+    return !inEdgeLocation(kingRow, kingCol).equals("NE")
+        && checkKingMove() && BoardProcessor.isKingGuarded(this);
+  }
+
+  /**
+    Check if king has room to move. 
+
+    @return Whether or not king has room to move.
+  */
+  public boolean checkKingMove() {
+    int [] above = new int[] {kingRow + 1, kingCol};
+    int [] below = new int[] {kingRow - 1, kingCol};
+    int [] left  = new int[] {kingRow, kingCol - 1};
+    int [] right = new int[] {kingRow, kingCol + 1};
+
+    // Check if king has room to move either left, right, up, or down.
+    return BoardProcessor.inBounds(left) && safeSquare(left[0], left[1]).isEmpty()
+        || BoardProcessor.inBounds(right) && safeSquare(right[0], right[1]).isEmpty()
+        || BoardProcessor.inBounds(above) && safeSquare(above[0], above[1]).isEmpty()
+        || BoardProcessor.inBounds(below) && safeSquare(below[0], below[1]).isEmpty();
+  }
 
   /**
     Check to see if there is a basic capture between two pieces.

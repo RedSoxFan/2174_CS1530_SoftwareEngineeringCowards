@@ -30,7 +30,7 @@ public class BoardLoader extends BoardLayout {
     @param sc The Scanner from which we are reading.
     @param numMoves How many moves we expect to read from the file.
    */
-  public static LinkedList<int []> getNextMoveList(Scanner sc, int numMoves) {
+  private static LinkedList<int []> getNextMoveList(Scanner sc, int numMoves) {
     LinkedList<int []> ret = new LinkedList<int []>();
     for (int i = 0; i < numMoves; ++i) {
       String currLine = sc.nextLine();

@@ -16,8 +16,8 @@ public class BoardProcessor extends BoardLayout {
     */
   public static boolean tooManyRepeats(ListIterator<int []> moves) {
     // Check if the last six moves are back and fourth.
-    int [] first = new int [2];
-    int [] second = new int [2];
+    int [] first = new int [4];
+    int [] second = new int [4];
 
     // Look through the list of previous moves and see if there were more than
     // the max allowable back-and-forth motions.
@@ -31,14 +31,20 @@ public class BoardProcessor extends BoardLayout {
         // First move in sequence.
         first[0] = nxt[0];
         first[1] = nxt[1];
+        first[2] = nxt[2];
+        first[3] = nxt[3];
       } else if (i == 1) {
         // Second move in sequence.
         second[0] = nxt[0];
         second[1] = nxt[1];
-      } else if (i % 2 == 0 && (first[0] != nxt[0] || first[1] != nxt[1])) {
+        second[2] = nxt[2];
+        second[3] = nxt[3];
+      } else if (i % 2 == 0 && (first[0] != nxt[0] || first[1] != nxt[1]
+          || first[2] != nxt[2] || first[3] != nxt[3])) {
         // Deviation from the first move in the sequence.
         return false;
-      } else if (i % 2 == 1 && (second[0] != nxt[0] || second[1] != nxt[1])) {
+      } else if (i % 2 == 1 && (second[0] != nxt[0] || second[1] != nxt[1]
+          || second[2] != nxt[2] || first[3] != nxt[3])) {
         // Deviation from the second move in the sequence.
         return false;
       } else if (i == maxRepeatMoves - 1) {

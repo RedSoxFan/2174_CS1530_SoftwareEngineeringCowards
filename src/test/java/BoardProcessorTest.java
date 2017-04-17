@@ -18,12 +18,12 @@ public class BoardProcessorTest {
   @Test
   public void repeatMovesTest() {
     LinkedList<int []> moves = new LinkedList<int []>();
-    moves.add(new int[]{1, 2});
-    moves.add(new int[]{3, 2});
-    moves.add(new int[]{1, 2});
-    moves.add(new int[]{3, 2});
-    moves.add(new int[]{1, 2});
-    moves.add(new int[]{3, 2});
+    moves.add(new int[]{1, 2, 3, 4});
+    moves.add(new int[]{3, 2, 1, 4});
+    moves.add(new int[]{1, 2, 3, 4});
+    moves.add(new int[]{3, 2, 1, 4});
+    moves.add(new int[]{1, 2, 3, 4});
+    moves.add(new int[]{3, 2, 1, 4});
     assertTrue(BoardProcessor.tooManyRepeats(moves.listIterator(0)));
   }
 
@@ -33,12 +33,12 @@ public class BoardProcessorTest {
   @Test
   public void noRepeatMovesTest() {
     LinkedList<int []> moves = new LinkedList<int []>();
-    moves.add(new int[]{1, 2});
-    moves.add(new int[]{3, 2});
-    moves.add(new int[]{1, 2});
-    moves.add(new int[]{2, 2});
-    moves.add(new int[]{1, 2});
-    moves.add(new int[]{3, 2});
+    moves.add(new int[]{1, 2, 3, 4});
+    moves.add(new int[]{3, 2, 1, 4});
+    moves.add(new int[]{1, 2, 3, 4});
+    moves.add(new int[]{2, 2, 1, 4});
+    moves.add(new int[]{1, 2, 3, 4});
+    moves.add(new int[]{3, 2, 1, 4});
     assertFalse(BoardProcessor.tooManyRepeats(moves.listIterator(0)));
   }
 

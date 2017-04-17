@@ -663,9 +663,9 @@ public class Board extends BoardLayout {
     LinkedList<int []> moves = isAttackerTurn() ? attackerMoves : defenderMoves;
     if (moves.size() > 5) {
       moves.removeFirst();
-      moves.add(new int [] {row, col});
+      moves.add(new int [] {row, col, selRow, selCol});
     } else {
-      moves.add(new int [] {row, col});
+      moves.add(new int [] {row, col, selRow, selCol});
     }
   }
 

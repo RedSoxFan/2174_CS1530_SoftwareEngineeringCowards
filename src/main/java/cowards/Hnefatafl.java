@@ -5,6 +5,9 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class Hnefatafl extends JFrame {
+  /**
+    Instantiate a Hnefatafl instance to start the game.
+  */
   public static void main(String[] args) {
     new Hnefatafl();
   }

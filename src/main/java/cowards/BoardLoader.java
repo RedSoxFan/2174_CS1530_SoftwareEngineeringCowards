@@ -30,7 +30,7 @@ public class BoardLoader extends BoardLayout {
     @param sc The Scanner from which we are reading.
     @param numMoves How many moves we expect to read from the file.
    */
-  public static LinkedList<int []> getNextMoveList(Scanner sc, int numMoves) {
+  private static LinkedList<int []> getNextMoveList(Scanner sc, int numMoves) {
     LinkedList<int []> ret = new LinkedList<int []>();
     for (int i = 0; i < numMoves; ++i) {
       String currLine = sc.nextLine();
@@ -65,7 +65,7 @@ public class BoardLoader extends BoardLayout {
     
     @param fileName The string of the filename containing save data.
    */
-  public static Board loadBoardFromSave(String fileName) {
+  public static Board loadBoardFromSave(String fileName) throws BoardLoadException {
     String pathName = "saved_games/" + fileName + ".txt";
     
     try {
@@ -105,6 +105,12 @@ public class BoardLoader extends BoardLayout {
       return new Board(innerBoard, am, dm, mwoCap, kr, kc, at, atc, dtc, append, dbp);
     } catch (FileNotFoundException ex) {
       /* Fall through */
+    } catch (StringIndexOutOfBoundsException ex) {
+      throw new BoardLoadException();
+    } catch (NoSuchElementException ex) {
+      throw new BoardLoadException();
+    } catch (NumberFormatException ex) {
+      throw new BoardLoadException();
     }
     
     /* Return a uninitialized board state. */

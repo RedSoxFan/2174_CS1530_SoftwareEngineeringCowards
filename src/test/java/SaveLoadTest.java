@@ -62,8 +62,12 @@ public class SaveLoadTest {
   @Test
   public void badLoadTest() {
     String fileName = "DOESNTEXIST";
-    Board board = BoardLoader.loadBoardFromSave(fileName);
-    assertNull(board);
+    try {
+      Board board = BoardLoader.loadBoardFromSave(fileName);
+      assertNull(board);
+    } catch (Exception ex) {
+      fail();
+    }
   }
 
 

@@ -2,6 +2,7 @@ import static org.junit.Assert.*;
 
 import cowards.BadAsciiBoardFormatException;
 import cowards.Board;
+import cowards.BoardLayout.GridSquareState;
 import cowards.GridOutOfBoundsException;
 
 import java.util.LinkedList;
@@ -307,6 +308,63 @@ public class BoardTest {
     } catch (BadAsciiBoardFormatException bx) {
       fail();
     } catch (GridOutOfBoundsException ex) {
+      fail();
+    }
+  }
+  
+  /**
+    Test getBoard by checking that the board has the correct dimensions.
+  */
+  @Test
+  public void getBoardTest() {
+    try {
+      Board board = new Board();
+      GridSquareState[][] gs = board.getBoard();
+      assertEquals(gs.length, 11);
+      
+      for (int i = 0; i < gs.length; i++) {
+        assertEquals(gs[i].length, 11);
+      }
+    } catch (Exception ex) {
+      fail();
+    }
+  }
+  
+  /**
+    Test the isDefender method.
+  */
+  @Test
+  public void isDefenderTest() {
+    try {
+      Board board = new Board();
+      assertTrue(board.square(5,6).isDefender());
+    } catch (Exception ex) {
+      fail();
+    }
+  }
+  
+  /**
+    Test the isDefending method.
+  */
+  @Test
+  public void isDefendingTest() {
+    try {
+      Board board = new Board();
+      assertTrue(board.square(5,5).isDefending());
+    } catch (Exception ex) {
+      fail();
+    }
+  }
+  
+  /**
+    Test the isEmpty method.
+  */
+  @Test
+  public void isEmptyTest() {
+    try {
+      Board board = new Board();
+      assertTrue(board.square(1,1).isEmpty());
+    } catch (Exception ex) {
       fail();
     }
   }

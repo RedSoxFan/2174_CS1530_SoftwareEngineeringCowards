@@ -335,13 +335,12 @@ public class MinimaxTest {
     }
   }
 
-  /*
-    THESE AREN'T IMPLEMENTED YET. When the no moves rule is implemented readd this.
   /**
     Tests that the minimaxDescision() method guides the attackers to capture
     the King.
+   */
   @Test
-  public void captureOneLookTest() {
+  public void captureOneLookTest2() {
     try {
       Board board = getNearSurroundedKing();
       Node node = new Node(board, null, 0);
@@ -357,6 +356,7 @@ public class MinimaxTest {
   /**
     Tests that the minimaxDescision() method guides the attackers to capture
     the King.
+   */
   @Test
   public void secondCaptureOneLookTest() {
     try {
@@ -370,7 +370,6 @@ public class MinimaxTest {
       fail();
     }
   }
-   */
 
   /**
     Tests that the minimaxDescision() method guides the attackers to capture
